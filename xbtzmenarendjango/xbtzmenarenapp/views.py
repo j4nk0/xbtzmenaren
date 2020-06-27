@@ -12,7 +12,10 @@ def buy(request):
     }
     return HttpResponse(template.render(context, request))
 
-def buy_action(request):
-    coin = request.POST['coin_selection']
+def buy_btc(request):
     sum_eur = request.POST['sum_eur']
-    return HttpResponse("coin: " + coin + "\n"  + "sum: " + sum_eur)
+    return HttpResponse("coin: Bitcoin" + "\n"  + "sum: " + sum_eur)
+
+def buy_ltc(request):
+    sum_eur = request.POST['sum_eur']
+    return HttpResponse("coin: Litecoin" + "\n"  + "sum: " + sum_eur)
