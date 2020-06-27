@@ -45,26 +45,26 @@
       
       <div class="tab-content">
         <div id="Bitcoin" class="tab-pane active">
-          <form action="{% url 'buy-btc' %}" method="post">
+          <form action="{% url 'sell-btc' %}" method="post">
             {% csrf_token %}
             <div class="form-group">
-              <label for="usr">Nakúpiť za EUR:</label>
-              <input type="text" class="form-control" name="sum_eur"/>
-              <script>$(':text').val('{{ max_sum_eur }}');</script>
+              <label for="usr">Predať BTC:</label>
+              <input type="text" class="form-control" name="sum_btc" id="sum_btc"/>
+              <script>$('#sum_btc').val('{{ max_sum_btc }}');</script>
             </div>
-            <button type="submit" class="btn btn-default">Kúpiť</button>
+            <button type="submit" class="btn btn-default">Predať</button>
           </form>
         </div>
 
         <div id="Litecoin" class="tab-pane">
-          <form action="{% url 'buy-ltc' %}" method="post">
+          <form action="{% url 'sell-ltc' %}" method="post">
             {% csrf_token %}
             <div class="form-group">
-              <label for="usr">Nakúpiť za EUR:</label>
-              <input type="text" class="form-control" name="sum_eur"/>
-              <script>$(':text').val('{{ max_sum_eur }}');</script>
+              <label for="usr">Predať LTC:</label>
+              <input type="text" class="form-control" name="sum_ltc" id="sum_ltc"/>
+              <script>$('#sum_ltc').val('{{ max_sum_ltc }}');</script>
             </div>
-            <button type="submit" class="btn btn-default">Kúpiť</button>
+            <button type="submit" class="btn btn-default">Predať</button>
           </form>
         </div>
       </div>
