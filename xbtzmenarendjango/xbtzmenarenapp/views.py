@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
+from django.contrib.auth.decorators import login_required
 
 def index(request):
-    return redirect('auth/login')
+    return redirect('login')
 
+@login_required
 def buy(request, success=None):
     context = {
         'max_sum_eur': 55,
@@ -17,15 +19,18 @@ def buy(request, success=None):
     #return HttpResponse(template.render(context, request))
     return render(request, 'xbtzmenarenapp/buy.html', context)
 
+@login_required
 def buy_btc(request):
     sum_eur = request.POST['sum_eur']
     #return HttpResponse("coin: Bitcoin" + "\n"  + "sum: " + sum_eur)
     return buy(request, True)
 
+@login_required
 def buy_ltc(request):
     sum_eur = request.POST['sum_eur']
     return HttpResponse("coin: Litecoin" + "\n"  + "sum: " + sum_eur)
 
+@login_required
 def sell(request, success=None):
     context = {
         'max_sum_btc': 0.01,
@@ -37,10 +42,12 @@ def sell(request, success=None):
         context.update({'error_message': "Nesprávna hodnota"})
     return render(request, 'xbtzmenarenapp/sell.html', context)
 
+@login_required
 def sell_btc(request):
     sum_btc = request.POST['sum_btc']
     return HttpResponse("coin: Bitcoin" + "\n"  + "sum: " + sum_btc)
 
+@login_required
 def sell_ltc(request):
     sum_ltc = request.POST['sum_ltc']
     return HttpResponse("coin: Litecoin" + "\n"  + "sum: " + sum_ltc)
