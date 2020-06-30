@@ -1,74 +1,42 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <!-- Bootstrap: -->
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+{% extends 'xbtzmenarenapp/withMenu.html' %}
 
-    <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-    <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> 
-
-    <meta charset="utf-8">
-    <title>Xbt Zmenaren</title>
-  </head>
-  <body>
-    <ul class="nav nav-pills nav-justified">
-      <li class="dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Menu
-        <span class="caret"></span></a>
-        <ul class="dropdown-menu">
-          <li><a href="{% url 'buy' %}">Nákup</a></li>
-	  <li><a href="{% url 'sell' %}">Predaj</a></li>
-          <li><a href="#">Portfólio</a></li>
-          <li><a href="#">Ceny</a></li>
-          <li><a href="#">Vklad</a></li>
-          <li><a href="#">Výber</a></li>
-          <li><a href="#">Zmena hesla</a></li>
-	  <li><a href="{% url 'logout' %}">Odhlásenie</a></li>
-        </ul>
-      </li>
+{% block content %}
+  {% if ok_message %} 
+    <div class="alert alert-success"> {{ ok_message }} </div>
+  {% endif %}
+  {% if error_message %} 
+    <div class="alert alert-danger"> {{ error_message }} </div>
+  {% endif %}
+  <div class="container">
+    <ul class="nav nav-pills">
+      <li class="active"><a data-toggle="pill" href="#Bitcoin">Bitcoin</a></li>
+      <li><a data-toggle="pill" href="#Litecoin">Litecoin</a></li>
     </ul>
-    {% if ok_message %} 
-      <div class="alert alert-success"> {{ ok_message }} </div>
-    {% endif %}
-    {% if error_message %} 
-      <div class="alert alert-danger"> {{ error_message }} </div>
-    {% endif %}
-    <div class="container">
-      <ul class="nav nav-pills">
-	<li class="active"><a data-toggle="pill" href="#Bitcoin">Bitcoin</a></li>
-        <li><a data-toggle="pill" href="#Litecoin">Litecoin</a></li>
-      </ul>
-      
-      <div class="tab-content">
-        <div id="Bitcoin" class="tab-pane active">
-          <form action="{% url 'sell-btc' %}" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-              <label for="usr">Predať BTC:</label>
-              <input type="text" class="form-control" name="sum_btc" id="sum_btc"/>
-              <script>$('#sum_btc').val('{{ max_sum_btc }}');</script>
-            </div>
-            <button type="submit" class="btn btn-default">Predať</button>
-          </form>
-        </div>
+    
+    <div class="tab-content">
+      <div id="Bitcoin" class="tab-pane active">
+        <form action="{% url 'sell-btc' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Predať BTC:</label>
+            <input type="text" class="form-control" name="sum_btc" id="sum_btc"/>
+            <script>$('#sum_btc').val('{{ max_sum_btc }}');</script>
+          </div>
+          <button type="submit" class="btn btn-default">Predať</button>
+        </form>
+      </div>
 
-        <div id="Litecoin" class="tab-pane">
-          <form action="{% url 'sell-ltc' %}" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-              <label for="usr">Predať LTC:</label>
-              <input type="text" class="form-control" name="sum_ltc" id="sum_ltc"/>
-              <script>$('#sum_ltc').val('{{ max_sum_ltc }}');</script>
-            </div>
-            <button type="submit" class="btn btn-default">Predať</button>
-          </form>
-        </div>
+      <div id="Litecoin" class="tab-pane">
+        <form action="{% url 'sell-ltc' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Predať LTC:</label>
+            <input type="text" class="form-control" name="sum_ltc" id="sum_ltc"/>
+            <script>$('#sum_ltc').val('{{ max_sum_ltc }}');</script>
+          </div>
+          <button type="submit" class="btn btn-default">Predať</button>
+        </form>
       </div>
     </div>
-    
-  </body>
-</html>
+  </div>
+{% endblock %}

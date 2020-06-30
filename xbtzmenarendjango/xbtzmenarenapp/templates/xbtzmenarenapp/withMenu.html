@@ -1,0 +1,22 @@
+{% extends 'xbtzmenarenapp/basic.html' %}
+
+{% block body %}
+  <ul class="nav nav-pills nav-justified">
+    <li class="dropdown">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#">Menu
+        <span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li><a href="{% url 'buy' %}">Nákup</a></li>
+        <li><a href="{% url 'sell' %}">Predaj</a></li>
+        <li><a href="#">Portfólio</a></li>
+        <li><a href="#">Ceny</a></li>
+        <li><a href="#">Vklad</a></li>
+        <li><a href="#">Výber</a></li>
+        <li><a href="#">Zmena hesla</a></li>
+        <li><a href="{% url 'logout' %}">Odhlásenie</a></li>
+      </ul>
+    </li>
+  </ul>
+  {% block content %}
+  {% endblock %}
+{% endblock %}
