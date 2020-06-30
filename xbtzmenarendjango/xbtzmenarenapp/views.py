@@ -51,3 +51,8 @@ def sell_btc(request):
 def sell_ltc(request):
     sum_ltc = request.POST['sum_ltc']
     return HttpResponse("coin: Litecoin" + "\n"  + "sum: " + sum_ltc)
+
+def rates(request):
+    return render(request, 'xbtzmenarenapp/rates.html', {})
+
+

@@ -12,4 +12,6 @@ urlpatterns = [
     path('sell/', views.sell, name='sell'),
     path('sell-btc/', views.sell_btc, name='sell-btc'),
     path('sell-ltc/', views.sell_ltc, name='sell-ltc'),
+
+    path('rates/', views.rates, name='rates'),
 ]
