@@ -12,13 +12,13 @@
           <td>Nakúpite za</td>
           <td><b id="btceur-buy">8395</b></td>
 	  <script>
-		  $(document).ready(function(){
-	    $('#button').click(function(){ 
-	      $('#btceur-buy').load('rate-btceur-buy/', function(responseTxt){
-		      $('#btceur-buy').text(responseTxt)
-	      }
-	      ); });
-		  });
+	    $(document).ready(function(){
+	      setInterval(function(){
+	        $('#btceur-buy').load('rate-btceur-buy/', function(responseTxt){
+	          $('#btceur-buy').text(responseTxt)
+	        });
+	      }, 3000);
+            });
 	  </script>
         </tr>
         <tr>
