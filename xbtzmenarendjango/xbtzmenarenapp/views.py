@@ -55,4 +55,6 @@ def sell_ltc(request):
 def rates(request):
     return render(request, 'xbtzmenarenapp/rates.html', {})
 
+def rate_btceur_buy(request):
+    return HttpResponse(10000)
 

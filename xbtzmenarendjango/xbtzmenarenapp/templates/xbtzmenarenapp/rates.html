@@ -10,7 +10,16 @@
         </tr>
         <tr>
           <td>Nakúpite za</td>
-          <td><b>8395</b></td>
+          <td><b id="btceur-buy">8395</b></td>
+	  <script>
+		  $(document).ready(function(){
+	    $('#button').click(function(){ 
+	      $('#btceur-buy').load('rate-btceur-buy/', function(responseTxt){
+		      $('#btceur-buy').text(responseTxt)
+	      }
+	      ); });
+		  });
+	  </script>
         </tr>
         <tr>
           <td>Predáte za</td>
@@ -34,5 +43,6 @@
         </tr>
       </tbody>
     </table>
+    <button type="button" class="btn" id='button'>Button</button>
   </div>
 {% endblock %}
