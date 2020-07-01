@@ -14,7 +14,7 @@
 	  <script>
 	    $(document).ready(function(){
 	      setInterval(function(){
-	        $('#btceur-buy').load('rate-btceur-buy/', function(responseTxt){
+	        $('#btceur-buy').load('/rate-btceur-buy/', function(responseTxt){
 	          $('#btceur-buy').text(responseTxt)
 	        });
 	      }, 3000);

@@ -14,5 +14,5 @@ urlpatterns = [
     path('sell-ltc/', views.sell_ltc, name='sell-ltc'),
 
     path('rates/', views.rates, name='rates'),
-    path('rates/rate-btceur-buy/', views.rate_btceur_buy, name='rate-btceur-buy'),
+    path('rate-btceur-buy/', views.rate_btceur_buy, name='rate-btceur-buy'),
 ]
