@@ -10,7 +10,7 @@
         </tr>
         <tr>
           <td>Nakúpite za</td>
-          <td><b id="btceur-buy">8395</b></td>
+	  <td><b id="btceur-buy">{{ btceur_buy }}</b></td>
 	  <script>
 	    $(document).ready(function(){
 	      setInterval(function(){
@@ -23,7 +23,16 @@
         </tr>
         <tr>
           <td>Predáte za</td>
-          <td><b>7905</b></td>
+          <td><b id="btceur-sell">{{ btceur_sell }}</b></td>
+	  <script>
+	    $(document).ready(function(){
+	      setInterval(function(){
+	        $('#btceur-sell').load('/rate-btceur-sell/', function(responseTxt){
+	          $('#btceur-sell').text(responseTxt)
+	        });
+	      }, 3000);
+            });
+	  </script>
         </tr>
         <tr>
           <td></td>
@@ -35,14 +44,31 @@
         </tr>
         <tr>
           <td>Nakúpite za</td>
-          <td><b>37</b></td>
+	  <td><b id="ltceur-buy">{{ ltceur_buy }}</b></td>
+	  <script>
+	    $(document).ready(function(){
+	      setInterval(function(){
+	        $('#ltceur-buy').load('/rate-ltceur-buy/', function(responseTxt){
+	          $('#ltceur-buy').text(responseTxt)
+	        });
+	      }, 3000);
+            });
+	  </script>
         </tr>
         <tr>
           <td>Predáte za</td>
-          <td><b>35</b></td>
+	  <td><b id="ltceur-sell">{{ ltceur_sell }}</b></td>
+	  <script>
+	    $(document).ready(function(){
+	      setInterval(function(){
+	        $('#ltceur-sell').load('/rate-ltceur-sell/', function(responseTxt){
+	          $('#ltceur-sell').text(responseTxt)
+	        });
+	      }, 3000);
+            });
+	  </script>
         </tr>
       </tbody>
     </table>
-    <button type="button" class="btn" id='button'>Button</button>
   </div>
 {% endblock %}

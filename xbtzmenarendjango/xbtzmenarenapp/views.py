@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.decorators import login_required
+from . import coinbase
 
 def index(request):
     return redirect('login')
@@ -53,8 +54,23 @@ def sell_ltc(request):
     return HttpResponse("coin: Litecoin" + "\n"  + "sum: " + sum_ltc)
 
 def rates(request):
-    return render(request, 'xbtzmenarenapp/rates.html', {})
+    context = {
+            'btceur_buy': coinbase.get_btceur_buy(),
+            'btceur_sell': coinbase.get_btceur_sell(),
+            'ltceur_buy': coinbase.get_ltceur_buy(),
+            'ltceur_sell': coinbase.get_ltceur_sell(),
+    }
+    return render(request, 'xbtzmenarenapp/rates.html', context)
 
 def rate_btceur_buy(request):
-    return HttpResponse(10000)
+    return HttpResponse(coinbase.get_btceur_buy())
+
+def rate_btceur_sell(request):
+    return HttpResponse(coinbase.get_btceur_sell())
+
+def rate_ltceur_buy(request):
+    return HttpResponse(coinbase.get_ltceur_buy())
+
+def rate_ltceur_sell(request):
+    return HttpResponse(coinbase.get_ltceur_sell())
 
