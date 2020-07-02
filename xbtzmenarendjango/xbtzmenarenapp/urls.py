@@ -20,4 +20,5 @@ urlpatterns = [
     path('rate-ltceur-sell/', views.rate_ltceur_sell, name='rate-ltceur-sell'),
 
     path('terms/', views.terms_and_conditions, name='terms'),
+    path('contacts/', views.contacts, name='contacts'),
 ]

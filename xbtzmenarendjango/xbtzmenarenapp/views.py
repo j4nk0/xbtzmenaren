@@ -87,3 +87,5 @@ def rate_ltceur_sell(request):
 def terms_and_conditions(request):
     return render(request, 'xbtzmenarenapp/terms.html', {})
 
+def contacts(request):
+    return render(request, 'xbtzmenarenapp/contacts.html', {})
