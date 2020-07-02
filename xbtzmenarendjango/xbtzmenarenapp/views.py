@@ -89,3 +89,9 @@ def terms_and_conditions(request):
 
 def contacts(request):
     return render(request, 'xbtzmenarenapp/contacts.html', {})
+
+def registration(request):
+    return render(request, 'xbtzmenarenapp/registration.html', {})
+        
+def registration_attempt(request):
+    return registration(request)

@@ -21,4 +21,7 @@ urlpatterns = [
 
     path('terms/', views.terms_and_conditions, name='terms'),
     path('contacts/', views.contacts, name='contacts'),
+
+    path('registration/', views.registration, name='registration'),
+    path('registration-attempt/', views.registration_attempt, name='registration-attempt'),
 ]
