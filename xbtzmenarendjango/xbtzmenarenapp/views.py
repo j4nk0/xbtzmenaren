@@ -84,3 +84,6 @@ def rate_ltceur_buy(request):
 def rate_ltceur_sell(request):
     return HttpResponse(rates.get_ltceur_sell())
 
+def terms_and_conditions(request):
+    return render(request, 'xbtzmenarenapp/terms.html', {})
+
