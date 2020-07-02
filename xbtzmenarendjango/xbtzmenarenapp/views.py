@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.decorators import login_required
-from . import coinbase
+from . import rates
 
 def index(request):
     return redirect('login')
@@ -53,24 +53,24 @@ def sell_ltc(request):
     sum_ltc = request.POST['sum_ltc']
     return HttpResponse("coin: Litecoin" + "\n"  + "sum: " + sum_ltc)
 
-def rates(request):
+def private_rates(request):
     context = {
-            'btceur_buy': coinbase.get_btceur_buy(),
-            'btceur_sell': coinbase.get_btceur_sell(),
-            'ltceur_buy': coinbase.get_ltceur_buy(),
-            'ltceur_sell': coinbase.get_ltceur_sell(),
+            'btceur_buy': rates.get_btceur_buy(),
+            'btceur_sell': rates.get_btceur_sell(),
+            'ltceur_buy': rates.get_ltceur_buy(),
+            'ltceur_sell': rates.get_ltceur_sell(),
     }
-    return render(request, 'xbtzmenarenapp/rates.html', context)
+    return render(request, 'xbtzmenarenapp/privateRates.html', context)
 
 def rate_btceur_buy(request):
-    return HttpResponse(coinbase.get_btceur_buy())
+    return HttpResponse(rates.get_btceur_buy())
 
 def rate_btceur_sell(request):
-    return HttpResponse(coinbase.get_btceur_sell())
+    return HttpResponse(rates.get_btceur_sell())
 
 def rate_ltceur_buy(request):
-    return HttpResponse(coinbase.get_ltceur_buy())
+    return HttpResponse(rates.get_ltceur_buy())
 
 def rate_ltceur_sell(request):
-    return HttpResponse(coinbase.get_ltceur_sell())
+    return HttpResponse(rates.get_ltceur_sell())
 

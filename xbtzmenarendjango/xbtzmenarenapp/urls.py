@@ -13,7 +13,7 @@ urlpatterns = [
     path('sell-btc/', views.sell_btc, name='sell-btc'),
     path('sell-ltc/', views.sell_ltc, name='sell-ltc'),
 
-    path('rates/', views.rates, name='rates'),
+    path('rates/', views.private_rates, name='rates'),
     path('rate-btceur-buy/', views.rate_btceur_buy, name='rate-btceur-buy'),
     path('rate-btceur-sell/', views.rate_btceur_sell, name='rate-btceur-sell'),
     path('rate-ltceur-buy/', views.rate_ltceur_buy, name='rate-ltceur-buy'),
