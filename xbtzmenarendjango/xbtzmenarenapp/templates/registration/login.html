@@ -1,33 +1,18 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <!-- Bootstrap: -->
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+{% extends 'xbtzmenarenapp/withPublicMenu.html' %}
 
-    <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-    <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> 
-
-    <meta charset="utf-8">
-    <title>Xbt Zmenaren</title>
-  </head>
-  <body>
-    <div class="container">
-      <form action="{% url 'login' %}" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-          <label for="usr">E-mail:</label>
-          <input type="text" class="form-control" name="username"/>
-        </div>
-        <div class="form-group">
-          <label for="password">Heslo:</label>
-          <input type="password" class="form-control" name="password"/>
-        </div>
-        <button type="submit" class="btn btn-default">Prihlásiť</button>
-      </form>
-    </div>
-  </body>
-</html>
+{% block content %}
+  <div class="container">
+    <form action="{% url 'login' %}" method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="usr">E-mail:</label>
+        <input type="text" class="form-control" name="username"/>
+      </div>
+      <div class="form-group">
+        <label for="password">Heslo:</label>
+        <input type="password" class="form-control" name="password"/>
+      </div>
+      <button type="submit" class="btn btn-default">Prihlásiť</button>
+    </form>
+  </div>
+{% endblock %}

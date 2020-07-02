@@ -53,6 +53,7 @@ def sell_ltc(request):
     sum_ltc = request.POST['sum_ltc']
     return HttpResponse("coin: Litecoin" + "\n"  + "sum: " + sum_ltc)
 
+@login_required
 def private_rates(request):
     context = {
             'btceur_buy': rates.get_btceur_buy(),
@@ -61,6 +62,15 @@ def private_rates(request):
             'ltceur_sell': rates.get_ltceur_sell(),
     }
     return render(request, 'xbtzmenarenapp/privateRates.html', context)
+
+def public_rates(request):
+    context = {
+            'btceur_buy': rates.get_btceur_buy(),
+            'btceur_sell': rates.get_btceur_sell(),
+            'ltceur_buy': rates.get_ltceur_buy(),
+            'ltceur_sell': rates.get_ltceur_sell(),
+    }
+    return render(request, 'xbtzmenarenapp/publicRates.html', context)
 
 def rate_btceur_buy(request):
     return HttpResponse(rates.get_btceur_buy())

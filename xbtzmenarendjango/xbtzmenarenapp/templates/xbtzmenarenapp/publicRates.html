@@ -1,0 +1,74 @@
+{% extends 'xbtzmenarenapp/withPublicMenu.html' %}
+
+{% block content %}
+  <div class="container">
+    <table class="table">
+      <tbody>
+        <tr>
+          <td><b>BTC-EUR</b></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Nakúpite za</td>
+	  <td><b id="btceur-buy">{{ btceur_buy }}</b></td>
+	  <script>
+	    $(document).ready(function(){
+	      setInterval(function(){
+	        $('#btceur-buy').load('/rate-btceur-buy/', function(responseTxt){
+	          $('#btceur-buy').text(responseTxt)
+	        });
+	      }, 3000);
+            });
+	  </script>
+        </tr>
+        <tr>
+          <td>Predáte za</td>
+          <td><b id="btceur-sell">{{ btceur_sell }}</b></td>
+	  <script>
+	    $(document).ready(function(){
+	      setInterval(function(){
+	        $('#btceur-sell').load('/rate-btceur-sell/', function(responseTxt){
+	          $('#btceur-sell').text(responseTxt)
+	        });
+	      }, 3000);
+            });
+	  </script>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><b>LTC-EUR</b></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Nakúpite za</td>
+	  <td><b id="ltceur-buy">{{ ltceur_buy }}</b></td>
+	  <script>
+	    $(document).ready(function(){
+	      setInterval(function(){
+	        $('#ltceur-buy').load('/rate-ltceur-buy/', function(responseTxt){
+	          $('#ltceur-buy').text(responseTxt)
+	        });
+	      }, 3000);
+            });
+	  </script>
+        </tr>
+        <tr>
+          <td>Predáte za</td>
+	  <td><b id="ltceur-sell">{{ ltceur_sell }}</b></td>
+	  <script>
+	    $(document).ready(function(){
+	      setInterval(function(){
+	        $('#ltceur-sell').load('/rate-ltceur-sell/', function(responseTxt){
+	          $('#ltceur-sell').text(responseTxt)
+	        });
+	      }, 3000);
+            });
+	  </script>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
