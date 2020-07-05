@@ -132,3 +132,6 @@ STATIC_URL = '/static/'
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = '/buy'
+
+# Use custom user model
+AUTH_USER_MODEL = 'xbtzmenarenapp.User'
