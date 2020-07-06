@@ -1,12 +1,15 @@
 {% extends 'xbtzmenarenapp/withPublicMenu.html' %}
 
 {% block content %}
+  {% if error_message %}
+    <div class="alert alert-danger"> {{ error_message }} </div>
+  {% endif %}
   <div class="container">
     <form action="{% url 'registration-attempt' %}" method="post">
       {% csrf_token %}
       <div class="form-group">
         <label for="usr">E-mail:</label>
-        <input type="text" class="form-control" name="username"/>
+        <input type="text" class="form-control" name="email"/>
       </div>
       <div class="form-group">
         <label for="password">Heslo:</label>

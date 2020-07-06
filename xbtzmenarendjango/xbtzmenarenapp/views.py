@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.decorators import login_required
 from . import rates
+from .models import CustomUser
 
 def index(request):
     return redirect('login')
@@ -90,8 +91,23 @@ def terms_and_conditions(request):
 def contacts(request):
     return render(request, 'xbtzmenarenapp/contacts.html', {})
 
-def registration(request):
-    return render(request, 'xbtzmenarenapp/registration.html', {})
+def registration(request, error_message=None):
+    context = { 'error_message': error_message }
+    return render(request, 'xbtzmenarenapp/registration.html', context)
         
 def registration_attempt(request):
-    return registration(request)
+    if request.POST['password'] != request.POST['password-again']:
+        return registration(request, 'Heslá sa nezhodujú')
+    username = request.POST['email']
+    password = request.POST['password']
+    CustomUser.objects.create_user(username, password=password)
+    return redirect('login')
+
+@login_required
+def portfolio(request):
+    context = {
+        'eur': '50.00',
+        'btc': '0.00100000',
+        'ltc': '20.00000000',
+    }
+    return render(request, 'xbtzmenarenapp/portfolio.html', context)
