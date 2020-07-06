@@ -14,7 +14,7 @@
 	  <script>
 	    $(document).ready(function(){
 	      setInterval(function(){
-	        $('#btceur-buy').load('/rate-btceur-buy/', function(responseTxt){
+		      $('#btceur-buy').load("{% url 'rate-btceur-buy' %}", function(responseTxt){
 	          $('#btceur-buy').text(responseTxt)
 	        });
 	      }, 3000);
@@ -27,7 +27,7 @@
 	  <script>
 	    $(document).ready(function(){
 	      setInterval(function(){
-	        $('#btceur-sell').load('/rate-btceur-sell/', function(responseTxt){
+	        $('#btceur-sell').load("{% url 'rate-btceur-sell' %}", function(responseTxt){
 	          $('#btceur-sell').text(responseTxt)
 	        });
 	      }, 3000);
@@ -48,7 +48,7 @@
 	  <script>
 	    $(document).ready(function(){
 	      setInterval(function(){
-	        $('#ltceur-buy').load('/rate-ltceur-buy/', function(responseTxt){
+		      $('#ltceur-buy').load("{% url 'rate-ltceur-buy' %}", function(responseTxt){
 	          $('#ltceur-buy').text(responseTxt)
 	        });
 	      }, 3000);
@@ -61,7 +61,7 @@
 	  <script>
 	    $(document).ready(function(){
 	      setInterval(function(){
-	        $('#ltceur-sell').load('/rate-ltceur-sell/', function(responseTxt){
+		      $('#ltceur-sell').load("{% url 'rate-ltceur-sell' %}", function(responseTxt){
 	          $('#ltceur-sell').text(responseTxt)
 	        });
 	      }, 3000);
