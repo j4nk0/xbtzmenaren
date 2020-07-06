@@ -134,4 +134,4 @@ STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = '/buy'
 
 # Use custom user model
-AUTH_USER_MODEL = 'xbtzmenarenapp.User'
+AUTH_USER_MODEL = 'xbtzmenarenapp.CustomUser'
