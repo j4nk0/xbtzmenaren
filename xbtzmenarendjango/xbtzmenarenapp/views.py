@@ -111,3 +111,17 @@ def portfolio(request):
         'ltc': '20.00000000',
     }
     return render(request, 'xbtzmenarenapp/portfolio.html', context)
+
+@login_required
+def change_password(request, error_message=None):
+    context = { 'error_message': error_message }
+    return render(request, 'xbtzmenarenapp/changePassword.html', context)
+
+@login_required
+def change_password_attempt(request):
+    if request.POST['password'] != request.POST['password-again']:
+        return change_password(request, 'Heslá sa nezhodujú')
+    user = CustomUser.objects.get(email=request.user.email)
+    user.set_password(request.POST['password'])
+    user.save()
+    return redirect('logout')

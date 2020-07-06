@@ -26,4 +26,7 @@ urlpatterns = [
     path('registration-attempt/', views.registration_attempt, name='registration-attempt'),
 
     path('portfolio/', views.portfolio, name='portfolio'),
+
+    path('change-password/', views.change_password, name='change-password'),
+    path('change-password-attempt/', views.change_password_attempt, name='change-password-attempt'),
 ]
