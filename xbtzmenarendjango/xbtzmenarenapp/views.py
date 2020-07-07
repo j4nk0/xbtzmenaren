@@ -134,3 +134,27 @@ def deposit(request):
         'ltc_address': 'LP61ejcPMHCHLgPAXNyur2Vd2hNnDBSoSs',
     }
     return render(request, 'xbtzmenarenapp/deposit.html', context)
+
+@login_required
+def withdrawal(request):
+    context = {
+        'max_sum_eur': 50,
+        'max_sum_btc': 0.01,
+        'max_sum_ltc': 2,
+    }
+    return render(request, 'xbtzmenarenapp/withdrawal.html', context)
+
+@login_required
+def withdrawal_eur(request):
+    sum_eur = request.POST['sum_eur']
+    return HttpResponse("Withdraw EUR: " + sum_eur)
+
+@login_required
+def withdrawal_btc(request):
+    sum_btc = request.POST['sum_btc']
+    return HttpResponse("Withdraw BTC: " + sum_btc)
+
+@login_required
+def withdrawal_ltc(request):
+    sum_ltc = request.POST['sum_ltc']
+    return HttpResponse("Withdraw LTC: " + sum_ltc)

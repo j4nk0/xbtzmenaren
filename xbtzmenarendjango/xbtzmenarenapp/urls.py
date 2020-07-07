@@ -20,6 +20,7 @@ urlpatterns = [
     path('rate-ltceur-sell/', views.rate_ltceur_sell, name='rate-ltceur-sell'),
 
     path('terms/', views.terms_and_conditions, name='terms'),
+
     path('contacts/', views.contacts, name='contacts'),
 
     path('registration/', views.registration, name='registration'),
@@ -31,4 +32,9 @@ urlpatterns = [
     path('change-password-attempt/', views.change_password_attempt, name='change-password-attempt'),
 
     path('deposit/', views.deposit, name='deposit'),
+
+    path('withdrawal/', views.withdrawal, name='withdrawal'),
+    path('withdrawal-eur/', views.withdrawal_eur, name='withdrawal-eur'),
+    path('withdrawal-btc/', views.withdrawal_btc, name='withdrawal-btc'),
+    path('withdrawal-ltc/', views.withdrawal_ltc, name='withdrawal-ltc'),
 ]
