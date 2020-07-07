@@ -100,7 +100,10 @@ def registration_attempt(request):
         return registration(request, 'Heslá sa nezhodujú')
     username = request.POST['email']
     password = request.POST['password']
-    CustomUser.objects.create_user(username, password=password)
+    try:
+        CustomUser.objects.create_user(username, password=password)
+    except:
+        return registration(request, 'Email je už registrovaný')
     return redirect('login')
 
 @login_required
