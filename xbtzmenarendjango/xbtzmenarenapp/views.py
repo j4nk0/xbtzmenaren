@@ -125,3 +125,12 @@ def change_password_attempt(request):
     user.set_password(request.POST['password'])
     user.save()
     return redirect('logout')
+
+@login_required
+def deposit(request):
+    context = { 
+        'vs': 1234, 
+        'btc_address': 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq', 
+        'ltc_address': 'LP61ejcPMHCHLgPAXNyur2Vd2hNnDBSoSs',
+    }
+    return render(request, 'xbtzmenarenapp/deposit.html', context)

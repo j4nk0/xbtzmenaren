@@ -29,4 +29,6 @@ urlpatterns = [
 
     path('change-password/', views.change_password, name='change-password'),
     path('change-password-attempt/', views.change_password_attempt, name='change-password-attempt'),
+
+    path('deposit/', views.deposit, name='deposit'),
 ]
