@@ -17,6 +17,11 @@
             <input type="text" class="form-control" name="sum_eur" id="sum_eur"/>
             <script>$('#sum_eur').val('{{ max_sum_eur }}');</script>
           </div>
+          <div class="form-group">
+            <label for="usr">Zaslať na účet IBAN:</label>
+            <input type="text" class="form-control"
+	      name="account_number" id="account_number"/>
+          </div>
           <button type="submit" class="btn btn-default">Vybrať</button>
         </form>
       </div>
@@ -29,6 +34,11 @@
             <input type="text" class="form-control" name="sum_btc" id="sum_btc"/>
             <script>$('#sum_btc').val('{{ max_sum_btc }}');</script>
           </div>
+          <div class="form-group">
+            <label for="usr">Zaslať na adresu:</label>
+            <input type="text" class="form-control"
+	      name="address_btc" id="address_btc"/>
+          </div>
           <button type="submit" class="btn btn-default">Vybrať</button>
         </form>
       </div>
@@ -40,6 +50,11 @@
             <label for="usr">Vybrať LTC:</label>
             <input type="text" class="form-control" name="sum_ltc" id="sum_ltc"/>
             <script>$('#sum_ltc').val('{{ max_sum_ltc }}');</script>
+          </div>
+          <div class="form-group">
+            <label for="usr">Zaslať na adresu:</label>
+            <input type="text" class="form-control"
+	      name="address_ltc" id="address_ltc"/>
           </div>
           <button type="submit" class="btn btn-default">Vybrať</button>
         </form>

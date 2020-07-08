@@ -178,14 +178,17 @@ def withdrawal(request):
 @login_required
 def withdrawal_eur(request):
     sum_eur = request.POST['sum_eur']
-    return HttpResponse("Withdraw EUR: " + sum_eur)
+    iban = request.POST['account_number']
+    return HttpResponse("Withdraw EUR: " + sum_eur + ' to IBAN: ' + iban)
 
 @login_required
 def withdrawal_btc(request):
     sum_btc = request.POST['sum_btc']
-    return HttpResponse("Withdraw BTC: " + sum_btc)
+    address_btc = request.POST['address_btc']
+    return HttpResponse("Withdraw BTC: " + sum_btc + ' to address: ' + address_btc)
 
 @login_required
 def withdrawal_ltc(request):
     sum_ltc = request.POST['sum_ltc']
-    return HttpResponse("Withdraw LTC: " + sum_ltc)
+    address_ltc = request.POST['address_ltc']
+    return HttpResponse("Withdraw LTC: " + sum_ltc + ' to address: ' + address_ltc)
