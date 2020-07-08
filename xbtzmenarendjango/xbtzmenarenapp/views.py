@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.decorators import login_required
 from . import rates
-from .models import CustomUser
+from .models import CustomUser, Address, Balance
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
@@ -14,7 +14,7 @@ def index(request):
 @login_required
 def buy(request, success=None):
     context = {
-        'max_sum_eur': 55,
+        'max_sum_eur': request.user.balance.eur,
     }
     if success == True:
         context.update({'ok_message': "Nákup uspešný"})
@@ -38,8 +38,8 @@ def buy_ltc(request):
 @login_required
 def sell(request, success=None):
     context = {
-        'max_sum_btc': 0.01,
-        'max_sum_ltc': 2,
+        'max_sum_btc': request.user.balance.btc,
+        'max_sum_ltc': request.user.balance.ltc,
     }
     if success == True:
         context.update({'ok_message': "Predaj uspešný"})
@@ -115,14 +115,26 @@ def registration_attempt(request):
         CustomUser.objects.create_user(email, password=password)
     except:
         return registration(request, 'Email je už registrovaný')
+    Address.objects.create(
+        user=CustomUser.objects.get(email=email),
+        vs=f'{CustomUser.objects.get(email=email).id:010}',
+        btc='BTC_address:' + email[:88],
+        ltc='LTC_address:' + email[:88],
+    )
+    Balance.objects.create(
+        user=CustomUser.objects.get(email=email),
+        eur=0,
+        btc=0,
+        ltc=0,
+    )
     return redirect('login')
 
 @login_required
 def portfolio(request):
     context = {
-        'eur': '50.00',
-        'btc': '0.00100000',
-        'ltc': '20.00000000',
+        'eur': request.user.balance.eur,
+        'btc': request.user.balance.btc,
+        'ltc': request.user.balance.ltc,
     }
     return render(request, 'xbtzmenarenapp/portfolio.html', context)
 
@@ -135,26 +147,31 @@ def change_password(request, error_message=None):
 def change_password_attempt(request):
     if request.POST['password'] != request.POST['password-again']:
         return change_password(request, 'Heslá sa nezhodujú')
+    password = request.POST['password'] 
+    try:
+        validate_password(password, request.user)
+    except ValidationError:
+        return change_password(request, 'Slabé heslo')
     user = CustomUser.objects.get(email=request.user.email)
-    user.set_password(request.POST['password'])
+    user.set_password(password)
     user.save()
     return redirect('logout')
 
 @login_required
 def deposit(request):
     context = { 
-        'vs': 1234, 
-        'btc_address': 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq', 
-        'ltc_address': 'LP61ejcPMHCHLgPAXNyur2Vd2hNnDBSoSs',
+        'vs': request.user.address.vs, 
+        'btc_address': request.user.address.btc, 
+        'ltc_address': request.user.address.ltc,
     }
     return render(request, 'xbtzmenarenapp/deposit.html', context)
 
 @login_required
 def withdrawal(request):
     context = {
-        'max_sum_eur': 50,
-        'max_sum_btc': 0.01,
-        'max_sum_ltc': 2,
+        'max_sum_eur': request.user.balance.eur,
+        'max_sum_btc': request.user.balance.btc,
+        'max_sum_ltc': request.user.balance.ltc,
     }
     return render(request, 'xbtzmenarenapp/withdrawal.html', context)
 

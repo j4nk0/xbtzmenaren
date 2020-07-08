@@ -47,3 +47,16 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.email
+
+class Address(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
+    vs = models.CharField(max_length=10, unique=True)
+    btc = models.CharField(max_length=100, unique=True)
+    ltc = models.CharField(max_length=100, unique=True)
+
+class Balance(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
+    eur = models.DecimalField(max_digits=9, decimal_places=2)
+    btc = models.DecimalField(max_digits=11, decimal_places=8)
+    ltc = models.DecimalField(max_digits=14, decimal_places=8)
+
