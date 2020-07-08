@@ -4,6 +4,9 @@ from django.template import loader
 from django.contrib.auth.decorators import login_required
 from . import rates
 from .models import CustomUser
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.contrib.auth.password_validation import validate_password
 
 def index(request):
     return redirect('login')
@@ -98,10 +101,18 @@ def registration(request, error_message=None):
 def registration_attempt(request):
     if request.POST['password'] != request.POST['password-again']:
         return registration(request, 'Heslá sa nezhodujú')
-    username = request.POST['email']
+    email = request.POST['email']
+    try:
+        validate_email(email)
+    except ValidationError:
+        return registration(request, 'Neplatný e-mail')
     password = request.POST['password']
     try:
-        CustomUser.objects.create_user(username, password=password)
+        validate_password(password, request.user)
+    except ValidationError:
+        return registration(request, 'Slabé heslo')
+    try:
+        CustomUser.objects.create_user(email, password=password)
     except:
         return registration(request, 'Email je už registrovaný')
     return redirect('login')
