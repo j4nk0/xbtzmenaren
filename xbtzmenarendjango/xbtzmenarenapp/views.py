@@ -172,6 +172,8 @@ def withdrawal(request):
         'max_sum_eur': request.user.balance.eur,
         'max_sum_btc': request.user.balance.btc,
         'max_sum_ltc': request.user.balance.ltc,
+        'fee_btc': 0.0001,
+        'fee_ltc': 0.0005,
     }
     return render(request, 'xbtzmenarenapp/withdrawal.html', context)
 
@@ -185,10 +187,20 @@ def withdrawal_eur(request):
 def withdrawal_btc(request):
     sum_btc = request.POST['sum_btc']
     address_btc = request.POST['address_btc']
-    return HttpResponse("Withdraw BTC: " + sum_btc + ' to address: ' + address_btc)
+    is_instant = True if 'is_instant_btc' in request.POST else False
+    return HttpResponse(
+        'Withdraw BTC: ' + sum_btc      \
+        + ' to address: ' + address_btc \
+        + ' instant: ' + str(is_instant)
+    )
 
 @login_required
 def withdrawal_ltc(request):
     sum_ltc = request.POST['sum_ltc']
     address_ltc = request.POST['address_ltc']
-    return HttpResponse("Withdraw LTC: " + sum_ltc + ' to address: ' + address_ltc)
+    is_instant = True if 'is_instant_ltc' in request.POST else False
+    return HttpResponse(
+        "Withdraw LTC: " + sum_ltc      \
+        + ' to address: ' + address_ltc \
+        + ' instant: ' + str(is_instant)
+    )

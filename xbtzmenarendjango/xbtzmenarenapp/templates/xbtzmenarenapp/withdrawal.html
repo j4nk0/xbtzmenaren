@@ -39,6 +39,11 @@
             <input type="text" class="form-control"
 	      name="address_btc" id="address_btc"/>
           </div>
+	  <div class="checkbox">
+	    <label>
+      	      <input type="checkbox" name="is_instant_btc" value=""/>Instantný výber (poplatok {{ fee_btc }} BTC)
+	    </label>
+          </div>
           <button type="submit" class="btn btn-default">Vybrať</button>
         </form>
       </div>
@@ -55,6 +60,11 @@
             <label for="usr">Zaslať na adresu:</label>
             <input type="text" class="form-control"
 	      name="address_ltc" id="address_ltc"/>
+          </div>
+	  <div class="checkbox">
+	    <label>
+      	      <input type="checkbox" name="is_instant_ltc" value=""/>Instantný výber (poplatok {{ fee_ltc }} LTC)
+	    </label>
           </div>
           <button type="submit" class="btn btn-default">Vybrať</button>
         </form>
