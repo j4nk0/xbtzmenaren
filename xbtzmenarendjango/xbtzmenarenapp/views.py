@@ -204,3 +204,11 @@ def withdrawal_ltc(request):
         + ' to address: ' + address_ltc \
         + ' instant: ' + str(is_instant)
     )
+
+@login_required
+def management_verification(request):
+    return render(request, 'xbtzmenarenapp/managementVerification.html', {})
+
+@login_required
+def management_verification_attempt(request):
+    return management_verification(request)
