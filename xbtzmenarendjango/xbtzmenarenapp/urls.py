@@ -39,5 +39,5 @@ urlpatterns = [
     path('withdrawal-ltc/', views.withdrawal_ltc, name='withdrawal-ltc'),
 
     path('management/verification/', views.management_verification, name='management-verification'),
-    path('management/verification_attempt/', views.management_verification_attempt, name='management-verification-attempt'),
+    path('management/verification-attempt/', views.management_verification_attempt, name='management-verification-attempt'),
 ]

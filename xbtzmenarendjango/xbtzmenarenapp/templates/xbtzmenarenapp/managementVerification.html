@@ -1,6 +1,12 @@
 {% extends 'xbtzmenarenapp/withMenu.html' %}
 
 {% block content %}
+  {% if ok_message %} 
+    <div class="alert alert-success"> {{ ok_message }} </div>
+  {% endif %}
+  {% if error_message %} 
+    <div class="alert alert-danger"> {{ error_message }} </div>
+  {% endif %}
   <div class="container">
     <form action="{% url 'management-verification-attempt' %}" method="post">
       {% csrf_token %}

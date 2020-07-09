@@ -1,13 +1,12 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from . import rates
 from .models import CustomUser, Address, Balance
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
-
 def index(request):
     return redirect('login')
 
@@ -205,10 +204,27 @@ def withdrawal_ltc(request):
         + ' instant: ' + str(is_instant)
     )
 
-@login_required
-def management_verification(request):
-    return render(request, 'xbtzmenarenapp/managementVerification.html', {})
+def staff_check(user):
+    return user.is_staff
 
+@user_passes_test(staff_check)
+@login_required
+def management_verification(request, success=None):
+    context = {}
+    if success == True:
+        context.update({'ok_message': "Užívateľ overený"})
+    if success == False:
+        context.update({'error_message': "Užívateľ nenájdený"})
+    return render(request, 'xbtzmenarenapp/managementVerification.html', context)
+
+@user_passes_test(staff_check)
 @login_required
 def management_verification_attempt(request):
-    return management_verification(request)
+    email = request.POST['email']
+    try:
+        user = CustomUser.objects.get(email=email)
+    except ObjectDoesNotExist:
+        return management_verification(request, False)
+    user.is_verified = True
+    user.save()
+    return management_verification(request, True)
