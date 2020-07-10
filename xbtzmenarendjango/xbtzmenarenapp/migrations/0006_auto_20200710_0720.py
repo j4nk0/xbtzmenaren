@@ -4,22 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
-    dependencies = [
-        ('xbtzmenarenapp', '0005_withdrawal_btc_withdrawal_eur_withdrawal_ltc'),
-    ]
-
+    dependencies = [ ('xbtzmenarenapp', '0005_withdrawal_btc_withdrawal_eur_withdrawal_ltc'), ] 
     operations = [
         migrations.AddField(
             model_name='withdrawal_btc',
             name='address',
-            field=models.CharField(default='default_address:jflsjldsdlsfl', max_length=100, unique=True),
+            field=models.CharField(
+            default='default_address:jflsjldsdlsfl', max_length=100, unique=True),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='withdrawal_eur',
             name='iban',
-            field=models.CharField(default='default_iban:SK00 1234 1234', max_length=24),
+            field=models.CharField(default='default_iban:SK00 123456', max_length=24),
             preserve_default=False,
         ),
         migrations.AddField(
