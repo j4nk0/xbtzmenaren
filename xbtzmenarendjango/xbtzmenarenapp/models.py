@@ -73,16 +73,19 @@ class Withdrawal_eur(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     datetime = models.DateTimeField()
     eur = models.DecimalField(max_digits=MAX_DIGITS_EUR, decimal_places=DECIMAL_PLACES_EUR)
+    iban = models.CharField(max_length=24)
     is_pending = models.BooleanField(default=True)
 
 class Withdrawal_btc(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     datetime = models.DateTimeField()
     btc = models.DecimalField(max_digits=MAX_DIGITS_BTC, decimal_places=DECIMAL_PLACES_BTC)
+    address = models.CharField(max_length=100, unique=True)
     is_pending = models.BooleanField(default=True)
 
 class Withdrawal_ltc(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     datetime = models.DateTimeField()
     ltc = models.DecimalField(max_digits=MAX_DIGITS_LTC, decimal_places=DECIMAL_PLACES_LTC)
+    address = models.CharField(max_length=100, unique=True)
     is_pending = models.BooleanField(default=True)
