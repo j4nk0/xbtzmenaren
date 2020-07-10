@@ -33,6 +33,15 @@ class CustomUserManager(BaseUserManager):
             raise ValueError(_('Superuser must have is_superuser=True.'))
         return self.create_user(email, password, **extra_fields)
 
+# By design of the systems used:
+DECIMAL_PLACES_EUR = 2
+DECIMAL_PLACES_BTC = 8
+DECIMAL_PLACES_LTC = 8
+# To store value up to 10 000 000 EUR:
+MAX_DIGITS_EUR = 9
+MAX_DIGITS_BTC = 11
+MAX_DIGITS_LTC = 14
+
 class CustomUser(AbstractUser):
     username = None
     first_name = None
@@ -56,7 +65,13 @@ class Address(models.Model):
 
 class Balance(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
-    eur = models.DecimalField(max_digits=9, decimal_places=2)
-    btc = models.DecimalField(max_digits=11, decimal_places=8)
-    ltc = models.DecimalField(max_digits=14, decimal_places=8)
+    eur = models.DecimalField(max_digits=MAX_DIGITS_EUR, decimal_places=DECIMAL_PLACES_EUR)
+    btc = models.DecimalField(max_digits=MAX_DIGITS_BTC, decimal_places=DECIMAL_PLACES_BTC)
+    ltc = models.DecimalField(max_digits=MAX_DIGITS_LTC, decimal_places=DECIMAL_PLACES_LTC)
+
+class Withdrawal_eur(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    datetime = models.DateTimeField()
+    eur = models.DecimalField(max_digits=MAX_DIGITS_EUR, decimal_places=DECIMAL_PLACES_EUR)
+    is_pending = models.BooleanField(default=True)
 
