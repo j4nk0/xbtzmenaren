@@ -75,3 +75,14 @@ class Withdrawal_eur(models.Model):
     eur = models.DecimalField(max_digits=MAX_DIGITS_EUR, decimal_places=DECIMAL_PLACES_EUR)
     is_pending = models.BooleanField(default=True)
 
+class Withdrawal_btc(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    datetime = models.DateTimeField()
+    btc = models.DecimalField(max_digits=MAX_DIGITS_BTC, decimal_places=DECIMAL_PLACES_BTC)
+    is_pending = models.BooleanField(default=True)
+
+class Withdrawal_ltc(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    datetime = models.DateTimeField()
+    ltc = models.DecimalField(max_digits=MAX_DIGITS_LTC, decimal_places=DECIMAL_PLACES_LTC)
+    is_pending = models.BooleanField(default=True)
