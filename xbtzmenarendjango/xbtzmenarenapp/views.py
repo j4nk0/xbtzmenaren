@@ -8,6 +8,9 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
 from django.utils import timezone
+from django.db import transaction
+from django.db.models import F
+from decimal import Decimal as D
 
 def index(request):
     return redirect('login')
@@ -168,8 +171,10 @@ def deposit(request):
     return render(request, 'xbtzmenarenapp/deposit.html', context)
 
 @login_required
-def withdrawal(request):
+def withdrawal(request, error_message=None, ok_message=None):
     context = {
+        'error_message': error_message,
+        'ok_message': ok_message,
         'max_sum_eur': request.user.balance.eur,
         'max_sum_btc': request.user.balance.btc,
         'max_sum_ltc': request.user.balance.ltc,
@@ -182,14 +187,22 @@ def withdrawal(request):
 def withdrawal_eur(request):
     sum_eur = request.POST['sum_eur']
     iban = request.POST['account_number']
-    Withdrawal_eur.objects.create(
-        user=request.user,
-        datetime=timezone.now(),
-        eur=sum_eur,
-        is_pending=True,
-        iban=iban,
-    )
-    return withdrawal(request)
+    try:
+        with transaction.atomic():
+            balance = Balance.objects.get(user=request.user)
+            balance.eur -= D(sum_eur)
+            balance.save()
+            Withdrawal_eur.objects.create(
+                user=request.user,
+                datetime=timezone.now(),
+                eur=sum_eur,
+                is_pending=True,
+                iban=iban,
+            )
+            if balance.eur < 0: raise ValueError
+    except ValueError:
+        return withdrawal(request, error_message='Nesprávna hodnota')
+    return withdrawal(request, ok_message='Požiadavka zaregistrovaná')
 
 @login_required
 def withdrawal_btc(request):
