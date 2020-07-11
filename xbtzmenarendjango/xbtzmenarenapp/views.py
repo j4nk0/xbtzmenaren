@@ -3,10 +3,12 @@ from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.decorators import login_required, user_passes_test
 from . import rates
-from .models import CustomUser, Address, Balance
+from .models import CustomUser, Address, Balance, Withdrawal_eur
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
+from django.utils import timezone
+
 def index(request):
     return redirect('login')
 
@@ -180,7 +182,14 @@ def withdrawal(request):
 def withdrawal_eur(request):
     sum_eur = request.POST['sum_eur']
     iban = request.POST['account_number']
-    return HttpResponse("Withdraw EUR: " + sum_eur + ' to IBAN: ' + iban)
+    Withdrawal_eur.objects.create(
+        user=request.user,
+        datetime=timezone.now(),
+        eur=sum_eur,
+        is_pending=True,
+        iban=iban,
+    )
+    return withdrawal(request)
 
 @login_required
 def withdrawal_btc(request):
@@ -228,3 +237,19 @@ def management_verification_attempt(request):
     user.is_verified = True
     user.save()
     return management_verification(request, True)
+
+@user_passes_test(staff_check)
+@login_required
+def management_withdrawals(request):
+    context = {
+        'withdrawals': Withdrawal_eur.objects.filter(is_pending=True).order_by('iban')
+    }
+    return render(request, 'xbtzmenarenapp/managementWithdrawals.html', context)
+
+@user_passes_test(staff_check)
+@login_required
+def management_withdrawal_check(request, withdrawal_id):
+    withdrawal = Withdrawal_eur.objects.get(id=withdrawal_id)
+    withdrawal.is_pending = False
+    withdrawal.save()
+    return management_withdrawals(request)

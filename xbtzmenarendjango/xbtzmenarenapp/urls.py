@@ -40,4 +40,7 @@ urlpatterns = [
 
     path('management/verification/', views.management_verification, name='management-verification'),
     path('management/verification-attempt/', views.management_verification_attempt, name='management-verification-attempt'),
+
+    path('management/withdrawals/', views.management_withdrawals, name='management-withdrawals'),
+    path('management/withdrawal-check/<int:withdrawal_id>', views.management_withdrawal_check, name='management-withdrawal-check'),
 ]
