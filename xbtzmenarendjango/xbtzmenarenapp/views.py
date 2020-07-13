@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.decorators import login_required, user_passes_test
 from . import rates
-from .models import CustomUser, Address, Balance, Withdrawal_eur, Withdrawal_btc, Withdrawal_ltc
+from .models import *
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
@@ -30,14 +30,35 @@ def buy(request, success=None):
 
 @login_required
 def buy_btc(request):
-    sum_eur = request.POST['sum_eur']
-    #return HttpResponse("coin: Bitcoin" + "\n"  + "sum: " + sum_eur)
+    sum_eur = D(request.POST['sum_eur'])
+    sum_btc = sum_eur / rates.get_btceur_buy()
+    try:
+        with transaction.atomic():
+            balance = Balance.objects.get(user=request.user)
+            balance.eur -= sum_eur
+            balance.btc += sum_btc
+            balance.save()
+            Buy_btc.objects.create(user=request.user, datetime=timezone.now(), btc=sum_btc, eur=sum_eur)
+            if balance.eur < 0: raise ValueError
+    except ValueError:
+        buy(request, False)
     return buy(request, True)
 
 @login_required
 def buy_ltc(request):
-    sum_eur = request.POST['sum_eur']
-    return HttpResponse("coin: Litecoin" + "\n"  + "sum: " + sum_eur)
+    sum_eur = D(request.POST['sum_eur'])
+    sum_ltc = sum_eur / rates.get_ltceur_buy()
+    try:
+        with transaction.atomic():
+            balance = Balance.objects.get(user=request.user)
+            balance.eur -= sum_eur
+            balance.ltc += sum_ltc
+            balance.save()
+            Buy_ltc.objects.create(user=request.user, datetime=timezone.now(), ltc=sum_ltc, eur=sum_eur)
+            if balance.eur < 0: raise ValueError
+    except ValueError:
+        buy(request, False)
+    return buy(request, True)
 
 @login_required
 def sell(request, success=None):
@@ -53,13 +74,36 @@ def sell(request, success=None):
 
 @login_required
 def sell_btc(request):
-    sum_btc = request.POST['sum_btc']
-    return HttpResponse("coin: Bitcoin" + "\n"  + "sum: " + sum_btc)
+    sum_btc = D(request.POST['sum_btc'])
+    sum_eur = sum_btc * rates.get_btceur_sell()
+    try:
+        with transaction.atomic():
+            balance = Balance.objects.get(user=request.user)
+            balance.eur += sum_eur
+            balance.btc -= sum_btc
+            balance.save()
+            Sell_btc.objects.create(user=request.user, datetime=timezone.now(), btc=sum_btc, eur=sum_eur)
+            if balance.btc < 0: raise ValueError
+    except ValueError:
+        sell(request, False)
+    return sell(request, True)
+
 
 @login_required
 def sell_ltc(request):
-    sum_ltc = request.POST['sum_ltc']
-    return HttpResponse("coin: Litecoin" + "\n"  + "sum: " + sum_ltc)
+    sum_ltc = D(request.POST['sum_ltc'])
+    sum_eur = sum_ltc * rates.get_ltceur_sell()
+    try:
+        with transaction.atomic():
+            balance = Balance.objects.get(user=request.user)
+            balance.eur += sum_eur
+            balance.ltc -= sum_ltc
+            balance.save()
+            Sell_ltc.objects.create(user=request.user, datetime=timezone.now(), ltc=sum_ltc, eur=sum_eur)
+            if balance.ltc < 0: raise ValueError
+    except ValueError:
+        sell(request, False)
+    return sell(request, True)
 
 @login_required
 def private_rates(request):
