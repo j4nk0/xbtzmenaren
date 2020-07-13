@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.decorators import login_required, user_passes_test
 from . import rates
-from .models import CustomUser, Address, Balance, Withdrawal_eur
+from .models import CustomUser, Address, Balance, Withdrawal_eur, Withdrawal_btc, Withdrawal_ltc
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
@@ -209,22 +209,67 @@ def withdrawal_btc(request):
     sum_btc = request.POST['sum_btc']
     address_btc = request.POST['address_btc']
     is_instant = True if 'is_instant_btc' in request.POST else False
-    return HttpResponse(
-        'Withdraw BTC: ' + sum_btc      \
-        + ' to address: ' + address_btc \
-        + ' instant: ' + str(is_instant)
-    )
+    try:
+        with transaction.atomic():
+            balance = Balance.objects.get(user=request.user)
+            balance.btc -= D(sum_btc)
+            balance.save()
+            if is_instant:
+                Withdrawal_btc.objects.create(
+                    user=request.user,
+                    time_created=timezone.now(),
+                    time_processed=timezone.now(),
+                    btc=sum_btc,
+                    address=address_btc,
+                    is_pending=False,
+                )
+                # do smtg
+            else:
+                Withdrawal_btc.objects.create(
+                    user=request.user,
+                    time_created=timezone.now(),
+                    btc=sum_btc,
+                    address=address_btc,
+                    is_pending=True,
+                )
+            if balance.btc < 0: raise ValueError
+    except ValueError:
+        return withdrawal(request, error_message='Nesprávna hodnota')
+    return withdrawal(request, ok_message='Požiadavka zaregistrovaná')
 
 @login_required
 def withdrawal_ltc(request):
     sum_ltc = request.POST['sum_ltc']
     address_ltc = request.POST['address_ltc']
     is_instant = True if 'is_instant_ltc' in request.POST else False
-    return HttpResponse(
-        "Withdraw LTC: " + sum_ltc      \
-        + ' to address: ' + address_ltc \
-        + ' instant: ' + str(is_instant)
-    )
+    try:
+        with transaction.atomic():
+            balance = Balance.objects.get(user=request.user)
+            balance.ltc -= D(sum_ltc)
+            balance.save()
+            if is_instant:
+                Withdrawal_ltc.objects.create(
+                    user=request.user,
+                    time_created=timezone.now(),
+                    time_processed=timezone.now(),
+                    ltc=sum_ltc,
+                    address=address_ltc,
+                    is_pending=False,
+                )
+                # do smtg
+            else:
+                Withdrawal_ltc.objects.create(
+                    user=request.user,
+                    time_created=timezone.now(),
+                    ltc=sum_ltc,
+                    address=address_ltc,
+                    is_pending=True,
+                )
+            if balance.btc < 0: raise ValueError
+    except ValueError:
+        return withdrawal(request, error_message='Nesprávna hodnota')
+    return withdrawal(request, ok_message='Požiadavka zaregistrovaná')
+
 
 def staff_check(user):
     return user.is_staff
@@ -255,15 +300,37 @@ def management_verification_attempt(request):
 @login_required
 def management_withdrawals(request):
     context = {
-        'old_withdrawals': Withdrawal_eur.objects.filter(is_pending=False).order_by('-time_processed')[:5],
-        'withdrawals': Withdrawal_eur.objects.filter(is_pending=True).order_by('iban')
+        'old_withdrawals_eur': Withdrawal_eur.objects.filter(is_pending=False).order_by('-time_processed')[:5],
+        'old_withdrawals_btc': Withdrawal_btc.objects.filter(is_pending=False).order_by('-time_processed')[:5],
+        'old_withdrawals_ltc': Withdrawal_ltc.objects.filter(is_pending=False).order_by('-time_processed')[:5],
+        'withdrawals_eur': Withdrawal_eur.objects.filter(is_pending=True).order_by('iban'),
+        'withdrawals_btc': Withdrawal_btc.objects.filter(is_pending=True).order_by('address'),
+        'withdrawals_ltc': Withdrawal_ltc.objects.filter(is_pending=True).order_by('address'),
     }
     return render(request, 'xbtzmenarenapp/managementWithdrawals.html', context)
 
 @user_passes_test(staff_check)
 @login_required
-def management_withdrawal_check(request, withdrawal_id):
+def management_withdrawal_eur_check(request, withdrawal_id):
     withdrawal = Withdrawal_eur.objects.get(id=withdrawal_id)
+    withdrawal.is_pending = False
+    withdrawal.time_processed=timezone.now()
+    withdrawal.save()
+    return management_withdrawals(request)
+
+@user_passes_test(staff_check)
+@login_required
+def management_withdrawal_btc_check(request, withdrawal_id):
+    withdrawal = Withdrawal_btc.objects.get(id=withdrawal_id)
+    withdrawal.is_pending = False
+    withdrawal.time_processed=timezone.now()
+    withdrawal.save()
+    return management_withdrawals(request)
+
+@user_passes_test(staff_check)
+@login_required
+def management_withdrawal_ltc_check(request, withdrawal_id):
+    withdrawal = Withdrawal_ltc.objects.get(id=withdrawal_id)
     withdrawal.is_pending = False
     withdrawal.time_processed=timezone.now()
     withdrawal.save()

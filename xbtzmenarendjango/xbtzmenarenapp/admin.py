@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, Address, Balance, Withdrawal_eur
+from .models import CustomUser, Address, Balance, Withdrawal_eur, Withdrawal_btc, Withdrawal_ltc
 
 # Register your models here.
 
@@ -34,8 +34,20 @@ class Withdrawal_eurAdmin(admin.ModelAdmin):
     search_fields = ('iban', 'eur',)
     list_filter = ('is_pending',)
 
+class Withdrawal_btcAdmin(admin.ModelAdmin):
+    list_display = ('user', 'time_created', 'time_processed', 'address', 'btc', 'is_pending')
+    search_fields = ('address', 'btc',)
+    list_filter = ('is_pending',)
+
+class Withdrawal_ltcAdmin(admin.ModelAdmin):
+    list_display = ('user', 'time_created', 'time_processed', 'address', 'ltc', 'is_pending')
+    search_fields = ('address', 'ltc',)
+    list_filter = ('is_pending',)
+
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Address, AddressAdmin)
 admin.site.register(Balance, BalanceAdmin)
 admin.site.register(Withdrawal_eur, Withdrawal_eurAdmin)
+admin.site.register(Withdrawal_btc, Withdrawal_btcAdmin)
+admin.site.register(Withdrawal_ltc, Withdrawal_ltcAdmin)
 

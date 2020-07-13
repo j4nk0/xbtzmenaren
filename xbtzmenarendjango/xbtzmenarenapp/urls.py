@@ -42,5 +42,7 @@ urlpatterns = [
     path('management/verification-attempt/', views.management_verification_attempt, name='management-verification-attempt'),
 
     path('management/withdrawals/', views.management_withdrawals, name='management-withdrawals'),
-    path('management/withdrawal-check/<int:withdrawal_id>', views.management_withdrawal_check, name='management-withdrawal-check'),
+    path('management/withdrawal-eur-check/<int:withdrawal_id>', views.management_withdrawal_eur_check, name='management-withdrawal-eur-check'),
+    path('management/withdrawal-btc-check/<int:withdrawal_id>', views.management_withdrawal_btc_check, name='management-withdrawal-btc-check'),
+    path('management/withdrawal-ltc-check/<int:withdrawal_id>', views.management_withdrawal_ltc_check, name='management-withdrawal-ltc-check'),
 ]
