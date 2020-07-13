@@ -7,8 +7,29 @@
           <tr>
             <td><b>IBAN</b></td>
             <td><b>Suma</b></td>
-            <td><b>Čas</b></td>
-            <td><b>Akcia</b></td>
+            <td><b>Vytvorené</b></td>
+            <td><b>Vybavené</b></td>
+          </tr>
+      </thead>
+      <tbody>
+        {% for withdrawal in old_withdrawals %}
+          <tr>
+            <td>{{ withdrawal.iban }}</td>
+            <td>{{ withdrawal.eur }}</td>
+            <td>{{ withdrawal.time_created }}</td>
+            <td>{{ withdrawal.time_processed }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+ 
+    <table class="table">
+      <thead>
+          <tr>
+            <td><b>IBAN</b></td>
+            <td><b>Suma</b></td>
+            <td><b>Vytvorené</b></td>
+            <td><b>Vybavené</b></td>
           </tr>
       </thead>
       <tbody>
@@ -16,7 +37,7 @@
           <tr>
             <td>{{ withdrawal.iban }}</td>
             <td>{{ withdrawal.eur }}</td>
-            <td>{{ withdrawal.datetime }}</td>
+            <td>{{ withdrawal.time_created }}</td>
             <td>
               <form action="{% url 'management-withdrawal-check' withdrawal.id %}" method="post">
                 {% csrf_token %}

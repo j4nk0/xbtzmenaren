@@ -194,7 +194,7 @@ def withdrawal_eur(request):
             balance.save()
             Withdrawal_eur.objects.create(
                 user=request.user,
-                datetime=timezone.now(),
+                time_created=timezone.now(),
                 eur=sum_eur,
                 is_pending=True,
                 iban=iban,
@@ -255,6 +255,7 @@ def management_verification_attempt(request):
 @login_required
 def management_withdrawals(request):
     context = {
+        'old_withdrawals': Withdrawal_eur.objects.filter(is_pending=False).order_by('-time_processed')[:5],
         'withdrawals': Withdrawal_eur.objects.filter(is_pending=True).order_by('iban')
     }
     return render(request, 'xbtzmenarenapp/managementWithdrawals.html', context)
@@ -264,5 +265,6 @@ def management_withdrawals(request):
 def management_withdrawal_check(request, withdrawal_id):
     withdrawal = Withdrawal_eur.objects.get(id=withdrawal_id)
     withdrawal.is_pending = False
+    withdrawal.time_processed=timezone.now()
     withdrawal.save()
     return management_withdrawals(request)

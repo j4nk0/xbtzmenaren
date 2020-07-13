@@ -30,7 +30,7 @@ class BalanceAdmin(admin.ModelAdmin):
     search_fields = ('eur', 'btc', 'ltc')
 
 class Withdrawal_eurAdmin(admin.ModelAdmin):
-    list_display = ('user', 'datetime', 'iban', 'eur', 'is_pending')
+    list_display = ('user', 'time_created', 'time_processed', 'iban', 'eur', 'is_pending')
     search_fields = ('iban', 'eur',)
     list_filter = ('is_pending',)
 
