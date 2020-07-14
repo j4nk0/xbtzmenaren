@@ -60,6 +60,18 @@ class Sell_ltcAdmin(admin.ModelAdmin):
     list_display = ('user', 'datetime', 'ltc', 'eur',)
     search_fields = ('user', 'ltc', 'eur')
 
+class Deposit_eurAdmin(admin.ModelAdmin):
+    list_display = ('vs', 'eur', 'datetime',)
+    search_fields = ('vs', 'eur', 'datetime',)
+
+class Deposit_btcAdmin(admin.ModelAdmin):
+    list_display = ('address', 'btc', 'datetime',)
+    search_fields = ('address', 'btc', 'datetime',)
+
+class Deposit_ltcAdmin(admin.ModelAdmin):
+    list_display = ('address', 'ltc', 'datetime',)
+    search_fields = ('address', 'ltc', 'datetime',)
+
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Address, AddressAdmin)
 admin.site.register(Balance, BalanceAdmin)
@@ -70,3 +82,7 @@ admin.site.register(Buy_btc, Buy_btcAdmin)
 admin.site.register(Sell_btc, Sell_btcAdmin)
 admin.site.register(Buy_ltc, Buy_ltcAdmin)
 admin.site.register(Sell_ltc, Sell_ltcAdmin)
+admin.site.register(Deposit_eur, Deposit_eurAdmin)
+admin.site.register(Deposit_btc, Deposit_btcAdmin)
+admin.site.register(Deposit_ltc, Deposit_ltcAdmin)
+

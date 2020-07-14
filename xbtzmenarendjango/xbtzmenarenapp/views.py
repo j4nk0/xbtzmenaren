@@ -347,9 +347,9 @@ def management_withdrawals(request):
         'old_withdrawals_eur': Withdrawal_eur.objects.filter(is_pending=False).order_by('-time_processed')[:5],
         'old_withdrawals_btc': Withdrawal_btc.objects.filter(is_pending=False).order_by('-time_processed')[:5],
         'old_withdrawals_ltc': Withdrawal_ltc.objects.filter(is_pending=False).order_by('-time_processed')[:5],
-        'withdrawals_eur': Withdrawal_eur.objects.filter(is_pending=True).order_by('iban'),
-        'withdrawals_btc': Withdrawal_btc.objects.filter(is_pending=True).order_by('address'),
-        'withdrawals_ltc': Withdrawal_ltc.objects.filter(is_pending=True).order_by('address'),
+        'withdrawals_eur': Withdrawal_eur.objects.filter(is_pending=True).order_by('iban')[:100],
+        'withdrawals_btc': Withdrawal_btc.objects.filter(is_pending=True).order_by('address')[:100],
+        'withdrawals_ltc': Withdrawal_ltc.objects.filter(is_pending=True).order_by('address')[:100],
     }
     return render(request, 'xbtzmenarenapp/managementWithdrawals.html', context)
 
