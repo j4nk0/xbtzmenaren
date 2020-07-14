@@ -9,11 +9,11 @@
       <ul class="dropdown-menu">
         <li><a href="{% url 'buy' %}">Nákup</a></li>
         <li><a href="{% url 'sell' %}">Predaj</a></li>
-	<li><a href="{% url 'portfolio' %}">Portfólio</a></li>
-	<li><a href="{% url 'rates' %}">Kurzy</a></li>
-	<li><a href="{% url 'deposit' %}">Vklad</a></li>
-	<li><a href="{% url 'withdrawal' %}">Výber</a></li>
-	<li><a href="{% url 'change-password' %}">Zmena hesla</a></li>
+        <li><a href="{% url 'portfolio' %}">Portfólio</a></li>
+        <li><a href="{% url 'rates' %}">Kurzy</a></li>
+        <li><a href="{% url 'deposit' %}">Vklad</a></li>
+        <li><a href="{% url 'withdrawal' %}">Výber</a></li>
+        <li><a href="{% url 'change-password' %}">Zmena hesla</a></li>
         <li><a href="{% url 'logout' %}">Odhlásenie</a></li>
       </ul>
     </li>
@@ -23,9 +23,9 @@
         <span class="caret"></span>
       </a>
       <ul class="dropdown-menu">
-	      <li><a href="{% url 'management-verification' %}">Overenie</a></li>
-	<li><a href="#">Vklady</a></li>
-	<li><a href="{% url 'management-withdrawals' %}">Výbery</a></li>
+	    <li><a href="{% url 'management-verification' %}">Overenie</a></li>
+        <li><a href="{% url 'management-deposits' %}">Vklady</a></li>
+        <li><a href="{% url 'management-withdrawals' %}">Výbery</a></li>
       </ul>
     </li>
     {% endif %}

@@ -379,3 +379,29 @@ def management_withdrawal_ltc_check(request, withdrawal_id):
     withdrawal.time_processed=timezone.now()
     withdrawal.save()
     return management_withdrawals(request)
+
+@user_passes_test(staff_check)
+@login_required
+def management_deposits(request, error_message=None):
+    context = {
+        'deposits_eur': Deposit_eur.objects.all().order_by('-datetime')[:10],
+        'error_message': error_message,
+    }
+    return render(request, 'xbtzmenarenapp/managementDeposits.html', context)
+
+
+@user_passes_test(staff_check)
+@login_required
+def management_deposit_attempt(request):
+    vs = request.POST['vs']
+    sum_eur = D(request.POST['sum_eur'])
+    try:
+        with transaction.atomic():
+            address = Address.objects.get(vs=vs)
+            balance = address.user.balance
+            Deposit_eur.objects.create(vs=vs, eur=sum_eur, datetime=timezone.now())
+            balance.eur += sum_eur
+            balance.save()
+    except ObjectDoesNotExist:
+        return management_deposits(request, 'Neplatný variabilný symbol')
+    return management_deposits(request)

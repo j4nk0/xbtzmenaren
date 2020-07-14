@@ -45,4 +45,7 @@ urlpatterns = [
     path('management/withdrawal-eur-check/<int:withdrawal_id>', views.management_withdrawal_eur_check, name='management-withdrawal-eur-check'),
     path('management/withdrawal-btc-check/<int:withdrawal_id>', views.management_withdrawal_btc_check, name='management-withdrawal-btc-check'),
     path('management/withdrawal-ltc-check/<int:withdrawal_id>', views.management_withdrawal_ltc_check, name='management-withdrawal-ltc-check'),
+
+    path('management/deposits/', views.management_deposits, name='management-deposits'),
+    path('management/deposit-attempt/', views.management_deposit_attempt, name='deposit-attempt'),
 ]

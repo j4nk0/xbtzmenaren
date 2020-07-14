@@ -1,0 +1,40 @@
+{% extends 'xbtzmenarenapp/withMenu.html' %}
+
+{% block content %}
+  {% if error_message %}
+    <div class="alert alert-danger"> {{ error_message }} </div>
+  {% endif %}
+  <div class="container">
+    <form action="{% url 'deposit-attempt' %}" method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="usr">Variabilný symbol:</label>
+        <input type="text" class="form-control" name="vs"/>
+      </div>
+      <div class="form-group">
+        <label for="usr">Suma EUR:</label>
+        <input type="text" class="form-control" name="sum_eur"/>
+      </div>
+      <button type="submit" class="btn btn-default">Pripísať</button>
+    </form>
+
+    <table class="table">
+      <thead>
+          <tr>
+            <td><b>VS</b></td>
+            <td><b>Suma</b></td>
+            <td><b>Čas</b></td>
+          </tr>
+      </thead>
+      <tbody>
+        {% for deposit in deposits_eur %}
+          <tr>
+            <td>{{ deposit.vs }}</td>
+            <td>{{ deposit.eur }}</td>
+            <td>{{ deposit.datetime }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
