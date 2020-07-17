@@ -1,8 +1,8 @@
 # xbtzmenaren
 ## Installing dev environment
 ```
-pip install django
-pip install psycopg2
-pip install requests
-pip install django-axes
+pip install django #framework 
+pip install psycopg2 #postgresql driver
+pip install requests #for calls to ecternal API
+pip install django-axes #login throttling
 ```
