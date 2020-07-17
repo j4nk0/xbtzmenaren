@@ -9,7 +9,7 @@ from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
 from django.utils import timezone
 from django.db import transaction
-from django.db.models import F
+from django.db.models import F, Func, Sum
 from decimal import Decimal as D
 
 def index(request):
@@ -326,7 +326,7 @@ def management_verification(request, success=None):
         context.update({'ok_message': "Užívateľ overený"})
     if success == False:
         context.update({'error_message': "Užívateľ nenájdený"})
-    return render(request, 'xbtzmenarenapp/managementVerification.html', context)
+    return render(request, 'xbtzmenarenapp/management/verification.html', context)
 
 @user_passes_test(staff_check)
 @login_required
@@ -351,7 +351,7 @@ def management_withdrawals(request):
         'withdrawals_btc': Withdrawal_btc.objects.filter(is_pending=True).order_by('address')[:100],
         'withdrawals_ltc': Withdrawal_ltc.objects.filter(is_pending=True).order_by('address')[:100],
     }
-    return render(request, 'xbtzmenarenapp/managementWithdrawals.html', context)
+    return render(request, 'xbtzmenarenapp/management/withdrawals.html', context)
 
 @user_passes_test(staff_check)
 @login_required
@@ -372,7 +372,7 @@ def management_withdrawal_btc_check(request, withdrawal_id):
     return management_withdrawals(request)
 
 @user_passes_test(staff_check)
-@login_required
+@login_required 
 def management_withdrawal_ltc_check(request, withdrawal_id):
     withdrawal = Withdrawal_ltc.objects.get(id=withdrawal_id)
     withdrawal.is_pending = False
@@ -387,7 +387,7 @@ def management_deposits(request, error_message=None):
         'deposits_eur': Deposit_eur.objects.all().order_by('-datetime')[:10],
         'error_message': error_message,
     }
-    return render(request, 'xbtzmenarenapp/managementDeposits.html', context)
+    return render(request, 'xbtzmenarenapp/management/deposits.html', context)
 
 
 @user_passes_test(staff_check)
@@ -405,3 +405,33 @@ def management_deposit_attempt(request):
     except ObjectDoesNotExist:
         return management_deposits(request, 'Neplatný variabilný symbol')
     return management_deposits(request)
+
+@user_passes_test(staff_check)
+@login_required
+def management_balances(request):
+    total_eur = Balance.objects.aggregate(Sum('eur'))['eur__sum']
+    total_btc = Balance.objects.aggregate(Sum('btc'))['btc__sum']
+    total_ltc = Balance.objects.aggregate(Sum('ltc'))['ltc__sum']
+    staff_eur = 0
+    staff_btc = 0
+    staff_ltc = 0
+    staff_users = CustomUser.objects.filter(is_staff=True)
+    for user in staff_users:
+        staff_eur += user.balance.eur
+        staff_btc += user.balance.btc
+        staff_ltc += user.balance.ltc
+    non_staff_eur = total_eur - staff_eur
+    non_staff_btc = total_btc - staff_btc
+    non_staff_ltc = total_ltc - staff_ltc
+    context = {
+        'non_staff_eur': non_staff_eur,
+        'staff_eur': staff_eur,
+        'total_eur': total_eur,
+        'non_staff_btc': non_staff_btc,
+        'staff_btc': staff_btc,
+        'total_btc': total_btc,
+        'non_staff_ltc': non_staff_ltc,
+        'staff_ltc': staff_ltc,
+        'total_ltc': total_ltc,
+    }
+    return render(request, 'xbtzmenarenapp/management/balances.html', context)

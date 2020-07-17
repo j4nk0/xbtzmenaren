@@ -48,4 +48,6 @@ urlpatterns = [
 
     path('management/deposits/', views.management_deposits, name='management-deposits'),
     path('management/deposit-attempt/', views.management_deposit_attempt, name='deposit-eur-attempt'),
+
+    path('management/balances/', views.management_balances, name='management-balances'),
 ]
