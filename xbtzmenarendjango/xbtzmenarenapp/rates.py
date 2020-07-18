@@ -1,48 +1,106 @@
 import requests
-from decimal import *
+from datetime import datetime, timedelta
+from decimal import Decimal as Dec
 from time import sleep
 from threading import Thread
 
-#getcontext().prec = 10
+btceur_rates = {
+    'buy': Dec('100000'),
+    'sell': Dec('0'),
+}
 
-btceur_spot = [Decimal(0)]
-ltceur_spot = [Decimal(0)]
+ltceur_rates = {
+    'buy': Dec('100000'),
+    'sell': Dec('0'),
+}
 
-def download_btceur_spot_price():
+def D(flt):
+    return Dec(str(flt))
+    
+def get_max_delta_up(json, day):
+    if day +1 == len(json): return D(json[day][2])- D(json[day][3])
+    elif day + 2 == len(json): return max(D(json[day][2]), D(json[day +1][2])) - D(json[day][3])
+    else: return max(D(json[day][2]), D(json[day +1][2]), D(json[day +2][2])) - D(json[day][3])
+
+def get_max_delta_down(json, day):
+    if day +1 == len(json): return D(json[day][3]) - D(json[day][1])
+    elif day + 2 == len(json): return D(json[day][3]) - min(D(json[day][1]), D(json[day +1][1]))
+    else: return D(json[day][3]) - min(D(json[day][2]), D(json[day +1][2]), D(json[day +2][2]))
+
+def get_eur_deltas(coin):
+    start_time = (datetime.utcnow() - timedelta(days=10)).replace(microsecond=0)
+    end_time = datetime.utcnow().replace(microsecond=0)
+    URL = 'https://api.pro.coinbase.com/products/' + coin + '-EUR/candles?start='    \
+         + start_time.isoformat() + '&end=' + end_time.isoformat() + '&granularity=86400'
+    response = requests.get(URL)
+    json = response.json()
+    json.reverse()
+    delta_ups = []
+    delta_downs = []
+    for day in range(len(json)):
+        delta_ups.append(get_max_delta_up(json, day))
+        delta_downs.append(get_max_delta_down(json, day))
+    delta = {
+        'up': max(delta_ups),
+        'down': max(delta_downs),
+    }
+    return delta
+
+def get_buy_amount(amount_btc, asks):
+    amount_btc = D(amount_btc)
+    amount_eur = D(0)
+    for ask in asks:
+        if D(ask[1]) < amount_btc:
+            amount_btc -= D(ask[1])
+            amount_eur += D(ask[0]) * D(ask[1])
+        else:
+            amount_eur += D(ask[0]) * amount_btc
+            break
+    return amount_eur
+
+def get_eur_buy_price(coin):
+    URL = 'https://api.pro.coinbase.com/products/' + coin + '-EUR/book?level=2'
+    response = requests.get(URL)
+    json = response.json()
+    return get_buy_amount(0.001, json['asks']) * D(1000)
+
+def update_prices(last_price, delta, eur_rates):
+    buy = max(last_price + delta['up'], last_price * D(1.02))
+    sell = min(last_price - delta['down'], last_price * D(0.98))
+    new_rates = {
+        'buy': buy,
+        'sell': sell
+    }
+    eur_rates.update(new_rates)
+
+def check_rates_continuously():
+    # check prices every 28 seconds
+    global btceur_rates
+    global ltceur_rates
     while True:
-        response = requests.get('https://api.coinbase.com/v2/prices/BTC-EUR/spot')
-        spot_price = Decimal(response.json()['data']['amount'])
-        global btceur_spot
-        btceur_spot.insert(0, spot_price)
-        btceur_spot.pop()
+        btc_delta = get_eur_deltas('BTC')
         sleep(1)
-
-Thread(target=download_btceur_spot_price, daemon=True).start()
-
-def download_ltceur_spot_price():
-    while True:
-        response = requests.get('https://api.coinbase.com/v2/prices/LTC-EUR/spot')
-        spot_price = Decimal(response.json()['data']['amount'])
-        global ltceur_spot
-        ltceur_spot.insert(0, spot_price)
-        ltceur_spot.pop()
+        ltc_delta = get_eur_deltas('LTC')
         sleep(1)
+        btc_last_price = get_eur_buy_price('BTC')
+        sleep(1)
+        ltc_last_price = get_eur_buy_price('LTC')
+        update_prices(btc_last_price, btc_delta, btceur_rates)
+        update_prices(ltc_last_price, ltc_delta, ltceur_rates)
+        sleep(25)
 
-Thread(target=download_ltceur_spot_price, daemon=True).start()
+Thread(target=check_rates_continuously, daemon=True).start()
 
+# outputs:
 def get_btceur_buy():
-    buy_price = (btceur_spot[0] * Decimal('1.03')).quantize(Decimal('0.01'))
-    return buy_price
+    return btceur_rates['buy']
 
 def get_btceur_sell():
-    sell_price = (btceur_spot[0] * Decimal('0.97')).quantize(Decimal('0.01'))
-    return sell_price
+    return btceur_rates['sell']
 
 def get_ltceur_buy():
-    buy_price = (ltceur_spot[0] * Decimal('1.03')).quantize(Decimal('0.01'))
-    return buy_price
+    return ltceur_rates['buy']
 
 def get_ltceur_sell():
-    sell_price = (ltceur_spot[0] * Decimal('0.97')).quantize(Decimal('0.01'))
-    return sell_price
+    return ltceur_rates['sell']
 
