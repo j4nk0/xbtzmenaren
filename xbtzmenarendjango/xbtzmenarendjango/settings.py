@@ -25,7 +25,7 @@ SECRET_KEY = '6+m7ya(wfnwdo9*fh@=%exal=k9qf1w@u&wb5r&cmj%839yw-+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -139,6 +139,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+# for favicon:
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = '/buy'
