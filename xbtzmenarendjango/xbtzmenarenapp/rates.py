@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal as Dec
 from time import sleep
 from threading import Thread
+import json
 
 btceur_rates = {
     'buy': Dec('100000'),
@@ -104,3 +105,15 @@ def get_ltceur_buy():
 def get_ltceur_sell():
     return ltceur_rates['sell']
 
+def rates():
+    res = {
+        'BTC-EUR': {
+             'buy': str(btceur_rates['buy']),
+             'sell': str(btceur_rates['sell']),
+        },
+        'LTC-EUR': {
+             'buy': str(ltceur_rates['buy']),
+             'sell': str(ltceur_rates['sell']),
+        }
+    }
+    return json.dumps(res)
