@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.template import loader
 from django.contrib.auth.decorators import login_required, user_passes_test
 from . import rates
 from .models import *
@@ -9,11 +8,21 @@ from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
 from django.utils import timezone
 from django.db import transaction
-from django.db.models import F, Func, Sum
+from django.db.models import F, Sum
 from decimal import Decimal as D
+from decimal import InvalidOperation
 
-def index(request):
-    return redirect('login')
+def dec(n, decimal_places):
+    try:
+        decimal = D(n)
+    except InvalidOperation:
+        raise ValueError
+    rounded = decimal.quantize(D('0.1') ** decimal_places)
+    if rounded != decimal:
+        raise ValueError
+    if decimal <= 0:
+        raise ValueError
+    return decimal
 
 @login_required
 def buy(request, success=None):
@@ -24,40 +33,42 @@ def buy(request, success=None):
         context.update({'ok_message': "Nákup uspešný"})
     if success == False:
         context.update({'error_message': "Nesprávna hodnota"})
-    #template = loader.get_template('xbtzmenarenapp/buy.html')
-    #return HttpResponse(template.render(context, request))
     return render(request, 'xbtzmenarenapp/buy.html', context)
 
 @login_required
 def buy_btc(request):
-    sum_eur = D(request.POST['sum_eur'])
+    try:
+        sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
+    except ValueError:
+        return buy(request, False)
     sum_btc = sum_eur / rates.get_btceur_buy()
     try:
         with transaction.atomic():
-            balance = Balance.objects.get(user=request.user)
-            balance.eur -= sum_eur
-            balance.btc += sum_btc
-            balance.save()
+            balance = Balance.objects.filter(user=request.user)
+            balance.update(eur=F('eur') - sum_eur)
+            balance.update(btc=F('btc') + sum_btc)
             Buy_btc.objects.create(user=request.user, datetime=timezone.now(), btc=sum_btc, eur=sum_eur)
-            if balance.eur < 0: raise ValueError
+            if balance[0].eur < 0: raise ValueError
     except ValueError:
-        buy(request, False)
+        return buy(request, False)
     return buy(request, True)
 
 @login_required
 def buy_ltc(request):
-    sum_eur = D(request.POST['sum_eur'])
+    try:
+        sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
+    except ValueError:
+        return buy(request, False)
     sum_ltc = sum_eur / rates.get_ltceur_buy()
     try:
         with transaction.atomic():
-            balance = Balance.objects.get(user=request.user)
-            balance.eur -= sum_eur
-            balance.ltc += sum_ltc
-            balance.save()
+            balance = Balance.objects.filter(user=request.user)
+            balance.update(eur=F('eur') - sum_eur)
+            balance.update(ltc=F('ltc') + sum_ltc)
             Buy_ltc.objects.create(user=request.user, datetime=timezone.now(), ltc=sum_ltc, eur=sum_eur)
-            if balance.eur < 0: raise ValueError
+            if balance[0].eur < 0: raise ValueError
     except ValueError:
-        buy(request, False)
+        return buy(request, False)
     return buy(request, True)
 
 @login_required
@@ -74,33 +85,37 @@ def sell(request, success=None):
 
 @login_required
 def sell_btc(request):
-    sum_btc = D(request.POST['sum_btc'])
+    try:
+        sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
+    except ValueError:
+        return sell(request, False)
     sum_eur = sum_btc * rates.get_btceur_sell()
     try:
         with transaction.atomic():
-            balance = Balance.objects.get(user=request.user)
-            balance.eur += sum_eur
-            balance.btc -= sum_btc
-            balance.save()
+            balance = Balance.objects.filter(user=request.user)
+            balance.update(eur=F('eur') + sum_eur)
+            balance.update(btc=F('btc') - sum_btc)
             Sell_btc.objects.create(user=request.user, datetime=timezone.now(), btc=sum_btc, eur=sum_eur)
-            if balance.btc < 0: raise ValueError
+            if balance[0].btc < 0: raise ValueError
     except ValueError:
-        sell(request, False)
+        return sell(request, False)
     return sell(request, True)
 
 
 @login_required
 def sell_ltc(request):
-    sum_ltc = D(request.POST['sum_ltc'])
+    try:
+        sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
+    except ValueError:
+        return sell(request, False)
     sum_eur = sum_ltc * rates.get_ltceur_sell()
     try:
         with transaction.atomic():
-            balance = Balance.objects.get(user=request.user)
-            balance.eur += sum_eur
-            balance.ltc -= sum_ltc
-            balance.save()
+            balance = Balance.objects.filter(user=request.user)
+            balance.update(eur=F('eur') + sum_eur)
+            balance.update(ltc=F('ltc') - sum_ltc)
             Sell_ltc.objects.create(user=request.user, datetime=timezone.now(), ltc=sum_ltc, eur=sum_eur)
-            if balance.ltc < 0: raise ValueError
+            if balance[0].ltc < 0: raise ValueError
     except ValueError:
         sell(request, False)
     return sell(request, True)
@@ -229,13 +244,15 @@ def withdrawal(request, error_message=None, ok_message=None):
 
 @login_required
 def withdrawal_eur(request):
-    sum_eur = request.POST['sum_eur']
-    iban = request.POST['account_number']
+    try:
+        sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
+    except ValueError:
+        return withdrawal(request, error_message='Nesprávna hodnota')
+    iban = request.POST['account_number']   # TODO Validate IBAN
     try:
         with transaction.atomic():
-            balance = Balance.objects.get(user=request.user)
-            balance.eur -= D(sum_eur)
-            balance.save()
+            balance = Balance.objects.filter(user=request.user)
+            balance.update(eur=F('eur') - sum_eur)
             Withdrawal_eur.objects.create(
                 user=request.user,
                 time_created=timezone.now(),
@@ -243,21 +260,23 @@ def withdrawal_eur(request):
                 is_pending=True,
                 iban=iban,
             )
-            if balance.eur < 0: raise ValueError
+            if balance[0].eur < 0: raise ValueError
     except ValueError:
         return withdrawal(request, error_message='Nesprávna hodnota')
     return withdrawal(request, ok_message='Požiadavka zaregistrovaná')
 
 @login_required
 def withdrawal_btc(request):
-    sum_btc = request.POST['sum_btc']
-    address_btc = request.POST['address_btc']
+    try:
+        sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
+    except ValueError:
+        return withdrawal(request, error_message='Nesprávna hodnota')
+    address_btc = request.POST['address_btc']   # TODO Validate btc address
     is_instant = True if 'is_instant_btc' in request.POST else False
     try:
         with transaction.atomic():
-            balance = Balance.objects.get(user=request.user)
-            balance.btc -= D(sum_btc)
-            balance.save()
+            balance = Balance.objects.filter(user=request.user)
+            balance.update(btc=F('btc') - sum_btc)
             if is_instant:
                 Withdrawal_btc.objects.create(
                     user=request.user,
@@ -276,21 +295,23 @@ def withdrawal_btc(request):
                     address=address_btc,
                     is_pending=True,
                 )
-            if balance.btc < 0: raise ValueError
+            if balance[0].btc < 0: raise ValueError
     except ValueError:
         return withdrawal(request, error_message='Nesprávna hodnota')
     return withdrawal(request, ok_message='Požiadavka zaregistrovaná')
 
 @login_required
 def withdrawal_ltc(request):
-    sum_ltc = request.POST['sum_ltc']
-    address_ltc = request.POST['address_ltc']
+    try:
+        sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
+    except ValueError:
+        return withdrawal(request, error_message='Nesprávna hodnota')
+    address_ltc = request.POST['address_ltc']   # TODO Validate LTC address
     is_instant = True if 'is_instant_ltc' in request.POST else False
     try:
         with transaction.atomic():
-            balance = Balance.objects.get(user=request.user)
-            balance.ltc -= D(sum_ltc)
-            balance.save()
+            balance = Balance.objects.filter(user=request.user)
+            balance.update(ltc=F('ltc') - sum_ltc)
             if is_instant:
                 Withdrawal_ltc.objects.create(
                     user=request.user,
@@ -309,7 +330,7 @@ def withdrawal_ltc(request):
                     address=address_ltc,
                     is_pending=True,
                 )
-            if balance.btc < 0: raise ValueError
+            if balance[0].ltc < 0: raise ValueError
     except ValueError:
         return withdrawal(request, error_message='Nesprávna hodnota')
     return withdrawal(request, ok_message='Požiadavka zaregistrovaná')
@@ -394,7 +415,10 @@ def management_deposits(request, error_message=None):
 @login_required
 def management_deposit_attempt(request):
     vs = request.POST['vs']
-    sum_eur = D(request.POST['sum_eur'])
+    try:
+        sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
+    except ValueError:
+        return management_deposits(request, 'Neplatná hodnota')
     try:
         with transaction.atomic():
             address = Address.objects.get(vs=vs)
@@ -435,3 +459,21 @@ def management_balances(request):
         'total_ltc': total_ltc,
     }
     return render(request, 'xbtzmenarenapp/management/balances.html', context)
+
+@user_passes_test(staff_check)
+@login_required
+def management_buys(request):
+    context = {
+        'buys_btc': Buy_btc.objects.all().order_by('-datetime')[:100],
+        'buys_ltc': Buy_ltc.objects.all().order_by('-datetime')[:100],
+    }
+    return render(request, 'xbtzmenarenapp/management/buys.html', context)
+
+@user_passes_test(staff_check)
+@login_required
+def management_sells(request):
+    context = {
+        'sells_btc': Sell_btc.objects.all().order_by('-datetime')[:100],
+        'sells_ltc': Sell_ltc.objects.all().order_by('-datetime')[:100],
+    }
+    return render(request, 'xbtzmenarenapp/management/sells.html', context)

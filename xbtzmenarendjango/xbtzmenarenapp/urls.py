@@ -50,4 +50,8 @@ urlpatterns = [
     path('management/deposit-attempt/', views.management_deposit_attempt, name='deposit-eur-attempt'),
 
     path('management/balances/', views.management_balances, name='management-balances'),
+
+    path('management/buys/', views.management_buys, name='management-buys'),
+
+    path('management/sells/', views.management_sells, name='management-sells'),
 ]

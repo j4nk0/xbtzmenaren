@@ -1,0 +1,59 @@
+{% extends 'xbtzmenarenapp/withMenu.html' %}
+
+{% block content %}
+  <div class="container">
+    <ul class="nav nav-pills">
+      <li class="active"><a data-toggle="pill" href="#Bitcoin">Bitcoin</a></li>
+      <li><a data-toggle="pill" href="#Litecoin">Litecoin</a></li>
+    </ul>
+    <div class="tab-content">
+
+      <div id="Bitcoin" class="tab-pane active">
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>Čas</b></td>
+                <td><b>BTC</b></td>
+                <td><b>EUR</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for sell in sells_btc %}
+              <tr>
+                <td>{{ sell.user }}</td>
+                <td>{{ sell.datetime }}</td>
+                <td>{{ sell.btc }}</td>
+                <td>{{ sell.eur }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div id="Litecoin" class="tab-pane">
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>Čas</b></td>
+                <td><b>LTC</b></td>
+                <td><b>EUR</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for sell in sells_ltc %}
+              <tr>
+                <td>{{ sell.user }}</td>
+                <td>{{ sell.datetime }}</td>
+                <td>{{ sell.ltc }}</td>
+                <td>{{ sell.eur }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+{% endblock %}
