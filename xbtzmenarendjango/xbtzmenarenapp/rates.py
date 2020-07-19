@@ -65,12 +65,20 @@ def get_eur_buy_price(coin):
     json = response.json()
     return get_buy_amount(0.001, json['asks']) * D(1000)
 
+def get_rid_of_trailing_zeros(n):
+    res = n
+    for i in range(10, -1, -1):
+        new_res = n.quantize(D(0.1) ** D(i))
+        if new_res != n: break
+        res = new_res
+    return res
+
 def update_prices(last_price, delta, eur_rates):
     buy = max(last_price + delta['up'], last_price * D(1.02))
     sell = min(last_price - delta['down'], last_price * D(0.98))
     new_rates = {
-        'buy': buy,
-        'sell': sell
+        'buy': get_rid_of_trailing_zeros(buy),
+        'sell': get_rid_of_trailing_zeros(sell)
     }
     eur_rates.update(new_rates)
 
