@@ -11,6 +11,7 @@ from django.db import transaction
 from django.db.models import F, Sum
 from decimal import Decimal as D
 from decimal import InvalidOperation
+from schwifty import IBAN
 
 def dec(n, decimal_places):
     try:
@@ -253,7 +254,11 @@ def withdrawal_eur(request):
         sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
     except ValueError:
         return withdrawal(request, error_message='Nesprávna hodnota')
-    iban = request.POST['account_number']   # TODO Validate IBAN
+    iban = request.POST['account_number']
+    try:
+        iban = IBAN(iban).formatted
+    except ValueError:
+        return withdrawal(request, error_message='Nesprávny IBAN')
     try:
         with transaction.atomic():
             balance = Balance.objects.filter(user=request.user)
