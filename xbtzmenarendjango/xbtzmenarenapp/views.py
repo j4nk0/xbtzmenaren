@@ -12,6 +12,7 @@ from django.db.models import F, Sum
 from decimal import Decimal as D
 from decimal import InvalidOperation
 from schwifty import IBAN
+from .check_address import is_valid_btc_address, is_valid_ltc_address
 
 def dec(n, decimal_places):
     try:
@@ -281,7 +282,9 @@ def withdrawal_btc(request):
         sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
     except ValueError:
         return withdrawal(request, error_message='Nesprávna hodnota')
-    address_btc = request.POST['address_btc']   # TODO Validate btc address
+    address_btc = request.POST['address_btc']
+    if not is_valid_btc_address(address_btc):
+        return withdrawal(request, error_message='Nesprávna adresa')
     is_instant = True if 'is_instant_btc' in request.POST else False
     try:
         with transaction.atomic():
@@ -316,7 +319,9 @@ def withdrawal_ltc(request):
         sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
     except ValueError:
         return withdrawal(request, error_message='Nesprávna hodnota')
-    address_ltc = request.POST['address_ltc']   # TODO Validate LTC address
+    address_ltc = request.POST['address_ltc']
+    if not is_valid_ltc_address(address_ltc):
+        return withdrawal(request, error_message='Nesprávna adresa')
     is_instant = True if 'is_instant_ltc' in request.POST else False
     try:
         with transaction.atomic():
