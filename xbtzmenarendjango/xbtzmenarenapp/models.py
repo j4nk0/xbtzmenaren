@@ -37,10 +37,12 @@ class CustomUserManager(BaseUserManager):
 DECIMAL_PLACES_EUR = 2
 DECIMAL_PLACES_BTC = 8
 DECIMAL_PLACES_LTC = 8
+DECIMAL_PLACES_PRICE = 4
 # To store value up to 10 000 000 EUR:
 MAX_DIGITS_EUR = 9
 MAX_DIGITS_BTC = 11
 MAX_DIGITS_LTC = 14
+MAX_DIGITS_PRICE = 11
 
 class CustomUser(AbstractUser):
     username = None
@@ -134,3 +136,29 @@ class Deposit_ltc(models.Model):
     address = models.CharField(max_length=100)
     ltc = models.DecimalField(max_digits=MAX_DIGITS_LTC, decimal_places=DECIMAL_PLACES_LTC)
     datetime = models.DateTimeField()
+
+class Order_buy_btc(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    btc = models.DecimalField(max_digits=MAX_DIGITS_BTC, decimal_places=DECIMAL_PLACES_BTC)
+    price = models.DecimalField(max_digits=MAX_DIGITS_PRICE, decimal_places=DECIMAL_PLACES_PRICE)
+    datetime = models.DateTimeField()
+
+class Order_sell_btc(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    btc = models.DecimalField(max_digits=MAX_DIGITS_BTC, decimal_places=DECIMAL_PLACES_BTC)
+    price = models.DecimalField(max_digits=MAX_DIGITS_PRICE, decimal_places=DECIMAL_PLACES_PRICE)
+    datetime = models.DateTimeField()
+
+class Order_buy_ltc(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    ltc = models.DecimalField(max_digits=MAX_DIGITS_LTC, decimal_places=DECIMAL_PLACES_LTC)
+    price = models.DecimalField(max_digits=MAX_DIGITS_PRICE, decimal_places=DECIMAL_PLACES_PRICE)
+    datetime = models.DateTimeField()
+
+class Order_sell_ltc(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    ltc = models.DecimalField(max_digits=MAX_DIGITS_LTC, decimal_places=DECIMAL_PLACES_LTC)
+    price = models.DecimalField(max_digits=MAX_DIGITS_PRICE, decimal_places=DECIMAL_PLACES_PRICE)
+    datetime = models.DateTimeField()
+
+ 

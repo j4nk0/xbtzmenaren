@@ -14,11 +14,8 @@ urlpatterns = [
     path('sell-ltc/', views.sell_ltc, name='sell-ltc'),
 
     path('rates/', views.private_rates, name='rates'),
-    path('rate-btceur-buy/', views.rate_btceur_buy, name='rate-btceur-buy'),
-    path('rate-btceur-sell/', views.rate_btceur_sell, name='rate-btceur-sell'),
-    path('rate-ltceur-buy/', views.rate_ltceur_buy, name='rate-ltceur-buy'),
-    path('rate-ltceur-sell/', views.rate_ltceur_sell, name='rate-ltceur-sell'),
     path('rates/json', views.rates_json, name='rates-json'),
+    path('buy-btc/json', views.buy_btc_json, name='buy-btc-json'),
 
     path('terms/', views.terms_and_conditions, name='terms'),
 

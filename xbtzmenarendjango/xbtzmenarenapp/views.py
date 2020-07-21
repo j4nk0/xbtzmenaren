@@ -13,6 +13,7 @@ from decimal import Decimal as D
 from decimal import InvalidOperation
 from schwifty import IBAN
 from .check_address import is_valid_btc_address, is_valid_ltc_address
+import json
 
 def dec(n, decimal_places):
     try:
@@ -127,36 +128,34 @@ def sell_ltc(request):
 @login_required
 def private_rates(request):
     context = {
-            'btceur_buy': rates.get_btceur_buy(),
-            'btceur_sell': rates.get_btceur_sell(),
-            'ltceur_buy': rates.get_ltceur_buy(),
-            'ltceur_sell': rates.get_ltceur_sell(),
+        'btceur_buy': rates.rates()['BTC-EUR']['buy'],
+        'btceur_sell': rates.rates()['BTC-EUR']['sell'],
+        'ltceur_buy': rates.rates()['LTC-EUR']['buy'],
+        'ltceur_sell': rates.rates()['LTC-EUR']['sell'],
     }
     return render(request, 'xbtzmenarenapp/privateRates.html', context)
 
 def public_rates(request):
     context = {
-            'btceur_buy': rates.get_btceur_buy(),
-            'btceur_sell': rates.get_btceur_sell(),
-            'ltceur_buy': rates.get_ltceur_buy(),
-            'ltceur_sell': rates.get_ltceur_sell(),
+        'btceur_buy': rates.rates()['BTC-EUR']['buy'],
+        'btceur_sell': rates.rates()['BTC-EUR']['sell'],
+        'ltceur_buy': rates.rates()['LTC-EUR']['buy'],
+        'ltceur_sell': rates.rates()['LTC-EUR']['sell'],
     }
     return render(request, 'xbtzmenarenapp/publicRates.html', context)
 
-def rate_btceur_buy(request):
-    return HttpResponse(rates.get_btceur_buy())
-
-def rate_btceur_sell(request):
-    return HttpResponse(rates.get_btceur_sell())
-
-def rate_ltceur_buy(request):
-    return HttpResponse(rates.get_ltceur_buy())
-
-def rate_ltceur_sell(request):
-    return HttpResponse(rates.get_ltceur_sell())
+def buy_btc_json(request):
+    sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
+    data = {
+        'fee': str(rates.fee_market_buy_btc(sum_eur)),
+        'btc': str(rates.preview_market_buy_btc(sum_eur)),
+    }
+    res = HttpResponse(json.dumps(data))
+    res['Content-Type'] = 'application/json'
+    return res
 
 def rates_json(request):
-    res = HttpResponse(rates.rates())
+    res = HttpResponse(jsom.dumps(rates.rates()))
     res['Content-Type'] = 'application/json'
     return res
 

@@ -61,16 +61,32 @@ class Sell_ltcAdmin(admin.ModelAdmin):
     search_fields = ('user', 'ltc', 'eur')
 
 class Deposit_eurAdmin(admin.ModelAdmin):
-    list_display = ('vs', 'eur', 'datetime',)
-    search_fields = ('vs', 'eur', 'datetime',)
+    list_display = ('user', 'vs', 'eur', 'datetime',)
+    search_fields = ('user', 'vs', 'eur', 'datetime',)
 
 class Deposit_btcAdmin(admin.ModelAdmin):
-    list_display = ('address', 'btc', 'datetime',)
-    search_fields = ('address', 'btc', 'datetime',)
+    list_display = ('user', 'address', 'btc', 'datetime',)
+    search_fields = ('user', 'address', 'btc', 'datetime',)
 
 class Deposit_ltcAdmin(admin.ModelAdmin):
-    list_display = ('address', 'ltc', 'datetime',)
-    search_fields = ('address', 'ltc', 'datetime',)
+    list_display = ('user', 'address', 'ltc', 'datetime',)
+    search_fields = ('user', 'address', 'ltc', 'datetime',)
+
+class Order_buy_btcAdmin(admin.ModelAdmin):
+    list_display = ('user', 'btc', 'price', 'datetime',)
+    search_fields = ('user', 'btc', 'price', 'datetime',)
+
+class Order_sell_btcAdmin(admin.ModelAdmin):
+    list_display = ('user', 'btc', 'price', 'datetime',)
+    search_fields = ('user', 'btc', 'price', 'datetime',)
+
+class Order_buy_ltcAdmin(admin.ModelAdmin):
+    list_display = ('user', 'ltc', 'price', 'datetime',)
+    search_fields = ('user', 'ltc', 'price', 'datetime',)
+
+class Order_sell_ltcAdmin(admin.ModelAdmin):
+    list_display = ('user', 'ltc', 'price', 'datetime',)
+    search_fields = ('user', 'ltc', 'price', 'datetime',)
 
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Address, AddressAdmin)
@@ -85,4 +101,8 @@ admin.site.register(Sell_ltc, Sell_ltcAdmin)
 admin.site.register(Deposit_eur, Deposit_eurAdmin)
 admin.site.register(Deposit_btc, Deposit_btcAdmin)
 admin.site.register(Deposit_ltc, Deposit_ltcAdmin)
+admin.site.register(Order_buy_btc, Order_buy_btcAdmin)
+admin.site.register(Order_sell_btc, Order_sell_btcAdmin)
+admin.site.register(Order_buy_ltc, Order_buy_ltcAdmin)
+admin.site.register(Order_sell_ltc, Order_sell_ltcAdmin)
 

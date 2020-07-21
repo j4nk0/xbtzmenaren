@@ -35,9 +35,10 @@
           {% csrf_token %}
           <div class="form-group">
             <label for="usr">Nakúpiť za EUR:</label>
-            <input type="text" class="form-control" name="sum_eur"/>
-            <script>$(':text').val('{{ max_sum_eur }}');</script>
+            <input id="sum_eur_btc" type="text" class="form-control" name="sum_eur"/>
           </div>
+          <div>Poplatky: <b id="fee_btc">1.00</b> EUR</div>
+          <div>Nákup: <b id="sum_btc">0.10000000</b> BTC</div>
           <button type="submit" class="btn btn-default">Kúpiť</button>
         </form>
       </div>
@@ -52,7 +53,6 @@
           <div class="form-group">
             <label for="usr">Nakúpiť za EUR:</label>
             <input type="text" class="form-control" name="sum_eur"/>
-            <script>$(':text').val('{{ max_sum_eur }}');</script>
           </div>
           <button type="submit" class="btn btn-default">Kúpiť</button>
         </form>
@@ -60,4 +60,14 @@
 
     </div>
   </div>
+  <script>
+    $(':text').val('{{ max_sum_eur }}');
+    $('#sum_eur_btc').on("change paste keyup", function() {
+      $.post("{% url 'buy-btc-json' %}", {sum_eur: $('#sum_eur_btc').val(), csrfmiddlewaretoken: '{{ csrf_token }}'}, function(data){
+        $('#sum_btc').text(data.btc);
+        $('#fee_btc').text(data.fee);
+      });
+      //$('#sum_btc').text($(this).val());
+    });
+  </script>
 {% endblock %}
