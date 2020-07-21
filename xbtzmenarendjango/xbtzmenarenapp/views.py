@@ -441,8 +441,9 @@ def management_deposit_attempt(request):
     try:
         with transaction.atomic():
             address = Address.objects.get(vs=vs)
-            balance = address.user.balance
-            Deposit_eur.objects.create(vs=vs, eur=sum_eur, datetime=timezone.now())
+            user = address.user
+            balance = user.balance
+            Deposit_eur.objects.create(user=user, vs=vs, eur=sum_eur, datetime=timezone.now())
             balance.eur += sum_eur
             balance.save()
     except ObjectDoesNotExist:

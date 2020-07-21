@@ -31,6 +31,7 @@
         <table class="table">
           <thead>
               <tr>
+                <td><b>Užívateľ</b></td>
                 <td><b>IBAN</b></td>
                 <td><b>Suma</b></td>
                 <td><b>Vytvorené</b></td>
@@ -40,6 +41,7 @@
           <tbody>
             {% for withdrawal in old_withdrawals_eur %}
               <tr>
+                <td>{{ withdrawal.user }}</td>
                 <td>{{ withdrawal.iban }}</td>
                 <td>{{ withdrawal.eur }}</td>
                 <td>{{ withdrawal.time_created }}</td>
@@ -51,6 +53,7 @@
         <table class="table">
           <thead>
               <tr>
+                <td><b>Užívateľ</b></td>
                 <td><b>IBAN</b></td>
                 <td><b>Suma</b></td>
                 <td><b>Vytvorené</b></td>
@@ -60,6 +63,7 @@
           <tbody>
             {% for withdrawal in withdrawals_eur %}
               <tr>
+                <td>{{ withdrawal.user }}</td>
                 <td>{{ withdrawal.iban }}</td>
                 <td>{{ withdrawal.eur }}</td>
                 <td>{{ withdrawal.time_created }}</td>
@@ -83,6 +87,7 @@
         <table class="table">
           <thead>
               <tr>
+                <td><b>Užívateľ</b></td>
                 <td><b>Adresa</b></td>
                 <td><b>Suma</b></td>
                 <td><b>Vytvorené</b></td>
@@ -92,6 +97,7 @@
           <tbody>
             {% for withdrawal in old_withdrawals_btc %}
               <tr>
+                <td>{{ withdrawal.user }}</td>
                 <td>{{ withdrawal.address }}</td>
                 <td>{{ withdrawal.btc }}</td>
                 <td>{{ withdrawal.time_created }}</td>
@@ -103,6 +109,7 @@
         <table class="table">
           <thead>
               <tr>
+                <td><b>Užívateľ</b></td>
                 <td><b>Adresa</b></td>
                 <td><b>Suma</b></td>
                 <td><b>Vytvorené</b></td>
@@ -112,6 +119,7 @@
           <tbody>
             {% for withdrawal in withdrawals_btc %}
               <tr>
+                <td>{{ withdrawal.user }}</td>
                 <td>{{ withdrawal.address }}</td>
                 <td>{{ withdrawal.btc }}</td>
                 <td>{{ withdrawal.time_created }}</td>
@@ -135,6 +143,7 @@
         <table class="table">
           <thead>
               <tr>
+                <td><b>Užívateľ</b></td>
                 <td><b>Adresa</b></td>
                 <td><b>Suma</b></td>
                 <td><b>Vytvorené</b></td>
@@ -144,6 +153,7 @@
           <tbody>
             {% for withdrawal in old_withdrawals_ltc %}
               <tr>
+                <td>{{ withdrawal.user }}</td>
                 <td>{{ withdrawal.address }}</td>
                 <td>{{ withdrawal.ltc }}</td>
                 <td>{{ withdrawal.time_created }}</td>
@@ -155,6 +165,7 @@
         <table class="table">
           <thead>
               <tr>
+                <td><b>Užívateľ</b></td>
                 <td><b>Adresa</b></td>
                 <td><b>Suma</b></td>
                 <td><b>Vytvorené</b></td>
@@ -164,6 +175,7 @@
           <tbody>
             {% for withdrawal in withdrawals_ltc %}
               <tr>
+                <td>{{ withdrawal.user }}</td>
                 <td>{{ withdrawal.address }}</td>
                 <td>{{ withdrawal.ltc }}</td>
                 <td>{{ withdrawal.time_created }}</td>

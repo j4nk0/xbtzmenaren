@@ -21,6 +21,7 @@
     <table class="table">
       <thead>
           <tr>
+            <td><b>Užívateľ</b></td>
             <td><b>VS</b></td>
             <td><b>Suma</b></td>
             <td><b>Čas</b></td>
@@ -29,6 +30,7 @@
       <tbody>
         {% for deposit in deposits_eur %}
           <tr>
+            <td>{{ deposit.user }}</td>
             <td>{{ deposit.vs }}</td>
             <td>{{ deposit.eur }}</td>
             <td>{{ deposit.datetime }}</td>

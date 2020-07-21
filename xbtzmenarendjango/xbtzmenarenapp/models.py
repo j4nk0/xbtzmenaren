@@ -118,16 +118,19 @@ class Sell_ltc(models.Model):
     eur = models.DecimalField(max_digits=MAX_DIGITS_EUR, decimal_places=DECIMAL_PLACES_EUR)
 
 class Deposit_eur(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     vs = models.CharField(max_length=10)
     eur = models.DecimalField(max_digits=MAX_DIGITS_EUR, decimal_places=DECIMAL_PLACES_EUR)
     datetime = models.DateTimeField()
 
 class Deposit_btc(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     address = models.CharField(max_length=100)
     btc = models.DecimalField(max_digits=MAX_DIGITS_BTC, decimal_places=DECIMAL_PLACES_BTC)
     datetime = models.DateTimeField()
 
 class Deposit_ltc(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     address = models.CharField(max_length=100)
     ltc = models.DecimalField(max_digits=MAX_DIGITS_LTC, decimal_places=DECIMAL_PLACES_LTC)
     datetime = models.DateTimeField()
