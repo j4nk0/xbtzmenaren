@@ -3,12 +3,31 @@
 {% block content %}
   <div class="container">
     <ul class="nav nav-pills">
-      <li class="active"><a data-toggle="pill" href="#Euro">Euro</a></li>
-      <li><a data-toggle="pill" href="#Bitcoin">Bitcoin</a></li>
-      <li><a data-toggle="pill" href="#Litecoin">Litecoin</a></li>
+      {% if active == "eur" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#Euro">Euro</a></li>
+      {% if active == "btc" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#Bitcoin">Bitcoin</a></li>
+      {% if active == "ltc" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#Litecoin">Litecoin</a></li>
     </ul>
     <div class="tab-content">
+      {% if active == "eur" %}
       <div id="Euro" class="tab-pane active">
+      {% else %}
+      <div id="Euro" class="tab-pane">
+      {% endif %}
         <table class="table">
           <thead>
               <tr>
@@ -56,7 +75,11 @@
         </table>
       </div>
 
+      {% if active == "btc" %}
+      <div id="Bitcoin" class="tab-pane active">
+      {% else %}
       <div id="Bitcoin" class="tab-pane">
+      {% endif %}
         <table class="table">
           <thead>
               <tr>
@@ -104,7 +127,11 @@
         </table>
       </div>
 
+      {% if active == "ltc" %}
+      <div id="Litecoin" class="tab-pane active">
+      {% else %}
       <div id="Litecoin" class="tab-pane">
+      {% endif %}
         <table class="table">
           <thead>
               <tr>

@@ -27,9 +27,10 @@ def dec(n, decimal_places):
     return decimal
 
 @login_required
-def buy(request, success=None):
+def buy(request, success=None, active='btc'):
     context = {
         'max_sum_eur': request.user.balance.eur,
+        'active': active,
     }
     if success == True:
         context.update({'ok_message': "Nákup uspešný"})
@@ -42,7 +43,7 @@ def buy_btc(request):
     try:
         sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
     except ValueError:
-        return buy(request, False)
+        return buy(request, False, 'btc')
     sum_btc = sum_eur / rates.get_btceur_buy()
     try:
         with transaction.atomic():
@@ -52,15 +53,15 @@ def buy_btc(request):
             Buy_btc.objects.create(user=request.user, datetime=timezone.now(), btc=sum_btc, eur=sum_eur)
             if balance[0].eur < 0: raise ValueError
     except ValueError:
-        return buy(request, False)
-    return buy(request, True)
+        return buy(request, False, 'btc')
+    return buy(request, True, 'btc')
 
 @login_required
 def buy_ltc(request):
     try:
         sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
     except ValueError:
-        return buy(request, False)
+        return buy(request, False, 'ltc')
     sum_ltc = sum_eur / rates.get_ltceur_buy()
     try:
         with transaction.atomic():
@@ -70,14 +71,15 @@ def buy_ltc(request):
             Buy_ltc.objects.create(user=request.user, datetime=timezone.now(), ltc=sum_ltc, eur=sum_eur)
             if balance[0].eur < 0: raise ValueError
     except ValueError:
-        return buy(request, False)
-    return buy(request, True)
+        return buy(request, False, 'ltc')
+    return buy(request, True, 'ltc')
 
 @login_required
-def sell(request, success=None):
+def sell(request, success=None, active='btc'):
     context = {
         'max_sum_btc': request.user.balance.btc,
         'max_sum_ltc': request.user.balance.ltc,
+        'active': active,
     }
     if success == True:
         context.update({'ok_message': "Predaj uspešný"})
@@ -90,7 +92,7 @@ def sell_btc(request):
     try:
         sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
     except ValueError:
-        return sell(request, False)
+        return sell(request, False, 'btc')
     sum_eur = sum_btc * rates.get_btceur_sell()
     try:
         with transaction.atomic():
@@ -100,8 +102,8 @@ def sell_btc(request):
             Sell_btc.objects.create(user=request.user, datetime=timezone.now(), btc=sum_btc, eur=sum_eur)
             if balance[0].btc < 0: raise ValueError
     except ValueError:
-        return sell(request, False)
-    return sell(request, True)
+        return sell(request, False, 'btc')
+    return sell(request, True, 'btc')
 
 
 @login_required
@@ -109,7 +111,7 @@ def sell_ltc(request):
     try:
         sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
     except ValueError:
-        return sell(request, False)
+        return sell(request, False, 'ltc')
     sum_eur = sum_ltc * rates.get_ltceur_sell()
     try:
         with transaction.atomic():
@@ -119,8 +121,8 @@ def sell_ltc(request):
             Sell_ltc.objects.create(user=request.user, datetime=timezone.now(), ltc=sum_ltc, eur=sum_eur)
             if balance[0].ltc < 0: raise ValueError
     except ValueError:
-        sell(request, False)
-    return sell(request, True)
+        sell(request, False, 'ltc')
+    return sell(request, True, 'ltc')
 
 @login_required
 def private_rates(request):
@@ -237,7 +239,7 @@ def deposit(request):
     return render(request, 'xbtzmenarenapp/deposit.html', context)
 
 @login_required
-def withdrawal(request, error_message=None, ok_message=None):
+def withdrawal(request, error_message=None, ok_message=None, active='eur'):
     context = {
         'error_message': error_message,
         'ok_message': ok_message,
@@ -246,6 +248,7 @@ def withdrawal(request, error_message=None, ok_message=None):
         'max_sum_ltc': request.user.balance.ltc,
         'fee_btc': 0.0001,
         'fee_ltc': 0.0005,
+        'active': active,
     }
     return render(request, 'xbtzmenarenapp/withdrawal.html', context)
 
@@ -254,12 +257,12 @@ def withdrawal_eur(request):
     try:
         sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
     except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota')
+        return withdrawal(request, error_message='Nesprávna hodnota', active='eur')
     iban = request.POST['account_number']
     try:
         iban = IBAN(iban).formatted
     except ValueError:
-        return withdrawal(request, error_message='Nesprávny IBAN')
+        return withdrawal(request, error_message='Nesprávny IBAN', active='eur')
     try:
         with transaction.atomic():
             balance = Balance.objects.filter(user=request.user)
@@ -273,18 +276,18 @@ def withdrawal_eur(request):
             )
             if balance[0].eur < 0: raise ValueError
     except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota')
-    return withdrawal(request, ok_message='Požiadavka zaregistrovaná')
+        return withdrawal(request, error_message='Nesprávna hodnota', active='eur')
+    return withdrawal(request, ok_message='Požiadavka zaregistrovaná', active='eur')
 
 @login_required
 def withdrawal_btc(request):
     try:
         sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
     except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota')
+        return withdrawal(request, error_message='Nesprávna hodnota', active='btc')
     address_btc = request.POST['address_btc']
     if not is_valid_btc_address(address_btc):
-        return withdrawal(request, error_message='Nesprávna adresa')
+        return withdrawal(request, error_message='Nesprávna adresa', active='btc')
     is_instant = True if 'is_instant_btc' in request.POST else False
     try:
         with transaction.atomic():
@@ -310,18 +313,18 @@ def withdrawal_btc(request):
                 )
             if balance[0].btc < 0: raise ValueError
     except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota')
-    return withdrawal(request, ok_message='Požiadavka zaregistrovaná')
+        return withdrawal(request, error_message='Nesprávna hodnota', active='btc')
+    return withdrawal(request, ok_message='Požiadavka zaregistrovaná', active='btc')
 
 @login_required
 def withdrawal_ltc(request):
     try:
         sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
     except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota')
+        return withdrawal(request, error_message='Nesprávna hodnota', active='ltc')
     address_ltc = request.POST['address_ltc']
     if not is_valid_ltc_address(address_ltc):
-        return withdrawal(request, error_message='Nesprávna adresa')
+        return withdrawal(request, error_message='Nesprávna adresa', active='ltc')
     is_instant = True if 'is_instant_ltc' in request.POST else False
     try:
         with transaction.atomic():
@@ -347,8 +350,8 @@ def withdrawal_ltc(request):
                 )
             if balance[0].ltc < 0: raise ValueError
     except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota')
-    return withdrawal(request, ok_message='Požiadavka zaregistrovaná')
+        return withdrawal(request, error_message='Nesprávna hodnota', active='ltc')
+    return withdrawal(request, ok_message='Požiadavka zaregistrovaná', active='ltc')
 
 
 def staff_check(user):
@@ -378,7 +381,7 @@ def management_verification_attempt(request):
 
 @user_passes_test(staff_check)
 @login_required
-def management_withdrawals(request):
+def management_withdrawals(request, active='eur'):
     context = {
         'old_withdrawals_eur': Withdrawal_eur.objects.filter(is_pending=False).order_by('-time_processed')[:5],
         'old_withdrawals_btc': Withdrawal_btc.objects.filter(is_pending=False).order_by('-time_processed')[:5],
@@ -386,6 +389,7 @@ def management_withdrawals(request):
         'withdrawals_eur': Withdrawal_eur.objects.filter(is_pending=True).order_by('iban')[:100],
         'withdrawals_btc': Withdrawal_btc.objects.filter(is_pending=True).order_by('address')[:100],
         'withdrawals_ltc': Withdrawal_ltc.objects.filter(is_pending=True).order_by('address')[:100],
+        'active': active,
     }
     return render(request, 'xbtzmenarenapp/management/withdrawals.html', context)
 
@@ -396,7 +400,7 @@ def management_withdrawal_eur_check(request, withdrawal_id):
     withdrawal.is_pending = False
     withdrawal.time_processed=timezone.now()
     withdrawal.save()
-    return management_withdrawals(request)
+    return management_withdrawals(request, 'eur')
 
 @user_passes_test(staff_check)
 @login_required
@@ -405,7 +409,7 @@ def management_withdrawal_btc_check(request, withdrawal_id):
     withdrawal.is_pending = False
     withdrawal.time_processed=timezone.now()
     withdrawal.save()
-    return management_withdrawals(request)
+    return management_withdrawals(request, 'btc')
 
 @user_passes_test(staff_check)
 @login_required 
@@ -414,7 +418,7 @@ def management_withdrawal_ltc_check(request, withdrawal_id):
     withdrawal.is_pending = False
     withdrawal.time_processed=timezone.now()
     withdrawal.save()
-    return management_withdrawals(request)
+    return management_withdrawals(request, 'ltc')
 
 @user_passes_test(staff_check)
 @login_required
