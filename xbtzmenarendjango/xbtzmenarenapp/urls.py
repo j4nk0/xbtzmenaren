@@ -13,6 +13,10 @@ urlpatterns = [
     path('sell-btc/', views.sell_btc, name='sell-btc'),
     path('sell-ltc/', views.sell_ltc, name='sell-ltc'),
 
+    path('limit-order-buy/', views.limit_order_buy, name='limit-order-buy'),
+    path('limit-order-sell/', views.limit_order_sell, name='limit-order-sell'),
+    path('limit-order-buy-btc/', views.limit_order_buy_btc, name='limit-order-buy-btc'),
+
     path('rates/', views.private_rates, name='rates'),
     path('rates/json', views.rates_json, name='rates-json'),
     path('buy-btc/json', views.buy_btc_json, name='buy-btc-json'),

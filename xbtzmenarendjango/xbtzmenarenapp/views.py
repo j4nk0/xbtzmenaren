@@ -180,6 +180,31 @@ def sell_ltc_json(request):
     return res
 
 @login_required
+def limit_order_buy(request, success=None, active='btc'):
+    context = {
+        'active': active,
+    }
+    if success == True:
+        context.update({'ok_message': "Predaj uspešný"})
+    if success == False:
+        context.update({'error_message': "Nesprávna hodnota"})
+    return render(request, 'xbtzmenarenapp/limitOrderBuy.html', context)
+
+@login_required
+def limit_order_buy_btc(request):
+    sum_btc = request.POST['sum_btc']
+    price_btc = request.POST['price_btc']
+    return HttpResponse('buy coin: Bitcoin suma: ' + sum_btc + ' price: ' + price_btc)
+
+@login_required
+def limit_order_sell(request, active='btc'):
+    # TODO change render(request ... to limitOrderSell.html
+    context = {
+        'active': active,
+    }
+    return render(request, 'xbtzmenarenapp/limitOrderBuy.html', context)
+
+@login_required
 def private_rates(request):
     context = {
         'btceur_buy': rates.rates()['BTC-EUR']['buy'],
