@@ -16,6 +16,9 @@ urlpatterns = [
     path('rates/', views.private_rates, name='rates'),
     path('rates/json', views.rates_json, name='rates-json'),
     path('buy-btc/json', views.buy_btc_json, name='buy-btc-json'),
+    path('buy-ltc/json', views.buy_ltc_json, name='buy-ltc-json'),
+    path('sell-btc/json', views.sell_btc_json, name='sell-btc-json'),
+    path('sell-ltc/json', views.sell_ltc_json, name='sell-ltc-json'),
 
     path('terms/', views.terms_and_conditions, name='terms'),
 

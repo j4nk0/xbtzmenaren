@@ -34,8 +34,9 @@
           <div class="form-group">
             <label for="usr">Predať BTC:</label>
             <input type="text" class="form-control" name="sum_btc" id="sum_btc"/>
-            <script>$('#sum_btc').val('{{ max_sum_btc }}');</script>
           </div>
+          <div>Poplatky: <b id="fee_btc">{{ fee_btc }}</b> EUR</div>
+          <div>Predaj za: <b>~</b><b id="sum_eur_btc">{{ sum_eur_btc }}</b> EUR</div>
           <button type="submit" class="btn btn-default">Predať</button>
         </form>
       </div>
@@ -50,11 +51,49 @@
           <div class="form-group">
             <label for="usr">Predať LTC:</label>
             <input type="text" class="form-control" name="sum_ltc" id="sum_ltc"/>
-            <script>$('#sum_ltc').val('{{ max_sum_ltc }}');</script>
           </div>
+          <div>Poplatky: <b id="fee_ltc">{{ fee_ltc }}</b> EUR</div>
+          <div>Predaj za: <b>~</b><b id="sum_eur_ltc">{{ sum_eur_ltc }}</b> EUR</div>
           <button type="submit" class="btn btn-default">Predať</button>
         </form>
       </div>
     </div>
   </div>
+  <script>
+    $('#sum_btc').val('{{ max_sum_btc }}');
+    $('#sum_ltc').val('{{ max_sum_ltc }}');
+    
+    $('#sum_btc').on("change paste keyup", function() {
+      if(isNaN($('#sum_btc').val())
+        || $('#sum_btc').val() == "" 
+        || $('#sum_btc').val() == 0)
+      {
+        $('#sum_eur_btc').text("-");
+        $('#fee_btc').text("-");
+      };
+      $.post("{% url 'sell-btc-json' %}",
+        { sum_btc: $('#sum_btc').val(), csrfmiddlewaretoken: '{{ csrf_token }}' },
+        function(data) {
+          $('#sum_eur_btc').text(data.eur);
+          $('#fee_btc').text(data.fee);
+        }
+      );
+    });
+    $('#sum_ltc').on("change paste keyup", function() {
+      if(isNaN($('#sum_ltc').val()) 
+        || $('#sum_ltc').val() == ""
+        || $('#sum_ltc').val() == 0)
+      {
+        $('#sum_eur_ltc').text("-");
+        $('#fee_ltc').text("-");
+      };
+      $.post("{% url 'sell-ltc-json' %}",
+        { sum_ltc: $('#sum_ltc').val(), csrfmiddlewaretoken: '{{ csrf_token }}' },
+        function(data) {
+          $('#sum_eur_ltc').text(data.eur);
+          $('#fee_ltc').text(data.fee);
+        }
+      );
+    });
+  </script>
 {% endblock %}

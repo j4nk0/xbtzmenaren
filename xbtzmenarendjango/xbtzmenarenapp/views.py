@@ -29,9 +29,14 @@ def dec(n, decimal_places):
 
 @login_required
 def buy(request, success=None, active='btc'):
+    sum_eur = request.user.balance.eur
     context = {
-        'max_sum_eur': request.user.balance.eur,
+        'max_sum_eur': sum_eur,
         'active': active,
+        'fee_btc': rates.fee_market_buy_btc(sum_eur),
+        'sum_btc': rates.preview_market_buy_btc(sum_eur),
+        'fee_ltc': rates.fee_market_buy_ltc(sum_eur),
+        'sum_ltc': rates.preview_market_buy_ltc(sum_eur),
     }
     if success == True:
         context.update({'ok_message': "Nákup uspešný"})
@@ -57,6 +62,16 @@ def buy_btc(request):
         return buy(request, False, 'btc')
     return buy(request, True, 'btc')
 
+def buy_btc_json(request):
+    sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
+    data = {
+        'fee': str(rates.fee_market_buy_btc(sum_eur)),
+        'btc': str(rates.preview_market_buy_btc(sum_eur)),
+    }
+    res = HttpResponse(json.dumps(data))
+    res['Content-Type'] = 'application/json'
+    return res
+
 @login_required
 def buy_ltc(request):
     try:
@@ -75,12 +90,30 @@ def buy_ltc(request):
         return buy(request, False, 'ltc')
     return buy(request, True, 'ltc')
 
+def buy_ltc_json(request):
+    sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
+    data = {
+        'fee': str(rates.fee_market_buy_ltc(sum_eur)),
+        'ltc': str(rates.preview_market_buy_ltc(sum_eur)),
+    }
+    res = HttpResponse(json.dumps(data))
+    res['Content-Type'] = 'application/json'
+    return res
+
 @login_required
 def sell(request, success=None, active='btc'):
+    sum_btc = request.user.balance.btc
+    sum_ltc = request.user.balance.ltc
+    fee_btc, sum_eur_btc = rates.preview_market_sell_btc(sum_btc)
+    fee_ltc, sum_eur_ltc = rates.preview_market_sell_ltc(sum_ltc)
     context = {
-        'max_sum_btc': request.user.balance.btc,
-        'max_sum_ltc': request.user.balance.ltc,
+        'max_sum_btc': sum_btc,
+        'max_sum_ltc': sum_ltc,
         'active': active,
+        'fee_btc': fee_btc,
+        'sum_eur_btc': sum_eur_btc,
+        'fee_ltc': fee_ltc,
+        'sum_eur_ltc': sum_eur_ltc,
     }
     if success == True:
         context.update({'ok_message': "Predaj uspešný"})
@@ -106,6 +139,16 @@ def sell_btc(request):
         return sell(request, False, 'btc')
     return sell(request, True, 'btc')
 
+def sell_btc_json(request):
+    sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
+    fee, sum_eur = rates.preview_market_sell_btc(sum_btc)
+    data = {
+        'fee': str(fee),
+        'eur': str(sum_eur),
+    }
+    res = HttpResponse(json.dumps(data))
+    res['Content-Type'] = 'application/json'
+    return res
 
 @login_required
 def sell_ltc(request):
@@ -125,6 +168,17 @@ def sell_ltc(request):
         sell(request, False, 'ltc')
     return sell(request, True, 'ltc')
 
+def sell_ltc_json(request):
+    sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
+    fee, sum_eur = rates.preview_market_sell_ltc(sum_ltc)
+    data = {
+        'fee': str(fee),
+        'eur': str(sum_eur),
+    }
+    res = HttpResponse(json.dumps(data))
+    res['Content-Type'] = 'application/json'
+    return res
+
 @login_required
 def private_rates(request):
     context = {
@@ -143,16 +197,6 @@ def public_rates(request):
         'ltceur_sell': rates.rates()['LTC-EUR']['sell'],
     }
     return render(request, 'xbtzmenarenapp/publicRates.html', context)
-
-def buy_btc_json(request):
-    sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
-    data = {
-        'fee': str(rates.fee_market_buy_btc(sum_eur)),
-        'btc': str(rates.preview_market_buy_btc(sum_eur)),
-    }
-    res = HttpResponse(json.dumps(data))
-    res['Content-Type'] = 'application/json'
-    return res
 
 def rates_json(request):
     res = HttpResponse(jsom.dumps(rates.rates()))

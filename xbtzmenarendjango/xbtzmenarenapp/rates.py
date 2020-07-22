@@ -1,9 +1,10 @@
 from decimal import Decimal as Dec
 from .models import Order_buy_btc, Order_sell_btc, Order_buy_ltc, Order_sell_ltc
+from .models import DECIMAL_PLACES_BTC, DECIMAL_PLACES_LTC, DECIMAL_PLACES_EUR
 
 def D(flt):
     return Dec(str(flt))
-    
+ 
 def get_rid_of_trailing_zeros(n):
     res = n
     for i in range(10, -1, -1):
@@ -15,8 +16,20 @@ def get_rid_of_trailing_zeros(n):
 def r(x):
     return get_rid_of_trailing_zeros(x)
 
+#=======================BUYS========================================================================
+
+def fee_market_buy_btc(sum_eur):
+    fee = D(sum_eur) * D(0.02)
+    if fee < D(1): fee = D(1)
+    return r(fee.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
+
+def fee_market_buy_ltc(sum_eur):
+    fee = D(sum_eur) * D(0.02)
+    if fee < D(1): fee = D(1)
+    return r(fee.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
+
 def preview_market_buy_btc(sum_eur):
-    sum_eur = D(sum_eur)
+    sum_eur = D(sum_eur) - fee_market_buy_btc(sum_eur)
     sum_btc = 0
     for order in Order_sell_btc.objects.all().order_by('price'):
         if order.btc * order.price > sum_eur:
@@ -25,24 +38,11 @@ def preview_market_buy_btc(sum_eur):
         else:
             sum_eur -= order.btc * order.price
             sum_btc += order.btc
-    return r(sum_btc)
+    if sum_btc <= 0: return 0
+    return r(sum_btc.quantize(D(0.1) ** DECIMAL_PLACES_BTC))
 
-def price_market_sell_btc(sum_btc):
-    sum_btc = D(sum_btc)
-    old_sum_btc = sum_btc
-    sum_eur = 0
-    for order in Order_buy_btc.objects.all().order_by('-price'):
-        if order.btc > sum_btc:
-            sum_eur += sum_btc * order.price
-            break
-        else:
-            sum_btc -= order.btc
-            sum_eur += order.btc * order.price
-    return r(sum_eur / old_sum_btc)
-
-def price_market_buy_ltc(sum_eur):
-    sum_eur = D(sum_eur)
-    old_sum_eur = sum_eur
+def preview_market_buy_ltc(sum_eur):
+    sum_eur = D(sum_eur) - fee_market_buy_ltc(sum_eur)
     sum_ltc = 0
     for order in Order_sell_ltc.objects.all().order_by('price'):
         if order.ltc * order.price > sum_eur:
@@ -51,11 +51,38 @@ def price_market_buy_ltc(sum_eur):
         else:
             sum_eur -= order.ltc * order.price
             sum_ltc += order.ltc
-    return r(old_sum_eur / sum_ltc)
+    if sum_ltc <= 0: return 0
+    return r(sum_ltc.quantize(D(0.1) ** DECIMAL_PLACES_LTC))
 
-def price_market_sell_ltc(sum_ltc):
-    sum_ltc = D(sum_btc)
-    old_sum_ltc = sum_ltc
+#=======================SELLS=======================================================================
+def fee_market_sell_btc(sum_eur):
+    fee = D(sum_eur) * D(0.02)
+    if fee < D(1): fee = D(1)
+    return r(fee.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
+
+def fee_market_sell_ltc(sum_eur):
+    fee = D(sum_eur) * D(0.02)
+    if fee < D(1): fee = D(1)
+    return r(fee.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
+
+def preview_market_sell_btc(sum_btc):
+    sum_btc = D(sum_btc)
+    sum_eur = 0
+    for order in Order_buy_btc.objects.all().order_by('-price'):
+        if order.btc > sum_btc:
+            sum_eur += sum_btc * order.price
+            break
+        else:
+            sum_btc -= order.btc
+            sum_eur += order.btc * order.price
+    fee = r(fee_market_sell_btc(sum_eur))
+    sum_eur -= fee
+    sum_eur = r(sum_eur.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
+    if sum_eur < 0: sum_eur = 0
+    return (fee, sum_eur)
+
+def preview_market_sell_ltc(sum_ltc):
+    sum_ltc = D(sum_ltc)
     sum_eur = 0
     for order in Order_buy_ltc.objects.all().order_by('-price'):
         if order.ltc > sum_ltc:
@@ -64,7 +91,11 @@ def price_market_sell_ltc(sum_ltc):
         else:
             sum_ltc -= order.ltc
             sum_eur += order.ltc * order.price
-    return r(sum_eur / old_sum_ltc)
+    fee = r(fee_market_sell_ltc(sum_eur))
+    sum_eur -= fee
+    sum_eur = r(sum_eur.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
+    if sum_eur < 0: sum_eur = 0
+    return (fee, sum_eur)
 
 def rates():
     res = {
@@ -79,8 +110,4 @@ def rates():
     }
     return res
 
-def fee_market_buy_btc(sum_eur):
-    fee = D(sum_eur) * D(0.02)
-    if fee < D(1): fee = D(1)
-    return fee
 
