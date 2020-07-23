@@ -183,6 +183,7 @@ def sell_ltc_json(request):
 def limit_order_buy(request, success=None, active='btc'):
     context = {
         'active': active,
+        'max_sum_eur': request.user.balance.eur,
     }
     if success == True:
         context.update({'ok_message': "Predaj uspešný"})
@@ -195,6 +196,18 @@ def limit_order_buy_btc(request):
     sum_btc = request.POST['sum_btc']
     price_btc = request.POST['price_btc']
     return HttpResponse('buy coin: Bitcoin suma: ' + sum_btc + ' price: ' + price_btc)
+
+def limit_order_buy_btc_json(request):
+    sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
+    price_btc = dec(request.POST['price_btc'], DECIMAL_PLACES_PRICE)
+    fee, sum_eur = rates.preview_limit_order_buy_btc(sum_btc, price_btc)
+    data = {
+        'fee': str(fee),
+        'eur': str(sum_eur),
+    }
+    res = HttpResponse(json.dumps(data))
+    res['Content-Type'] = 'application/json'
+    return res
 
 @login_required
 def limit_order_sell(request, active='btc'):

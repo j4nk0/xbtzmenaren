@@ -16,6 +16,20 @@ def get_rid_of_trailing_zeros(n):
 def r(x):
     return get_rid_of_trailing_zeros(x)
 
+def rates():
+# TODO handle when there is no orders
+    res = {
+        'BTC-EUR': {
+             'buy': str(r(Order_sell_btc.objects.all().order_by('price')[0].price)),
+             'sell': str(r(Order_buy_btc.objects.all().order_by('-price')[0].price)),
+        },
+        'LTC-EUR': {
+             'buy': str(r(Order_sell_ltc.objects.all().order_by('price')[0].price)),
+             'sell': str(r(Order_buy_ltc.objects.all().order_by('-price')[0].price)),
+        }
+    }
+    return res
+
 #=======================BUYS========================================================================
 
 def fee_market_buy_btc(sum_eur):
@@ -55,6 +69,7 @@ def preview_market_buy_ltc(sum_eur):
     return r(sum_ltc.quantize(D(0.1) ** DECIMAL_PLACES_LTC))
 
 #=======================SELLS=======================================================================
+
 def fee_market_sell_btc(sum_eur):
     fee = D(sum_eur) * D(0.02)
     if fee < D(1): fee = D(1)
@@ -97,17 +112,14 @@ def preview_market_sell_ltc(sum_ltc):
     if sum_eur < 0: sum_eur = 0
     return (fee, sum_eur)
 
-def rates():
-    res = {
-        'BTC-EUR': {
-             'buy': str(r(Order_sell_btc.objects.all().order_by('price')[0].price)),
-             'sell': str(r(Order_buy_btc.objects.all().order_by('-price')[0].price)),
-        },
-        'LTC-EUR': {
-             'buy': str(r(Order_sell_ltc.objects.all().order_by('price')[0].price)),
-             'sell': str(r(Order_buy_ltc.objects.all().order_by('-price')[0].price)),
-        }
-    }
-    return res
+#=======================LIMIT ORDER BUYS============================================================
+def fee_limit_order_buy_btc(sum_eur):
+    return D(0)
 
-
+def preview_limit_order_buy_btc(sum_btc, price_btc):
+    sum_eur = sum_btc * price_btc
+    fee = r(fee_limit_order_buy_btc(sum_eur))
+    sum_eur -= fee
+    sum_eur = r(sum_eur.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
+    if sum_eur < 0: sum_eur = 0
+    return fee, sum_eur
