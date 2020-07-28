@@ -91,9 +91,13 @@
             $("#cookieConsent").show();
           }
           $("#closeCookieConsent, .cookieConsentOK").click(function() {
-              console.log("HERE 2");
               $("#cookieConsent").fadeOut(200);
-              document.cookie = "privacyRead=true; SameSite=Strict; path=/";
+              var now = new Date();
+              var time = now.getTime();
+              var expireTime = time + 24 * 3600;
+              now.setTime(expireTime);
+              var expires = now.toUTCString();
+              document.cookie = "privacyRead=true; SameSite=strict; path=/; expires=" + expires;
           }); 
         }); 
     </script>

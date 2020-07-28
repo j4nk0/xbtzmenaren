@@ -237,7 +237,7 @@ def public_rates(request):
     return render(request, 'xbtzmenarenapp/publicRates.html', context)
 
 def rates_json(request):
-    res = HttpResponse(jsom.dumps(rates.rates()))
+    res = HttpResponse(json.dumps(rates.rates()))
     res['Content-Type'] = 'application/json'
     return res
 
