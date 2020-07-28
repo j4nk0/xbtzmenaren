@@ -35,11 +35,13 @@ def rates():
 def fee_market_buy_btc(sum_eur):
     fee = D(sum_eur) * D(0.02)
     if fee < D(1): fee = D(1)
+    if fee > D(sum_eur): fee = D(sum_eur)
     return r(fee.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
 
 def fee_market_buy_ltc(sum_eur):
     fee = D(sum_eur) * D(0.02)
     if fee < D(1): fee = D(1)
+    if fee > D(sum_eur): fee = D(sum_eur)
     return r(fee.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
 
 def preview_market_buy_btc(sum_eur):
@@ -73,11 +75,13 @@ def preview_market_buy_ltc(sum_eur):
 def fee_market_sell_btc(sum_eur):
     fee = D(sum_eur) * D(0.02)
     if fee < D(1): fee = D(1)
+    if fee > D(sum_eur): fee = D(sum_eur)
     return r(fee.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
 
 def fee_market_sell_ltc(sum_eur):
     fee = D(sum_eur) * D(0.02)
     if fee < D(1): fee = D(1)
+    if fee > D(sum_eur): fee = D(sum_eur)
     return r(fee.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
 
 def preview_market_sell_btc(sum_btc):
