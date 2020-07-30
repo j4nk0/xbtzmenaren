@@ -20,12 +20,12 @@ def rates():
 # TODO handle when there is no orders
     res = {
         'BTC-EUR': {
-             'buy': str(r(Order_sell_btc.objects.all().order_by('price')[0].price)),
-             'sell': str(r(Order_buy_btc.objects.all().order_by('-price')[0].price)),
+             'buy': r(Order_sell_btc.objects.all().order_by('price')[0].price),
+             'sell': r(Order_buy_btc.objects.all().order_by('-price')[0].price),
         },
         'LTC-EUR': {
-             'buy': str(r(Order_sell_ltc.objects.all().order_by('price')[0].price)),
-             'sell': str(r(Order_buy_ltc.objects.all().order_by('-price')[0].price)),
+             'buy': r(Order_sell_ltc.objects.all().order_by('price')[0].price),
+             'sell': r(Order_buy_ltc.objects.all().order_by('-price')[0].price),
         }
     }
     return res
@@ -117,7 +117,11 @@ def preview_market_sell_ltc(sum_ltc):
     return (fee, sum_eur)
 
 #=======================LIMIT ORDER BUYS============================================================
+
 def fee_limit_order_buy_btc(sum_eur):
+    return D(0)
+
+def fee_limit_order_buy_ltc(sum_eur):
     return D(0)
 
 def preview_limit_order_buy_btc(sum_btc, price_btc):
@@ -127,3 +131,36 @@ def preview_limit_order_buy_btc(sum_btc, price_btc):
     sum_eur = r(sum_eur.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
     if sum_eur < 0: sum_eur = 0
     return fee, sum_eur
+
+def preview_limit_order_buy_ltc(sum_ltc, price_ltc):
+    sum_eur = sum_ltc * price_ltc
+    fee = r(fee_limit_order_buy_ltc(sum_eur))
+    sum_eur -= fee
+    sum_eur = r(sum_eur.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
+    if sum_eur < 0: sum_eur = 0
+    return fee, sum_eur
+
+#=======================LIMIT ORDER SELLS===========================================================
+
+def fee_limit_order_sell_btc(sum_eur):
+    return D(0)
+
+def fee_limit_order_sell_ltc(sum_eur):
+    return D(0)
+
+def preview_limit_order_sell_btc(sum_btc, price_btc):
+    sum_eur = sum_btc * price_btc
+    fee = r(fee_limit_order_sell_btc(sum_eur))
+    sum_eur -= fee
+    sum_eur = r(sum_eur.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
+    if sum_eur < 0: sum_eur = 0
+    return fee, sum_eur
+
+def preview_limit_order_sell_ltc(sum_ltc, price_ltc):
+    sum_eur = sum_ltc * price_ltc
+    fee = r(fee_limit_order_sell_ltc(sum_eur))
+    sum_eur -= fee
+    sum_eur = r(sum_eur.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
+    if sum_eur < 0: sum_eur = 0
+    return fee, sum_eur
+

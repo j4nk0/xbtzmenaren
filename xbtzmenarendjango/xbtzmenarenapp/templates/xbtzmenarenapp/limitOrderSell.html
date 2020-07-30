@@ -31,9 +31,9 @@
       {% else %}
       <div id="Bitcoin" class="tab-pane">
       {% endif %}
-        <form action="{% url 'limit-order-buy-btc' %}" method="post">
+        <form action="{% url 'limit-order-sell-btc' %}" method="post">
           {% csrf_token %}
-          <div>Maximálna celková cena: <b id="max_sum_eur">{{ max_sum_eur }}</b> EUR</div>
+          <div>Maximálne množstvo: <b id="max_sum_btc">{{ max_sum_btc }}</b> BTC</div>
           <div class="form-group">
             <label for="usr">Množstvo BTC:</label>
             <input id="sum_btc" type="text" class="form-control" name="sum_btc"/>
@@ -53,9 +53,9 @@
       {% else %}
       <div id="Litecoin" class="tab-pane">
       {% endif %}
-        <form action="{% url 'limit-order-buy-ltc' %}" method="post">
+        <form action="{% url 'limit-order-sell-ltc' %}" method="post">
           {% csrf_token %}
-          <div>Maximálna celková cena: <b id="max_sum_eur">{{ max_sum_eur }}</b> EUR</div>
+          <div>Maximálne množstvo: <b id="max_sum_ltc">{{ max_sum_ltc }}</b> LTC</div>
           <div class="form-group">
             <label for="usr">Množstvo LTC:</label>
             <input id="sum_ltc" type="text" class="form-control" name="sum_ltc"/>
@@ -84,7 +84,7 @@
         $('#fee_eur_btc').text("-");
         $('#sum_eur_btc').text("-");
       } else {
-        $.post("{% url 'limit-order-buy-btc-json' %}",
+        $.post("{% url 'limit-order-sell-btc-json' %}",
           { 
             sum_btc: $('#sum_btc').val(),
             price_btc: $('#price_btc').val(),
@@ -111,7 +111,7 @@
         $('#fee_eur_ltc').text("-");
         $('#sum_eur_ltc').text("-");
       } else {
-        $.post("{% url 'limit-order-buy-ltc-json' %}",
+        $.post("{% url 'limit-order-sell-ltc-json' %}",
           { 
             sum_ltc: $('#sum_ltc').val(),
             price_ltc: $('#price_ltc').val(),

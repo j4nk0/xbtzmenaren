@@ -39,9 +39,9 @@ def buy(request, success=None, active='btc'):
         'sum_ltc': rates.preview_market_buy_ltc(sum_eur),
     }
     if success == True:
-        context.update({'ok_message': "Nákup uspešný"})
+        context.update({'ok_message': 'Nákup uspešný'})
     if success == False:
-        context.update({'error_message': "Nesprávna hodnota"})
+        context.update({'error_message': 'Nesprávna hodnota'})
     return render(request, 'xbtzmenarenapp/buy.html', context)
 
 @login_required
@@ -116,9 +116,9 @@ def sell(request, success=None, active='btc'):
         'sum_eur_ltc': sum_eur_ltc,
     }
     if success == True:
-        context.update({'ok_message': "Predaj uspešný"})
+        context.update({'ok_message': 'Predaj uspešný'})
     if success == False:
-        context.update({'error_message': "Nesprávna hodnota"})
+        context.update({'error_message': 'Nesprávna hodnota'})
     return render(request, 'xbtzmenarenapp/sell.html', context)
 
 @login_required
@@ -186,9 +186,9 @@ def limit_order_buy(request, success=None, active='btc'):
         'max_sum_eur': request.user.balance.eur,
     }
     if success == True:
-        context.update({'ok_message': "Predaj uspešný"})
+        context.update({'ok_message': 'Požiadavka registrovaná'})
     if success == False:
-        context.update({'error_message': "Nesprávna hodnota"})
+        context.update({'error_message': 'Nesprávna hodnota'})
     return render(request, 'xbtzmenarenapp/limitOrderBuy.html', context)
 
 @login_required
@@ -210,12 +210,71 @@ def limit_order_buy_btc_json(request):
     return res
 
 @login_required
-def limit_order_sell(request, active='btc'):
-    # TODO change render(request ... to limitOrderSell.html
+def limit_order_buy_ltc(request):
+    sum_ltc = request.POST['sum_ltc']
+    price_ltc = request.POST['price_ltc']
+    return HttpResponse('buy coin: Litecoin suma: ' + sum_ltc + ' price: ' + price_ltc)
+
+def limit_order_buy_ltc_json(request):
+    sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
+    price_ltc = dec(request.POST['price_ltc'], DECIMAL_PLACES_PRICE)
+    fee, sum_eur = rates.preview_limit_order_buy_ltc(sum_ltc, price_ltc)
+    data = {
+        'fee': str(fee),
+        'eur': str(sum_eur),
+    }
+    res = HttpResponse(json.dumps(data))
+    res['Content-Type'] = 'application/json'
+    return res
+
+@login_required
+def limit_order_sell(request, success=None, active='btc'):
     context = {
         'active': active,
+        'max_sum_btc': request.user.balance.btc,
+        'max_sum_ltc': request.user.balance.ltc,
     }
-    return render(request, 'xbtzmenarenapp/limitOrderBuy.html', context)
+    if success == True:
+        context.update({'ok_message': 'Požiadavka registrovaná'})
+    if success == False:
+        context.update({'error_message': 'Nesprávna hodnota'})
+    return render(request, 'xbtzmenarenapp/limitOrderSell.html', context)
+
+@login_required
+def limit_order_sell_btc(request):
+    sum_btc = request.POST['sum_btc']
+    price_btc = request.POST['price_btc']
+    return HttpResponse('sell coin: Bitcoin suma: ' + sum_btc + ' price: ' + price_btc)
+
+def limit_order_sell_btc_json(request):
+    sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
+    price_btc = dec(request.POST['price_btc'], DECIMAL_PLACES_PRICE)
+    fee, sum_eur = rates.preview_limit_order_sell_btc(sum_btc, price_btc)
+    data = {
+        'fee': str(fee),
+        'eur': str(sum_eur),
+    }
+    res = HttpResponse(json.dumps(data))
+    res['Content-Type'] = 'application/json'
+    return res
+
+@login_required
+def limit_order_sell_ltc(request):
+    sum_ltc = request.POST['sum_ltc']
+    price_ltc = request.POST['price_ltc']
+    return HttpResponse('sell coin: Litecoin suma: ' + sum_ltc + ' price: ' + price_ltc)
+
+def limit_order_sell_ltc_json(request):
+    sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
+    price_ltc = dec(request.POST['price_ltc'], DECIMAL_PLACES_PRICE)
+    fee, sum_eur = rates.preview_limit_order_sell_ltc(sum_ltc, price_ltc)
+    data = {
+        'fee': str(fee),
+        'eur': str(sum_eur),
+    }
+    res = HttpResponse(json.dumps(data))
+    res['Content-Type'] = 'application/json'
+    return res
 
 @login_required
 def private_rates(request):
@@ -237,7 +296,12 @@ def public_rates(request):
     return render(request, 'xbtzmenarenapp/publicRates.html', context)
 
 def rates_json(request):
-    res = HttpResponse(json.dumps(rates.rates()))
+    data = rates.rates()
+    data['BTC-EUR']['buy'] = str(data['BTC-EUR']['buy'])
+    data['BTC-EUR']['sell'] = str(data['BTC-EUR']['sell'])
+    data['LTC-EUR']['buy'] = str(data['LTC-EUR']['buy'])
+    data['LTC-EUR']['sell'] = str(data['LTC-EUR']['sell'])
+    res = HttpResponse(json.dumps(data))
     res['Content-Type'] = 'application/json'
     return res
 

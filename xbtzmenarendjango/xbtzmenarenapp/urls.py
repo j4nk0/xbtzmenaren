@@ -17,6 +17,12 @@ urlpatterns = [
     path('limit-order-sell/', views.limit_order_sell, name='limit-order-sell'),
     path('limit-order-buy-btc/', views.limit_order_buy_btc, name='limit-order-buy-btc'),
     path('limit-order-buy-btc/json', views.limit_order_buy_btc_json, name='limit-order-buy-btc-json'),
+    path('limit-order-buy-ltc/', views.limit_order_buy_ltc, name='limit-order-buy-ltc'),
+    path('limit-order-buy-ltc/json', views.limit_order_buy_ltc_json, name='limit-order-buy-ltc-json'),
+    path('limit-order-sell-btc/', views.limit_order_sell_btc, name='limit-order-sell-btc'),
+    path('limit-order-sell-btc/json', views.limit_order_sell_btc_json, name='limit-order-sell-btc-json'),
+    path('limit-order-sell-ltc/', views.limit_order_sell_ltc, name='limit-order-sell-ltc'),
+    path('limit-order-sell-ltc/json', views.limit_order_sell_ltc_json, name='limit-order-sell-ltc-json'),
 
     path('rates/', views.private_rates, name='rates'),
     path('rates/json', views.rates_json, name='rates-json'),
