@@ -46,6 +46,32 @@
           <div>Celková cena: <b id="sum_eur_btc">-</b> EUR</div>
           <button type="submit" class="btn btn-default">Objednať</button>
         </form>
+        
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>BTC</b></td>
+                <td><b>Cena</b></td>
+                <td><b>Čas</b></td>
+                <td><b>Zrušiť</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for order in orders_btc %}
+              <tr>
+                <td>{{ order.btc }}</td>
+                <td>{{ order.price }}</td>
+                <td>{{ order.datetime }}</td>
+                <td>
+                  <form action="{% url 'limit-order-buy-btc-delete' order.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-default">Zrušiť</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
 
       {% if active == "ltc" %}
@@ -68,6 +94,32 @@
           <div>Celková cena: <b id="sum_eur_ltc">-</b> EUR</div>
           <button type="submit" class="btn btn-default">Objednať</button>
         </form>
+
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>LTC</b></td>
+                <td><b>Cena</b></td>
+                <td><b>Čas</b></td>
+                <td><b>Zrušiť</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for order in orders_ltc %}
+              <tr>
+                <td>{{ order.ltc }}</td>
+                <td>{{ order.price }}</td>
+                <td>{{ order.datetime }}</td>
+                <td>
+                  <form action="{% url 'limit-order-buy-ltc-delete' order.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-default">Zrušiť</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
 
     </div>

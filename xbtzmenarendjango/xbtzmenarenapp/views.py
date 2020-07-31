@@ -184,6 +184,8 @@ def limit_order_buy(request, success=None, active='btc'):
     context = {
         'active': active,
         'max_sum_eur': request.user.balance.eur,
+        'orders_btc': Order_buy_btc.objects.filter(user=request.user),
+        'orders_ltc': Order_buy_ltc.objects.filter(user=request.user),
     }
     if success == True:
         context.update({'ok_message': 'Požiadavka registrovaná'})
@@ -210,6 +212,11 @@ def limit_order_buy_btc_json(request):
     return res
 
 @login_required
+def limit_order_buy_btc_delete(request, order_id):
+    Order_buy_btc.objects.get(id=order_id).delete()
+    return limit_order_buy(request, True, 'btc')
+
+@login_required
 def limit_order_buy_ltc(request):
     sum_ltc = request.POST['sum_ltc']
     price_ltc = request.POST['price_ltc']
@@ -228,11 +235,18 @@ def limit_order_buy_ltc_json(request):
     return res
 
 @login_required
+def limit_order_buy_ltc_delete(request, order_id):
+    Order_buy_ltc.objects.get(id=order_id).delete()
+    return limit_order_buy(request, True, 'ltc')
+
+@login_required
 def limit_order_sell(request, success=None, active='btc'):
     context = {
         'active': active,
         'max_sum_btc': request.user.balance.btc,
         'max_sum_ltc': request.user.balance.ltc,
+        'orders_btc': Order_sell_btc.objects.filter(user=request.user),
+        'orders_ltc': Order_sell_ltc.objects.filter(user=request.user),
     }
     if success == True:
         context.update({'ok_message': 'Požiadavka registrovaná'})
@@ -259,6 +273,11 @@ def limit_order_sell_btc_json(request):
     return res
 
 @login_required
+def limit_order_sell_btc_delete(request, order_id):
+    Order_sell_btc.objects.get(id=order_id).delete()
+    return limit_order_buy(request, True, 'btc')
+
+@login_required
 def limit_order_sell_ltc(request):
     sum_ltc = request.POST['sum_ltc']
     price_ltc = request.POST['price_ltc']
@@ -275,6 +294,11 @@ def limit_order_sell_ltc_json(request):
     res = HttpResponse(json.dumps(data))
     res['Content-Type'] = 'application/json'
     return res
+
+@login_required
+def limit_order_sell_ltc_delete(request, order_id):
+    Order_sell_ltc.objects.get(id=order_id).delete()
+    return limit_order_buy(request, True, 'ltc')
 
 @login_required
 def private_rates(request):
