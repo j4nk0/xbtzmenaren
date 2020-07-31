@@ -1,6 +1,8 @@
 from decimal import Decimal as Dec
-from .models import Order_buy_btc, Order_sell_btc, Order_buy_ltc, Order_sell_ltc
-from .models import DECIMAL_PLACES_BTC, DECIMAL_PLACES_LTC, DECIMAL_PLACES_EUR
+from .models import *
+from django.db import transaction
+from django.db.models import F
+from django.utils import timezone
 
 def D(flt):
     return Dec(str(flt))
@@ -139,6 +141,29 @@ def preview_limit_order_buy_ltc(sum_ltc, price_ltc):
     sum_eur = r(sum_eur.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
     if sum_eur < 0: sum_eur = 0
     return fee, sum_eur
+
+def limit_order_buy_btc(user, sum_btc, price_btc):
+    sum_eur = sum_btc * price_btc
+    sum_eur_after_fees = sum_eur - fee_limit_order_buy_btc(sum_eur)
+    sum_btc_after_fees = sum_eur_after_fees / price_btc
+    with transaction.atomic():
+        bal = Balance.objects.filter(user=user)
+        bal.update(eur=F('eur') - sum_eur)
+        if bal[0].eur < 0: raise ValueError
+        Order_buy_btc.objects.create(
+            user=user,
+            btc=sum_btc_after_fees,
+            price=price_btc,
+            datetime=timezone.now()
+        )
+
+def delete_limit_order_buy_btc(order_id):
+    order = Order_buy_btc.objects.get(id=order_id)
+    bal = Balance.objects.filter(user=order.user)
+    sum_eur = order.btc * order.price
+    with transaction.atomic():
+        order.delete()
+        bal.update(eur=F('eur') + sum_eur)
 
 #=======================LIMIT ORDER SELLS===========================================================
 

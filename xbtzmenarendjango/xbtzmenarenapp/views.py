@@ -195,9 +195,13 @@ def limit_order_buy(request, success=None, active='btc'):
 
 @login_required
 def limit_order_buy_btc(request):
-    sum_btc = request.POST['sum_btc']
-    price_btc = request.POST['price_btc']
-    return HttpResponse('buy coin: Bitcoin suma: ' + sum_btc + ' price: ' + price_btc)
+    sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
+    price_btc = dec(request.POST['price_btc'], DECIMAL_PLACES_PRICE)
+    try:
+        rates.limit_order_buy_btc(request.user, sum_btc, price_btc)
+    except:
+        return limit_order_buy(request, False, 'btc')
+    return limit_order_buy(request, True, 'btc')
 
 def limit_order_buy_btc_json(request):
     sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
@@ -213,7 +217,11 @@ def limit_order_buy_btc_json(request):
 
 @login_required
 def limit_order_buy_btc_delete(request, order_id):
-    Order_buy_btc.objects.get(id=order_id).delete()
+    rates.delete_limit_order_buy_btc(order_id)
+    #try:
+    #    rates.delete_limit_order_buy_btc(order_id)
+    #except:
+    #    return limit_order_buy(request, False, 'btc')
     return limit_order_buy(request, True, 'btc')
 
 @login_required
