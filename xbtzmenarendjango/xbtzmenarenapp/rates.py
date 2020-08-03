@@ -19,15 +19,30 @@ def r(x):
     return get_rid_of_trailing_zeros(x)
 
 def rates():
-# TODO handle when there is no orders
+    try:
+        btc_buy = r(Order_sell_btc.objects.all().order_by('price')[0].price)
+    except:
+        btc_buy = 'X'
+    try:
+        btc_sell = r(Order_buy_btc.objects.all().order_by('-price')[0].price)
+    except:
+        btc_sell = 'X'
+    try:
+        ltc_buy = r(Order_sell_ltc.objects.all().order_by('price')[0].price)
+    except:
+        ltc_buy = 'X'
+    try:
+        ltc_sell = r(Order_buy_ltc.objects.all().order_by('-price')[0].price)
+    except:
+        ltc_sell = 'X'
     res = {
         'BTC-EUR': {
-             'buy': r(Order_sell_btc.objects.all().order_by('price')[0].price),
-             'sell': r(Order_buy_btc.objects.all().order_by('-price')[0].price),
+             'buy': btc_buy,
+             'sell': btc_sell,
         },
         'LTC-EUR': {
-             'buy': r(Order_sell_ltc.objects.all().order_by('price')[0].price),
-             'sell': r(Order_buy_ltc.objects.all().order_by('-price')[0].price),
+             'buy': ltc_buy,
+             'sell': ltc_sell,
         }
     }
     return res
@@ -157,10 +172,33 @@ def limit_order_buy_btc(user, sum_btc, price_btc):
             datetime=timezone.now()
         )
 
+def limit_order_buy_ltc(user, sum_ltc, price_ltc):
+    sum_eur = sum_ltc * price_ltc
+    sum_eur_after_fees = sum_eur - fee_limit_order_buy_ltc(sum_eur)
+    sum_ltc_after_fees = sum_eur_after_fees / price_ltc
+    with transaction.atomic():
+        bal = Balance.objects.filter(user=user)
+        bal.update(eur=F('eur') - sum_eur)
+        if bal[0].eur < 0: raise ValueError
+        Order_buy_ltc.objects.create(
+            user=user,
+            ltc=sum_ltc_after_fees,
+            price=price_ltc,
+            datetime=timezone.now()
+        )
+
 def delete_limit_order_buy_btc(order_id):
     order = Order_buy_btc.objects.get(id=order_id)
     bal = Balance.objects.filter(user=order.user)
     sum_eur = order.btc * order.price
+    with transaction.atomic():
+        order.delete()
+        bal.update(eur=F('eur') + sum_eur)
+
+def delete_limit_order_buy_ltc(order_id):
+    order = Order_buy_ltc.objects.get(id=order_id)
+    bal = Balance.objects.filter(user=order.user)
+    sum_eur = order.ltc * order.price
     with transaction.atomic():
         order.delete()
         bal.update(eur=F('eur') + sum_eur)

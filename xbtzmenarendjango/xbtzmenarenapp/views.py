@@ -195,9 +195,9 @@ def limit_order_buy(request, success=None, active='btc'):
 
 @login_required
 def limit_order_buy_btc(request):
-    sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
-    price_btc = dec(request.POST['price_btc'], DECIMAL_PLACES_PRICE)
     try:
+        sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
+        price_btc = dec(request.POST['price_btc'], DECIMAL_PLACES_PRICE)
         rates.limit_order_buy_btc(request.user, sum_btc, price_btc)
     except:
         return limit_order_buy(request, False, 'btc')
@@ -217,19 +217,23 @@ def limit_order_buy_btc_json(request):
 
 @login_required
 def limit_order_buy_btc_delete(request, order_id):
-    rates.delete_limit_order_buy_btc(order_id)
-    #try:
-    #    rates.delete_limit_order_buy_btc(order_id)
-    #except:
-    #    return limit_order_buy(request, False, 'btc')
+    try:
+        rates.delete_limit_order_buy_btc(order_id)
+    except:
+        return limit_order_buy(request, False, 'btc')
     return limit_order_buy(request, True, 'btc')
 
 @login_required
 def limit_order_buy_ltc(request):
-    sum_ltc = request.POST['sum_ltc']
-    price_ltc = request.POST['price_ltc']
-    return HttpResponse('buy coin: Litecoin suma: ' + sum_ltc + ' price: ' + price_ltc)
+    try:
+        sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
+        price_ltc = dec(request.POST['price_ltc'], DECIMAL_PLACES_PRICE)
+        rates.limit_order_buy_ltc(request.user, sum_ltc, price_ltc)
+    except:
+        return limit_order_buy(request, False, 'ltc')
+    return limit_order_buy(request, True, 'ltc')
 
+@login_required
 def limit_order_buy_ltc_json(request):
     sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
     price_ltc = dec(request.POST['price_ltc'], DECIMAL_PLACES_PRICE)
@@ -244,8 +248,12 @@ def limit_order_buy_ltc_json(request):
 
 @login_required
 def limit_order_buy_ltc_delete(request, order_id):
-    Order_buy_ltc.objects.get(id=order_id).delete()
+    try:
+        rates.delete_limit_order_buy_ltc(order_id)
+    except:
+        return limit_order_buy(request, False, 'ltc')
     return limit_order_buy(request, True, 'ltc')
+
 
 @login_required
 def limit_order_sell(request, success=None, active='btc'):
