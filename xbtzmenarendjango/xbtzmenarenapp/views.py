@@ -272,9 +272,13 @@ def limit_order_sell(request, success=None, active='btc'):
 
 @login_required
 def limit_order_sell_btc(request):
-    sum_btc = request.POST['sum_btc']
-    price_btc = request.POST['price_btc']
-    return HttpResponse('sell coin: Bitcoin suma: ' + sum_btc + ' price: ' + price_btc)
+    try:
+        sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
+        price_btc = dec(request.POST['price_btc'], DECIMAL_PLACES_PRICE)
+        rates.limit_order_sell_btc(request.user, sum_btc, price_btc)
+    except:
+        return limit_order_sell(request, False, 'btc')
+    return limit_order_sell(request, True, 'btc')
 
 def limit_order_sell_btc_json(request):
     sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
@@ -290,14 +294,21 @@ def limit_order_sell_btc_json(request):
 
 @login_required
 def limit_order_sell_btc_delete(request, order_id):
-    Order_sell_btc.objects.get(id=order_id).delete()
-    return limit_order_buy(request, True, 'btc')
+    try:
+        rates.delete_limit_order_sell_btc(order_id)
+    except:
+        return limit_order_sell(request, False, 'btc')
+    return limit_order_sell(request, True, 'btc')
 
 @login_required
 def limit_order_sell_ltc(request):
-    sum_ltc = request.POST['sum_ltc']
-    price_ltc = request.POST['price_ltc']
-    return HttpResponse('sell coin: Litecoin suma: ' + sum_ltc + ' price: ' + price_ltc)
+    try:
+        sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
+        price_ltc = dec(request.POST['price_ltc'], DECIMAL_PLACES_PRICE)
+        rates.limit_order_sell_ltc(request.user, sum_ltc, price_ltc)
+    except:
+        return limit_order_sell(request, False, 'ltc')
+    return limit_order_sell(request, True, 'ltc')
 
 def limit_order_sell_ltc_json(request):
     sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
@@ -313,8 +324,11 @@ def limit_order_sell_ltc_json(request):
 
 @login_required
 def limit_order_sell_ltc_delete(request, order_id):
-    Order_sell_ltc.objects.get(id=order_id).delete()
-    return limit_order_buy(request, True, 'ltc')
+    try:
+        rates.delete_limit_order_sell_ltc(order_id)
+    except:
+        return limit_order_sell(request, False, 'ltc')
+    return limit_order_sell(request, True, 'ltc')
 
 @login_required
 def private_rates(request):

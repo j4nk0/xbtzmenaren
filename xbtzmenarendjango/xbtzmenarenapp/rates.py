@@ -227,3 +227,46 @@ def preview_limit_order_sell_ltc(sum_ltc, price_ltc):
     if sum_eur < 0: sum_eur = 0
     return fee, sum_eur
 
+def limit_order_sell_btc(user, sum_btc, price_btc):
+    sum_eur = sum_btc * price_btc
+    sum_eur_after_fees = sum_eur - fee_limit_order_sell_btc(sum_eur)
+    sum_btc_after_fees = sum_eur_after_fees / price_btc
+    with transaction.atomic():
+        bal = Balance.objects.filter(user=user)
+        bal.update(btc=F('btc') - sum_btc)
+        if bal[0].btc < 0: raise ValueError
+        Order_sell_btc.objects.create(
+            user=user,
+            btc=sum_btc_after_fees,
+            price=price_btc,
+            datetime=timezone.now()
+        )
+
+def limit_order_sell_ltc(user, sum_ltc, price_ltc):
+    sum_eur = sum_ltc * price_ltc
+    sum_eur_after_fees = sum_eur - fee_limit_order_sell_ltc(sum_eur)
+    sum_ltc_after_fees = sum_eur_after_fees / price_ltc
+    with transaction.atomic():
+        bal = Balance.objects.filter(user=user)
+        bal.update(ltc=F('ltc') - sum_ltc)
+        if bal[0].ltc < 0: raise ValueError
+        Order_sell_ltc.objects.create(
+            user=user,
+            ltc=sum_ltc_after_fees,
+            price=price_ltc,
+            datetime=timezone.now()
+        )
+
+def delete_limit_order_sell_btc(order_id):
+    order = Order_sell_btc.objects.get(id=order_id)
+    bal = Balance.objects.filter(user=order.user)
+    with transaction.atomic():
+        order.delete()
+        bal.update(btc=F('btc') + order.btc)
+
+def delete_limit_order_sell_ltc(order_id):
+    order = Order_sell_ltc.objects.get(id=order_id)
+    bal = Balance.objects.filter(user=order.user)
+    with transaction.atomic():
+        order.delete()
+        bal.update(ltc=F('ltc') + order.ltc)
