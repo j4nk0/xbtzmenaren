@@ -217,6 +217,8 @@ def limit_order_buy_btc_json(request):
 
 @login_required
 def limit_order_buy_btc_delete(request, order_id):
+    if request.user != Order_buy_btc.objects.get(id=order_id).user:
+        return limit_order_buy(request, False, 'btc')
     try:
         rates.delete_limit_order_buy_btc(order_id)
     except:
@@ -248,6 +250,8 @@ def limit_order_buy_ltc_json(request):
 
 @login_required
 def limit_order_buy_ltc_delete(request, order_id):
+    if request.user != Order_buy_ltc.objects.get(id=order_id).user:
+        return limit_order_buy(request, False, 'ltc')
     try:
         rates.delete_limit_order_buy_ltc(order_id)
     except:
@@ -294,6 +298,8 @@ def limit_order_sell_btc_json(request):
 
 @login_required
 def limit_order_sell_btc_delete(request, order_id):
+    if request.user != Order_sell_btc.objects.get(id=order_id).user:
+        return limit_order_buy(request, False, 'btc')
     try:
         rates.delete_limit_order_sell_btc(order_id)
     except:
@@ -324,6 +330,8 @@ def limit_order_sell_ltc_json(request):
 
 @login_required
 def limit_order_sell_ltc_delete(request, order_id):
+    if request.user != Order_sell_ltc.objects.get(id=order_id).user:
+        return limit_order_buy(request, False, 'ltc')
     try:
         rates.delete_limit_order_sell_ltc(order_id)
     except:
