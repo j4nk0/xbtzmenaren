@@ -158,6 +158,10 @@ def preview_limit_order_buy_ltc(sum_ltc, price_ltc):
     return fee, sum_eur
 
 def limit_order_buy_btc(user, sum_btc, price_btc):
+    try:
+        if price_btc >= Order_sell_btc.objects.all().order_by('price')[0].price: raise ValueError
+    except IndexError:
+        pass
     sum_eur = sum_btc * price_btc
     sum_eur_after_fees = sum_eur - fee_limit_order_buy_btc(sum_eur)
     sum_btc_after_fees = sum_eur_after_fees / price_btc
@@ -173,6 +177,10 @@ def limit_order_buy_btc(user, sum_btc, price_btc):
         )
 
 def limit_order_buy_ltc(user, sum_ltc, price_ltc):
+    try:
+        if price_btc >= Order_sell_ltc.objects.all().order_by('price')[0].price: raise ValueError
+    except IndexError:
+        pass
     sum_eur = sum_ltc * price_ltc
     sum_eur_after_fees = sum_eur - fee_limit_order_buy_ltc(sum_eur)
     sum_ltc_after_fees = sum_eur_after_fees / price_ltc
@@ -228,6 +236,10 @@ def preview_limit_order_sell_ltc(sum_ltc, price_ltc):
     return fee, sum_eur
 
 def limit_order_sell_btc(user, sum_btc, price_btc):
+    try:
+        if price btc <= Order_buy_btc.objects.all().order_by('-price')[0].price: raise ValueError
+    except IndexError:
+        pass
     sum_eur = sum_btc * price_btc
     sum_eur_after_fees = sum_eur - fee_limit_order_sell_btc(sum_eur)
     sum_btc_after_fees = sum_eur_after_fees / price_btc
@@ -243,6 +255,10 @@ def limit_order_sell_btc(user, sum_btc, price_btc):
         )
 
 def limit_order_sell_ltc(user, sum_ltc, price_ltc):
+    try:
+        if price btc <= Order_buy_ltc.objects.all().order_by('-price')[0].price: raise ValueError
+    except IndexError:
+        pass
     sum_eur = sum_ltc * price_ltc
     sum_eur_after_fees = sum_eur - fee_limit_order_sell_ltc(sum_eur)
     sum_ltc_after_fees = sum_eur_after_fees / price_ltc
