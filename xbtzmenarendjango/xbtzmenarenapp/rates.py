@@ -87,6 +87,62 @@ def preview_market_buy_ltc(sum_eur):
     if sum_ltc <= 0: return 0
     return r(sum_ltc.quantize(D(0.1) ** DECIMAL_PLACES_LTC))
 
+def market_buy_btc(user, sum_eur):
+    sum_eur_before_fees = D(sum_eur)
+    bal = Balance.objects.filter(user=user)
+    with transaction.atomic():
+        bal.update(eur=F('eur') - D(sum_eur))
+        Order_sell_btc.objects.all().select_for_update()
+        sum_eur = D(sum_eur) - fee_market_buy_btc(sum_eur)
+        sum_btc = 0
+        for order in Order_sell_btc.objects.all().order_by('price'):
+            if order.btc * order.price > sum_eur:
+               sum_btc += sum_eur / order.price
+               order.btc -= sum_eur / order.price 
+               order.save()
+               break
+            else:
+                sum_eur -= order.btc * order.price
+                sum_btc += order.btc
+                order.delete()
+        else:
+            raise ValueError('Market order too big, not enough sell orders to accomodate')
+        bal.update(btc=F('btc') + D(sum_btc))
+        Buy_btc.objects.create(
+            user=user,
+            datetime=timezone.now(),
+            btc=sum_btc,
+            eur=sum_eur_before_fees,
+        )
+
+def market_buy_ltc(user, sum_eur):
+    sum_eur_before_fees = D(sum_eur)
+    bal = Balance.objects.filter(user=user)
+    with transaction.atomic():
+        bal.update(eur=F('eur') - D(sum_eur))
+        Order_sell_ltc.objects.all().select_for_update()
+        sum_eur = D(sum_eur) - fee_market_buy_ltc(sum_eur)
+        sum_ltc = 0
+        for order in Order_sell_ltc.objects.all().order_by('price'):
+            if order.ltc * order.price > sum_eur:
+               sum_ltc += sum_eur / order.price
+               order.ltc -= sum_eur / order.price 
+               order.save()
+               break
+            else:
+                sum_eur -= order.ltc * order.price
+                sum_ltc += order.ltc
+                order.delete()
+        else:
+            raise ValueError('Market order too big, not enough sell orders to accomodate')
+        bal.update(ltc=F('ltc') + D(sum_ltc))
+        Buy_ltc.objects.create(
+            user=user,
+            datetime=timezone.now(),
+            ltc=sum_btc,
+            eur=sum_eur_before_fees,
+        )
+
 #=======================SELLS=======================================================================
 
 def fee_market_sell_btc(sum_eur):
@@ -133,6 +189,64 @@ def preview_market_sell_ltc(sum_ltc):
     if sum_eur < 0: sum_eur = 0
     return (fee, sum_eur)
 
+def market_sell_btc(user, sum_btc):
+    sum_btc = D(sum_btc)
+    original_sum_btc = sum_btc
+    bal = Balance.objects.filter(user=user)
+    with transaction.atomic():
+        bal.update(btc=F('btc') - sum_btc)
+        Order_buy_btc.objects.all().select_for_update()
+        sum_eur = 0
+        for order in Order_buy_btc.objects.all().order_by('-price'):
+            if order.btc > sum_btc:
+                sum_eur += sum_btc * order.price
+                order.btc -= sum_btc
+                order.save()
+                break
+            else:
+                sum_btc -= order.btc
+                sum_eur += order.btc * order.price
+                order.delete()
+        else:
+            raise ValueError('Market order too big, not enough buy orders to accomodate')
+        sum_eur -= fee_market_sell_btc(sum_eur)
+        bal.update(eur=F('eur') + sum_eur)
+        Sell_btc.objects.create(
+            user=user,
+            datetime=timezone.now(),
+            btc=original_sum_btc,
+            eur=sum_eur,
+        )
+
+def market_sell_ltc(user, sum_ltc):
+    sum_ltc = D(sum_ltc)
+    original_sum_ltc = sum_ltc
+    bal = Balance.objects.filter(user=user)
+    with transaction.atomic():
+        bal.update(ltc=F('ltc') - sum_ltc)
+        Order_buy_ltc.objects.all().select_for_update()
+        sum_eur = 0
+        for order in Order_buy_ltc.objects.all().order_by('-price'):
+            if order.ltc > sum_ltc:
+                sum_eur += sum_ltc * order.price
+                order.ltc -= sum_ltc
+                order.save()
+                break
+            else:
+                sum_ltc -= order.ltc
+                sum_eur += order.ltc * order.price
+                order.delete()
+        else:
+            raise ValueError('Market order too big, not enough buy orders to accomodate')
+        sum_eur -= fee_market_sell_ltc(sum_eur)
+        bal.update(eur=F('eur') + sum_eur)
+        Sell_ltc.objects.create(
+            user=user,
+            datetime=timezone.now(),
+            ltc=original_sum_ltc,
+            eur=sum_eur,
+        )
+
 #=======================LIMIT ORDER BUYS============================================================
 
 def fee_limit_order_buy_btc(sum_eur):
@@ -178,7 +292,7 @@ def limit_order_buy_btc(user, sum_btc, price_btc):
 
 def limit_order_buy_ltc(user, sum_ltc, price_ltc):
     try:
-        if price_btc >= Order_sell_ltc.objects.all().order_by('price')[0].price: raise ValueError
+        if price_ltc >= Order_sell_ltc.objects.all().order_by('price')[0].price: raise ValueError
     except IndexError:
         pass
     sum_eur = sum_ltc * price_ltc
@@ -237,7 +351,7 @@ def preview_limit_order_sell_ltc(sum_ltc, price_ltc):
 
 def limit_order_sell_btc(user, sum_btc, price_btc):
     try:
-        if price btc <= Order_buy_btc.objects.all().order_by('-price')[0].price: raise ValueError
+        if price_btc <= Order_buy_btc.objects.all().order_by('-price')[0].price: raise ValueError
     except IndexError:
         pass
     sum_eur = sum_btc * price_btc
@@ -256,7 +370,7 @@ def limit_order_sell_btc(user, sum_btc, price_btc):
 
 def limit_order_sell_ltc(user, sum_ltc, price_ltc):
     try:
-        if price btc <= Order_buy_ltc.objects.all().order_by('-price')[0].price: raise ValueError
+        if price_ltc <= Order_buy_ltc.objects.all().order_by('-price')[0].price: raise ValueError
     except IndexError:
         pass
     sum_eur = sum_ltc * price_ltc

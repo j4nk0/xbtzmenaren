@@ -48,17 +48,8 @@ def buy(request, success=None, active='btc'):
 def buy_btc(request):
     try:
         sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
-    except ValueError:
-        return buy(request, False, 'btc')
-    sum_btc = sum_eur / rates.get_btceur_buy()
-    try:
-        with transaction.atomic():
-            balance = Balance.objects.filter(user=request.user)
-            balance.update(eur=F('eur') - sum_eur)
-            balance.update(btc=F('btc') + sum_btc)
-            Buy_btc.objects.create(user=request.user, datetime=timezone.now(), btc=sum_btc, eur=sum_eur)
-            if balance[0].eur < 0: raise ValueError
-    except ValueError:
+        rates.market_buy_btc(request.user, sum_eur)
+    except:
         return buy(request, False, 'btc')
     return buy(request, True, 'btc')
 
@@ -76,17 +67,8 @@ def buy_btc_json(request):
 def buy_ltc(request):
     try:
         sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
-    except ValueError:
-        return buy(request, False, 'ltc')
-    sum_ltc = sum_eur / rates.get_ltceur_buy()
-    try:
-        with transaction.atomic():
-            balance = Balance.objects.filter(user=request.user)
-            balance.update(eur=F('eur') - sum_eur)
-            balance.update(ltc=F('ltc') + sum_ltc)
-            Buy_ltc.objects.create(user=request.user, datetime=timezone.now(), ltc=sum_ltc, eur=sum_eur)
-            if balance[0].eur < 0: raise ValueError
-    except ValueError:
+        rates.market_buy_ltc(request.user, sum_eur)
+    except:
         return buy(request, False, 'ltc')
     return buy(request, True, 'ltc')
 
@@ -125,17 +107,8 @@ def sell(request, success=None, active='btc'):
 def sell_btc(request):
     try:
         sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
-    except ValueError:
-        return sell(request, False, 'btc')
-    sum_eur = sum_btc * rates.get_btceur_sell()
-    try:
-        with transaction.atomic():
-            balance = Balance.objects.filter(user=request.user)
-            balance.update(eur=F('eur') + sum_eur)
-            balance.update(btc=F('btc') - sum_btc)
-            Sell_btc.objects.create(user=request.user, datetime=timezone.now(), btc=sum_btc, eur=sum_eur)
-            if balance[0].btc < 0: raise ValueError
-    except ValueError:
+        rates.market_sell_btc(request.user, sum_btc)
+    except:
         return sell(request, False, 'btc')
     return sell(request, True, 'btc')
 
@@ -154,18 +127,9 @@ def sell_btc_json(request):
 def sell_ltc(request):
     try:
         sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
-    except ValueError:
+        rates.market_sell_ltc(request.user, sum_ltc)
+    except:
         return sell(request, False, 'ltc')
-    sum_eur = sum_ltc * rates.get_ltceur_sell()
-    try:
-        with transaction.atomic():
-            balance = Balance.objects.filter(user=request.user)
-            balance.update(eur=F('eur') + sum_eur)
-            balance.update(ltc=F('ltc') - sum_ltc)
-            Sell_ltc.objects.create(user=request.user, datetime=timezone.now(), ltc=sum_ltc, eur=sum_eur)
-            if balance[0].ltc < 0: raise ValueError
-    except ValueError:
-        sell(request, False, 'ltc')
     return sell(request, True, 'ltc')
 
 def sell_ltc_json(request):
