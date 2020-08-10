@@ -96,10 +96,11 @@ def market_buy_btc(user, sum_eur):
         sum_eur = D(sum_eur) - fee_market_buy_btc(sum_eur)
         sum_btc = 0
         for order in Order_sell_btc.objects.all().order_by('price'):
-            if order.btc * order.price > sum_eur:
+            if order.btc * order.price >= sum_eur:
                 sum_btc += sum_eur / order.price
                 order.btc -= sum_eur / order.price 
                 order.save()
+                if order.btc == 0: order.delete()
                 bal_maker = Balance.objects.filter(user=order.user)
                 bal_maker.update(eur=F('eur') + sum_eur)
                 break
@@ -128,10 +129,11 @@ def market_buy_ltc(user, sum_eur):
         sum_eur = D(sum_eur) - fee_market_buy_ltc(sum_eur)
         sum_ltc = 0
         for order in Order_sell_ltc.objects.all().order_by('price'):
-            if order.ltc * order.price > sum_eur:
+            if order.ltc * order.price >= sum_eur:
                 sum_ltc += sum_eur / order.price
                 order.ltc -= sum_eur / order.price 
                 order.save()
+                if order.ltc == 0: order.delete()
                 bal_maker = Balance.objects.filter(user=order.user)
                 bal_maker.update(eur=F('eur') + sum_eur)
                 break
@@ -206,10 +208,11 @@ def market_sell_btc(user, sum_btc):
         Order_buy_btc.objects.all().select_for_update()
         sum_eur = 0
         for order in Order_buy_btc.objects.all().order_by('-price'):
-            if order.btc > sum_btc:
+            if order.btc >= sum_btc:
                 sum_eur += sum_btc * order.price
                 order.btc -= sum_btc
                 order.save()
+                if order.btc == 0: order.delete()
                 bal_maker = Balance.objects.filter(user=order.user)
                 bal_maker.update(btc=F('btc') + sum_btc)
                 break
@@ -239,10 +242,11 @@ def market_sell_ltc(user, sum_ltc):
         Order_buy_ltc.objects.all().select_for_update()
         sum_eur = 0
         for order in Order_buy_ltc.objects.all().order_by('-price'):
-            if order.ltc > sum_ltc:
+            if order.ltc >= sum_ltc:
                 sum_eur += sum_ltc * order.price
                 order.ltc -= sum_ltc
                 order.save()
+                if order.ltc == 0: order.delete()
                 bal_maker = Balance.objects.filter(user=order.user)
                 bal_maker.update(btc=F('btc') + sum_ltc)
                 break
