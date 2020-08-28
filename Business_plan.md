@@ -29,3 +29,4 @@ Marža 2%
 = 300 eur mesačne
 Návratnosť:
 2000 / (300 - 155) = 14 mesiacov
+Okrem investície do servera si bude prevádzka vyžadovať rezervy mien a to vo výške 2500 eur na menu - rezerva na 5 dní - čas potrebný na nákup ďalšej meny.
