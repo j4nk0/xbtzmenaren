@@ -1,0 +1,107 @@
+{% extends 'xbtzmenarenapp/withMenu.html' %}
+
+{% block content %}
+  {% if ok_message %} 
+    <div class="alert alert-success"> {{ ok_message }} </div>
+  {% endif %}
+  {% if error_message %} 
+    <div class="alert alert-danger"> {{ error_message }} </div>
+  {% endif %}
+  <div class="container">
+    <ul class="nav nav-pills">
+      {% if active == "eur" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#Euro">Euro</a></li>
+      {% if active == "btc" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#Bitcoin">Bitcoin</a></li>
+      {% if active == "ltc" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#Litecoin">Litecoin</a></li>
+    </ul>
+    
+    <div class="tab-content">
+      {% if active == "eur" %}
+      <div id="Euro" class="tab-pane active">
+      {% else %}
+      <div id="Euro" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'withdrawal-eur' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Vybrať EUR:</label>
+            <input type="text" class="form-control" name="sum_eur" id="sum_eur"/>
+            <script>$('#sum_eur').val('{{ max_sum_eur }}');</script>
+          </div>
+          <div class="form-group">
+            <label for="usr">Zaslať na účet IBAN:</label>
+            <input type="text" class="form-control"
+	      name="account_number" id="account_number"/>
+          </div>
+          <button type="submit" class="btn btn-default">Vybrať</button>
+        </form>
+      </div>
+
+      {% if active == "btc" %}
+      <div id="Bitcoin" class="tab-pane active">
+      {% else %}
+      <div id="Bitcoin" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'withdrawal-btc' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Vybrať BTC:</label>
+            <input type="text" class="form-control" name="sum_btc" id="sum_btc"/>
+            <script>$('#sum_btc').val('{{ max_sum_btc }}');</script>
+          </div>
+          <div class="form-group">
+            <label for="usr">Zaslať na adresu:</label>
+            <input type="text" class="form-control"
+	      name="address_btc" id="address_btc"/>
+          </div>
+	  <div class="checkbox">
+	    <label>
+      	      <input type="checkbox" name="is_instant_btc" value=""/>Instantný výber s poplatkom {{ fee_btc }} BTC (poplatok sa môže zmeniť)
+	    </label>
+          </div>
+          <button type="submit" class="btn btn-default">Vybrať</button>
+        </form>
+      </div>
+
+      {% if active == "ltc" %}
+      <div id="Litecoin" class="tab-pane active">
+      {% else %}
+      <div id="Litecoin" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'withdrawal-ltc' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Vybrať LTC:</label>
+            <input type="text" class="form-control" name="sum_ltc" id="sum_ltc"/>
+            <script>$('#sum_ltc').val('{{ max_sum_ltc }}');</script>
+          </div>
+          <div class="form-group">
+            <label for="usr">Zaslať na adresu:</label>
+            <input type="text" class="form-control"
+	      name="address_ltc" id="address_ltc"/>
+          </div>
+	  <div class="checkbox">
+	    <label>
+      	      <input type="checkbox" name="is_instant_ltc" value=""/>Instantný výber s poplatkom {{ fee_ltc }} LTC (poplatok sa môže zmeniť)
+	    </label>
+          </div>
+          <button type="submit" class="btn btn-default">Vybrať</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

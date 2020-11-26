@@ -1,0 +1,18 @@
+{% extends 'xbtzmenarenapp/withPublicMenu.html' %}
+
+{% block content %}
+  <div class="container">
+    <form action="{% url 'login' %}" method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="usr">E-mail:</label>
+        <input type="text" class="form-control" name="username"/>
+      </div>
+      <div class="form-group">
+        <label for="password">Heslo:</label>
+        <input type="password" class="form-control" name="password"/>
+      </div>
+      <button type="submit" class="btn btn-default">Prihlásiť</button>
+    </form>
+  </div>
+{% endblock %}

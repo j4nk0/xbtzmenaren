@@ -1,0 +1,36 @@
+{% extends 'xbtzmenarenapp/withMenu.html' %}
+
+{% block content %}
+  <div class="container">
+    <table class="table">
+      <thead>
+        <tr>
+          <td><b>Mena</b></td>
+          <td><b>Non-staff</b></td>
+          <td><b>Staff</b></td>
+          <td><b>Spolu</b></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>EUR</b></td>
+          <td>{{ non_staff_eur }}</td>
+          <td>{{ staff_eur }}</td>
+          <td>{{ total_eur }}</td>
+        </tr>
+        <tr>
+          <td><b>BTC</b></td>
+          <td>{{ non_staff_btc }}</td>
+          <td>{{ staff_btc }}</td>
+          <td>{{ total_btc }}</td>
+        </tr>
+        <tr>
+          <td><b>LTC</b></td>
+          <td>{{ non_staff_ltc }}</td>
+          <td>{{ staff_ltc }}</td>
+          <td>{{ total_ltc }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

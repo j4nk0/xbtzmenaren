@@ -1,0 +1,49 @@
+{% extends 'xbtzmenarenapp/withMenu.html' %}
+
+{% block content %}
+  <div class="container">
+    <table class="table">
+      <tbody>
+        <tr>
+          <td><b>BTC-EUR</b></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Nakúpite za</td>
+          <td><b id="btceur-buy">{{ btceur_buy }}</b></td>
+        </tr>
+        <tr>
+          <td>Predáte za</td>
+          <td><b id="btceur-sell">{{ btceur_sell }}</b></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><b>LTC-EUR</b></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Nakúpite za</td>
+          <td><b id="ltceur-buy">{{ ltceur_buy }}</b></td>
+        </tr>
+        <tr>
+          <td>Predáte za</td>
+          <td><b id="ltceur-sell">{{ ltceur_sell }}</b></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <script>
+    function reload(){
+      $.get("{% url 'rates-json' %}", function(response){
+        $('#btceur-buy').text(response["BTC-EUR"].buy);
+        $('#btceur-sell').text(response["BTC-EUR"].sell);
+        $('#ltceur-buy').text(response["LTC-EUR"].buy);
+        $('#ltceur-sell').text(response["LTC-EUR"].sell);
+      });
+    };
+    setInterval(reload, 3000);
+  </script>
+{% endblock %}

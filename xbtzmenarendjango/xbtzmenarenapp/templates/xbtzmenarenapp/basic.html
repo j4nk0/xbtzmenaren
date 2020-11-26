@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Bootstrap: -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"/>
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> 
+
+    <meta charset="utf-8"/>
+
+    <!-- Responsiveness -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
+
+    <title>Xbt Zmenaren</title>
+  </head>
+  <body>
+    <div id="cookieConsent">
+      <div id="closeCookieConsent">x</div>Táto stránka používa súbory cookies na identifikáciu užívateľa
+      <a href="{% url 'terms' %}" target="_blank">Viac informácií</a>. 
+      <a class="cookieConsentOK">Súhlasím</a>
+    </div>
+    <style>
+      /*Cookie Consent Begin*/
+      #cookieConsent {
+          background-color: rgba(20,20,20,0.8);
+          min-height: 26px;
+          font-size: 14px;
+          color: #ccc;
+          line-height: 26px;
+          padding: 8px 0 8px 30px;
+          font-family: "Trebuchet MS",Helvetica,sans-serif;
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          display: none;
+          z-index: 9999;
+      }
+      #cookieConsent a {
+          color: #4B8EE7;
+          text-decoration: none;
+      }
+      #closeCookieConsent {
+          float: right;
+          display: inline-block;
+          cursor: pointer;
+          height: 20px;
+          width: 20px;
+          margin: -15px 0 0 0;
+          font-weight: bold;
+      }
+      #closeCookieConsent:hover {
+          color: #FFF;
+      }
+      #cookieConsent a.cookieConsentOK {
+          /*background-color: #F1D600;*/
+          background-color: #337ab7;
+          color: #fff;
+          display: inline-block;
+          border-radius: 5px;
+          padding: 0 20px;
+          cursor: pointer;
+          float: right;
+          margin: 0 60px 0 10px;
+      }
+      #cookieConsent a.cookieConsentOK:hover {
+          background-color: #00008B;
+      }
+      /*Cookie Consent End*/
+    </style>
+    <script>
+      $(document).ready(function(){   
+          var show = true
+          document.cookie.split(";").forEach(function(elem){
+            var key = elem.split("=")[0];
+            var value = elem.split("=")[1];
+            if(key == " privacyRead" && value == "true"){
+              show = false;
+            } 
+          });
+          if(show){
+            $("#cookieConsent").show();
+          }
+          $("#closeCookieConsent, .cookieConsentOK").click(function() {
+              $("#cookieConsent").fadeOut(200);
+              var now = new Date();
+              var time = now.getTime();
+              var expireTime = time + 24 * 3600;
+              now.setTime(expireTime);
+              var expires = now.toUTCString();
+              document.cookie = "privacyRead=true; SameSite=strict; path=/; expires=" + expires;
+          }); 
+        }); 
+    </script>
+    {% block body %}{% endblock %}
+  </body>
+</html>

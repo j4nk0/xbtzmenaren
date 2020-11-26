@@ -1,0 +1,31 @@
+{% extends 'xbtzmenarenapp/withMenu.html' %}
+
+{% block content %}
+  <div class="container">
+    <ul class="nav nav-pills">
+      <li class="active"><a data-toggle="pill" href="#Euro">Euro</a></li>
+      <li><a data-toggle="pill" href="#Bitcoin">Bitcoin</a></li>
+      <li><a data-toggle="pill" href="#Litecoin">Litecoin</a></li>
+    </ul>
+    <div class="tab-content">
+
+      <div id="Euro" class="tab-pane active">
+        <p>Zašlite na číslo účtu:</p>
+	<p><b>SK12 1234 1234 1234 1234 1234</b></p>
+	<p>S variabilným symbolom:</p>
+	<p><b>{{ vs }}</b></p>
+      </div>
+
+      <div id="Bitcoin" class="tab-pane">
+        <p>Zašlite na adresu:</p>
+	<p><b>{{ btc_address }}</b></p>
+      </div>
+
+      <div id="Litecoin" class="tab-pane">
+        <p>Zašlite na adresu:</p>
+	<p><b>{{ ltc_address }}</b></p>
+      </div>
+
+    </div>
+  </div>
+{% endblock %}
