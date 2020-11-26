@@ -14,3 +14,9 @@ from django.core.wsgi import get_wsgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'xbtzmenarendjango.settings')
 
 application = get_wsgi_application()
+
+# j4nk0:
+import logging
+
+logger = logging.getLogger(__name__)
+logger.error('running code in wsgi')
