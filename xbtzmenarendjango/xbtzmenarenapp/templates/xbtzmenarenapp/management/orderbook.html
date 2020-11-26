@@ -1,0 +1,112 @@
+{% extends 'xbtzmenarenapp/withMenu.html' %}
+
+{% block content %}
+  <div class="container">
+    <ul class="nav nav-pills">
+      <li class="active"><a data-toggle="pill" href="#Bitcoin">Bitcoin</a></li>
+      <li><a data-toggle="pill" href="#Litecoin">Litecoin</a></li>
+    </ul>
+    <div class="tab-content">
+
+      <div id="Bitcoin" class="tab-pane active">
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Nákupy<b></td>
+              </tr>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>BTC</b></td>
+                <td><b>Cena</b></td>
+                <td><b>Čas</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for order in buy_btc %}
+              <tr>
+                <td>{{ order.user }}</td>
+                <td>{{ order.btc }}</td>
+                <td>{{ order.price }}</td>
+                <td>{{ order.datetime }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Predaje<b></td>
+              </tr>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>BTC</b></td>
+                <td><b>Cena</b></td>
+                <td><b>Čas</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for order in sell_btc %}
+              <tr>
+                <td>{{ order.user }}</td>
+                <td>{{ order.btc }}</td>
+                <td>{{ order.price }}</td>
+                <td>{{ order.datetime }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div id="Litecoin" class="tab-pane">
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Nákupy<b></td>
+              </tr>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>LTC</b></td>
+                <td><b>Cena</b></td>
+                <td><b>Čas</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for order in buy_ltc %}
+              <tr>
+                <td>{{ order.user }}</td>
+                <td>{{ order.ltc }}</td>
+                <td>{{ order.price }}</td>
+                <td>{{ order.datetime }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Predaje<b></td>
+              </tr>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>LTC</b></td>
+                <td><b>Cena</b></td>
+                <td><b>Čas</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for order in sell_ltc %}
+              <tr>
+                <td>{{ order.user }}</td>
+                <td>{{ order.ltc }}</td>
+                <td>{{ order.price }}</td>
+                <td>{{ order.datetime }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+      </div>
+
+    </div>
+  </div>
+{% endblock %}

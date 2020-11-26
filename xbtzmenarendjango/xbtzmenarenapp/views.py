@@ -668,3 +668,14 @@ def management_sells(request):
         'sells_ltc': Sell_ltc.objects.all().order_by('-datetime')[:100],
     }
     return render(request, 'xbtzmenarenapp/management/sells.html', context)
+
+@user_passes_test(staff_check)
+@login_required
+def management_orderbook(request):
+    context = {
+        'buy_btc': list(Order_buy_btc.objects.all().order_by('-price')[:100]).reverse(),
+        'sell_btc': Order_sell_btc.objects.all().order_by('price')[:100],
+        'buy_ltc': list(Order_buy_ltc.objects.all().order_by('-price')[:100]).reverse(),
+        'sell_ltc': Order_sell_ltc.objects.all().order_by('price')[:100],
+    }
+    return render(request, 'xbtzmenarenapp/management/orderbook.html', context)

@@ -70,4 +70,6 @@ urlpatterns = [
     path('management/buys/', views.management_buys, name='management-buys'),
 
     path('management/sells/', views.management_sells, name='management-sells'),
+
+    path('management/orderbook/', views.management_orderbook, name='management-orderbook'),
 ]
