@@ -673,9 +673,9 @@ def management_sells(request):
 @login_required
 def management_orderbook(request):
     context = {
-        'buy_btc': list(Order_buy_btc.objects.all().order_by('-price')[:100]).reverse(),
+        'buy_btc': Order_buy_btc.objects.all().order_by('-price')[:100:-1],
         'sell_btc': Order_sell_btc.objects.all().order_by('price')[:100],
-        'buy_ltc': list(Order_buy_ltc.objects.all().order_by('-price')[:100]).reverse(),
+        'buy_ltc': Order_buy_ltc.objects.all().order_by('-price')[:100:-1],
         'sell_ltc': Order_sell_ltc.objects.all().order_by('price')[:100],
     }
     return render(request, 'xbtzmenarenapp/management/orderbook.html', context)
