@@ -8,4 +8,5 @@ pip install django-axes #login throttling
 pip install schwifty    #IBAN validation
 pip install ./coinaddr-master   #BTC, LTC address validation
 pip install pycoingecko #coingecko api wrapper
+pip install python-bitcoinlib #bitcoin.rpc caller
 ```
