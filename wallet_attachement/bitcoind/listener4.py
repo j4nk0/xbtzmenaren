@@ -1,8 +1,6 @@
 import socket
 from bitcoin.rpc import RawProxy, JSONRPCError
 
-p = RawProxy()
-
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversocket.bind(('localhost', 8331))
 serversocket.listen(5)
@@ -22,13 +20,15 @@ while True:
             break
         else:
             alldata.append(data)
-    print('res: ' + res)
     if 'NEWTX' in res:
         txid = res[res.find(':') +1:]
         try:
             raw_tx = RawProxy().getrawtransaction(txid)
-            #tx = p.decoderawtransaction(raw_tx)
             database.append([txid, None, 0])
+            tx = RawProxy().decoderawtransaction(raw_tx)
+            for output in tx['vout']:
+                for address in output['scriptPubKey']['addresses']:
+                    print(' + ', address, ' -> ', output['value'], ' ', '0/6')
         except JSONRPCError:
             pass
     elif 'NEWBLOCK' in res:
@@ -39,7 +39,7 @@ while True:
                 row[1] = blockhash
                 blockdata = RawProxy().getblock(blockhash)
                 row[2] = blockdata['confirmations']
-                tx_detail = RawProxy.gettransaction(row[0])
+                tx_detail = RawProxy().gettransaction(row[0])
                 for output in tx_detail['details']:
                     address = output['address']
                     amount = output['amount']
