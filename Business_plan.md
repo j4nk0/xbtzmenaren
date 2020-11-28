@@ -3,10 +3,12 @@
 ## Zhrnutie
 Zámerom je založenie slovenskej burzy virtuálnych mien so službou elektronickej peňaženky.
 ## Charakteristika podniku
-Podnik by mal formu s.r.o., nebol by platcom DPH, činnosťou by bolo poskytovanie služieb zmenárne a peňaženky virtuálnych mien.
+Podnik by mal formu s.r.o., bol by platcom DPH, činnosťou by bolo poskytovanie služieb zmenárne virtuálnej meny a poskytovanie služieb peňaženky virtuálnej meny (82a a 82b v prílohe 2 zákona 455/1991)
 ## Charakteristika produktu
 Produktom pre zákazníkov by bolo čo najjednoduchšie rozhranie na obchodovanie na burze virtuálnych mien umožňujúce okamžitý nákup a predaj virtuálnych mien ako aj zadávanie objednávok na nákup a predaj za určitú cenu.
 Ďalšou funkcionalitou je vkladanie a výber virtuálnych mien a aj eur a to prostredníctvom bankového prevodu.
+Okrem toho bude zákazníkom k dispozícii automatizovaný systém tvorby portfólia
+Podnik bude musieť spĺňať AML legislatívu - outsourcing?
 ## Odvetvie a ekologizácia
 ? Experimentálna kapitalistická technológia
 ## Marketing
@@ -22,11 +24,12 @@ Podnikanie si bude vyžadovať počiatočnú investíciu do servera - 2000 eur
 Nájom priestorov - 100 eur
 Internetové pripojenie - 50 eur
 Vedenie bankového účtu - 5 eur
+AML compliance - 25 eur
 Predpokladané mesačné príjmy:
 10 zákazníkov denne
 každý vloží priemerne 50 eur
 Marža 2%
 = 300 eur mesačne
 Návratnosť:
-2000 / (300 - 155) = 14 mesiacov
+2000 / (300 - 180) = 17 mesiacov
 Okrem investície do servera si bude prevádzka vyžadovať rezervy mien a to vo výške 2500 eur na menu - rezerva na 5 dní - čas potrebný na nákup ďalšej meny.
