@@ -3,7 +3,7 @@
 ## Zhrnutie
 Zámerom je založenie slovenskej burzy virtuálnych mien so službou elektronickej peňaženky.
 ## Charakteristika podniku
-Podnik by mal formu s.r.o., bol by platcom DPH, činnosťou by bolo poskytovanie služieb zmenárne a peňaženky virtuálnych mien.
+Podnik by mal formu s.r.o., bol by platcom DPH, činnosťou by bolo poskytovanie služieb zmenárne virtuálnej meny a poskytovanie služieb peňaženky virtuálnej meny (82a a 82b v prílohe 2 zákona 455/1991)
 ## Charakteristika produktu
 Produktom pre zákazníkov by bolo čo najjednoduchšie rozhranie na obchodovanie na burze virtuálnych mien umožňujúce okamžitý nákup a predaj virtuálnych mien ako aj zadávanie objednávok na nákup a predaj za určitú cenu.
 Ďalšou funkcionalitou je vkladanie a výber virtuálnych mien a aj eur a to prostredníctvom bankového prevodu.
