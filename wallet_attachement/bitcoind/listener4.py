@@ -1,9 +1,17 @@
 import socket
 from bitcoin.rpc import RawProxy, JSONRPCError
+import json
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversocket.bind(('localhost', 8331))
 serversocket.listen(5)
+
+def get_blockhash(blockhash):
+    while True:
+        yield blockhash
+        blockhash = RawProxy().getblock(blockhash)['previousblockhash']
+
+TRESHOLD_CONFIRMATIONS = 6
 
 database = []
 
@@ -24,32 +32,27 @@ while True:
         txid = res[res.find(':') +1:]
         try:
             raw_tx = RawProxy().getrawtransaction(txid)
-            database.append([txid, None, 0])
+            database.append(txid)
             tx = RawProxy().decoderawtransaction(raw_tx)
             for output in tx['vout']:
                 for address in output['scriptPubKey']['addresses']:
-                    print(' + ', address, ' -> ', output['value'], ' ', '0/6')
+                    print(' + ', address, ' -> ', output['value'], ' 0 / 6')
         except JSONRPCError:
             pass
     elif 'NEWBLOCK' in res:
-        blockhash = res[res.find(':') +1:]
+        new_blockhash = res[res.find(':') +1:]
         for row in database:
-            try:
-                RawProxy().getrawtransaction(row[0], False, blockhash)
-                row[1] = blockhash
-                blockdata = RawProxy().getblock(blockhash)
-                row[2] = blockdata['confirmations']
-                tx_detail = RawProxy().gettransaction(row[0])
-                for output in tx_detail['details']:
-                    address = output['address']
-                    amount = output['amount']
-                    print(' + ', address, ' -> ', amount, ' ', row[2], '/6')
-            except JSONRPCError:
-                row[2] = RawProxy().getblock(row[1])['confirmations']
-                for output in RawProxy().gettransaction(row[0])['details']:
-                    address = output['address']
-                    amount = output['amount']
-                    print(' + ', address, ' -> ', amount, ' ', row[2], '/6')
-            if row[2] == 6: database.remove(row)
-
+            for (blockhash, _) in zip(get_blockhash(new_blockhash), range(TRESHOLD_CONFIRMATIONS)):
+                try:
+                    RawProxy().getrawtransaction(row, False, blockhash)
+                    confirmations = RawProxy().getblock(blockhash)['confirmations']
+                    print('RawProxy().gettransaction(row): ', RawProxy().gettransaction(row))
+                    for output in RawProxy().gettransaction(row)['details']:
+                        address = output['address']
+                        amount = output['amount']
+                        print(' + ', address, ' -> ', amount, confirmations, '/ 6')
+                    if confirmations == TRESHOLD_CONFIRMATIONS: database.remove(row)
+                    break
+                except JSONRPCError:
+                    pass
 
