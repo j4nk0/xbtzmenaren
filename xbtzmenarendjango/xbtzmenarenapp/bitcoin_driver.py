@@ -1,7 +1,7 @@
 import socket
 from bitcoin.rpc import RawProxy, JSONRPCError
 import json
-from .models import Incoming_btc, Address
+from .models import Incoming_btc, Address, Balance
 
 TRESHOLD_CONFIRMATIONS = 6
 
@@ -21,7 +21,6 @@ def listen():
         res = ''
         while True:
             data = clientsocket.recv(1024).decode(encoding='UTF-8')
-            print('IN BITCOIN_DRIVER 2')
             if '*' in data:
                 alldata.append(data[:data.find('*')])
                 res = ''.join(alldata)
@@ -30,14 +29,13 @@ def listen():
             else:
                 alldata.append(data)
         if 'NEWTX' in res:
+            print('IN BITCOIN_DRIVER NEWTX')
             txid = res[res.find(':') +1:]
             try:
                 raw_tx = RawProxy().getrawtransaction(txid)
                 tx = RawProxy().decoderawtransaction(raw_tx)
                 for output in tx['vout']:
                     for address in output['scriptPubKey']['addresses']:
-                        print('IN BITCOIN_DRIVER 3', address)
-                        print('IN BITCOIN_DRIVER 4', Address.objects.all().values('btc'))
                         if address in Address.objects.all().values_list('btc', flat=True):
                             Incoming_btc.objects.create(
                                 user=Address.objects.get(btc=address).user,
@@ -49,17 +47,21 @@ def listen():
             except JSONRPCError:
                 pass
         elif 'NEWBLOCK' in res:
+            print('IN BITCOIN_DRIVER NEWBLOCK')
             new_blockhash = res[res.find(':') +1:]
-            for row in database:
+            for txid in Incoming_btc.objects.all().values_list('txid', flat=True):
                 for (blockhash, _) in zip(get_blockhash(new_blockhash), range(TRESHOLD_CONFIRMATIONS)):
                     try:
-                        RawProxy().getrawtransaction(row, False, blockhash)
+                        RawProxy().getrawtransaction(txid, False, blockhash)
                         confirmations = RawProxy().getblock(blockhash)['confirmations']
-                        for output in RawProxy().gettransaction(row)['details']:
-                            address = output['address']
-                            amount = output['amount']
-                            print(' + ', address, ' -> ', amount, confirmations, '/ 6')
-                        if confirmations == TRESHOLD_CONFIRMATIONS: database.remove(row)
+                        Incoming_btc.objects.filter(txid=txid).update(confirmations=confirmations)
+                        if confirmations == TRESHOLD_CONFIRMATIONS:
+                            users = Incoming_btc.objects.filter(txid=txid).values_list('user', flat=True)
+                            for user in users:
+                                amounts = Incoming_btc.objects.filter(txid=txid).filter(user=user).values_list('btc', flat=True)
+                                for amount in amounts:
+                                    Balance.get(user=user).update(btc=F('btc') + amount)
+                            Incomig_btc.objects.filter(txid=txid).delete()
                         break
                     except JSONRPCError:
                         pass
