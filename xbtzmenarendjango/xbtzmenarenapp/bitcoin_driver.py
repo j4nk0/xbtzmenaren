@@ -1,7 +1,9 @@
 import socket
 from bitcoin.rpc import RawProxy, JSONRPCError
 import json
-from .models import Incoming_btc, Address, Balance
+from .models import Incoming_btc, Deposit_btc, Address, Balance
+from django.db.models import F
+from django.utils import timezone
 
 TRESHOLD_CONFIRMATIONS = 6
 CHECK_CONFIRMATIONS = 10
@@ -12,7 +14,6 @@ def get_blockhash(blockhash):
         blockhash = RawProxy().getblock(blockhash)['previousblockhash']
 
 def listen():
-    print('IN BITCOIN_DRIVER')
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serversocket.bind(('localhost', 8331))
     serversocket.listen(5)
@@ -30,7 +31,6 @@ def listen():
             else:
                 alldata.append(data)
         if 'NEWTX' in res:
-            print('IN BITCOIN_DRIVER NEWTX')
             txid = res[res.find(':') +1:]
             try:
                 raw_tx = RawProxy().getrawtransaction(txid)
@@ -45,10 +45,12 @@ def listen():
                                 confirmations=0,
                                 txid=txid
                             )
+                            displayed_address = Address.objects.get(btc=address)
+                            displayed_address.btc = RawProxy().getnewaddress('', 'bech32')
+                            displayed_address.save()
             except JSONRPCError:
                 pass
         elif 'NEWBLOCK' in res:
-            print('IN BITCOIN_DRIVER NEWBLOCK')
             new_blockhash = res[res.find(':') +1:]
             for txid in Incoming_btc.objects.all().values_list('txid', flat=True):
                 for (blockhash, _) in zip(get_blockhash(new_blockhash), range(CHECK_CONFIRMATIONS)):
@@ -57,12 +59,15 @@ def listen():
                         confirmations = RawProxy().getblock(blockhash)['confirmations']
                         Incoming_btc.objects.filter(txid=txid).update(confirmations=confirmations)
                         if confirmations >= TRESHOLD_CONFIRMATIONS:
-                            users = Incoming_btc.objects.filter(txid=txid).values_list('user', flat=True)
-                            for user in users:
-                                amounts = Incoming_btc.objects.filter(txid=txid).filter(user=user).values_list('btc', flat=True)
-                                for amount in amounts:
-                                    Balance.objects.filter(user=user).update(btc=F('btc') + amount)
-                            Incomig_btc.objects.filter(txid=txid).delete()
+                            for record in Incoming_btc.objects.filter(txid=txid).values('user', 'address', 'btc'):
+                                    Deposit_btc.objects.create(
+                                        address=record['address'],
+                                        btc=record['btc'],
+                                        datetime=timezone.now(),
+                                        user_id=record['user']
+                                    )
+                                    Balance.objects.filter(user=record['user']).update(btc=F('btc') + record['btc'])
+                            Incoming_btc.objects.filter(txid=txid).delete()
                         break
                     except JSONRPCError:
                         pass
