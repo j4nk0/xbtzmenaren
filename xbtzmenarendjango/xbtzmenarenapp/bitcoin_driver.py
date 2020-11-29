@@ -61,7 +61,7 @@ def listen():
                             for user in users:
                                 amounts = Incoming_btc.objects.filter(txid=txid).filter(user=user).values_list('btc', flat=True)
                                 for amount in amounts:
-                                    Balance.get(user=user).update(btc=F('btc') + amount)
+                                    Balance.objects.filter(user=user).update(btc=F('btc') + amount)
                             Incomig_btc.objects.filter(txid=txid).delete()
                         break
                     except JSONRPCError:
