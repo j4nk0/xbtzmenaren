@@ -36,7 +36,7 @@ while True:
             tx = RawProxy().decoderawtransaction(raw_tx)
             for output in tx['vout']:
                 for address in output['scriptPubKey']['addresses']:
-                    print(' + ', address, ' -> ', output['value'], ' 0 / 6')
+                    print(' + ', address, ' -> ', output['value'], '0 / 6')
         except JSONRPCError:
             pass
     elif 'NEWBLOCK' in res:
@@ -46,7 +46,6 @@ while True:
                 try:
                     RawProxy().getrawtransaction(row, False, blockhash)
                     confirmations = RawProxy().getblock(blockhash)['confirmations']
-                    print('RawProxy().gettransaction(row): ', RawProxy().gettransaction(row))
                     for output in RawProxy().gettransaction(row)['details']:
                         address = output['address']
                         amount = output['amount']
