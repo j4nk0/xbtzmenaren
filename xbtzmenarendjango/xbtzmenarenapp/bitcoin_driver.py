@@ -21,6 +21,7 @@ def listen():
         res = ''
         while True:
             data = clientsocket.recv(1024).decode(encoding='UTF-8')
+            print('IN BITCOIN_DRIVER 2')
             if '*' in data:
                 alldata.append(data[:data.find('*')])
                 res = ''.join(alldata)
@@ -35,7 +36,9 @@ def listen():
                 tx = RawProxy().decoderawtransaction(raw_tx)
                 for output in tx['vout']:
                     for address in output['scriptPubKey']['addresses']:
-                        if address in Address.objects.all().values('btc'):
+                        print('IN BITCOIN_DRIVER 3', address)
+                        print('IN BITCOIN_DRIVER 4', Address.objects.all().values('btc'))
+                        if address in Address.objects.all().values_list('btc', flat=True):
                             Incoming_btc.objects.create(
                                 user=Address.objects.get(btc=address).user,
                                 address=address,
