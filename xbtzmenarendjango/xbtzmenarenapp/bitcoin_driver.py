@@ -4,6 +4,7 @@ import json
 from .models import Incoming_btc, Address, Balance
 
 TRESHOLD_CONFIRMATIONS = 6
+CHECK_CONFIRMATIONS = 10
 
 def get_blockhash(blockhash):
     while True:
@@ -50,12 +51,12 @@ def listen():
             print('IN BITCOIN_DRIVER NEWBLOCK')
             new_blockhash = res[res.find(':') +1:]
             for txid in Incoming_btc.objects.all().values_list('txid', flat=True):
-                for (blockhash, _) in zip(get_blockhash(new_blockhash), range(TRESHOLD_CONFIRMATIONS)):
+                for (blockhash, _) in zip(get_blockhash(new_blockhash), range(CHECK_CONFIRMATIONS)):
                     try:
                         RawProxy().getrawtransaction(txid, False, blockhash)
                         confirmations = RawProxy().getblock(blockhash)['confirmations']
                         Incoming_btc.objects.filter(txid=txid).update(confirmations=confirmations)
-                        if confirmations == TRESHOLD_CONFIRMATIONS:
+                        if confirmations >= TRESHOLD_CONFIRMATIONS:
                             users = Incoming_btc.objects.filter(txid=txid).values_list('user', flat=True)
                             for user in users:
                                 amounts = Incoming_btc.objects.filter(txid=txid).filter(user=user).values_list('btc', flat=True)
