@@ -14,6 +14,7 @@ from decimal import InvalidOperation
 from schwifty import IBAN
 from .check_address import is_valid_btc_address, is_valid_ltc_address
 import json
+from . import bitcoin_driver
 
 def dec(n, decimal_places):
     try:
@@ -406,6 +407,7 @@ def deposit(request):
         'vs': request.user.address.vs, 
         'btc_address': request.user.address.btc, 
         'ltc_address': request.user.address.ltc,
+        'incoming_btc': Incoming_btc.objects.filter(user=request.user)
     }
     return render(request, 'xbtzmenarenapp/deposit.html', context)
 
@@ -415,10 +417,8 @@ def withdrawal(request, error_message=None, ok_message=None, active='eur'):
         'error_message': error_message,
         'ok_message': ok_message,
         'max_sum_eur': request.user.balance.eur,
-        'max_sum_btc': request.user.balance.btc,
+        'max_sum_btc': request.user.balance.btc - bitcoin_driver.get_fee_per_kB(),
         'max_sum_ltc': request.user.balance.ltc,
-        'fee_btc': 0.0001,
-        'fee_ltc': 0.0005,
         'active': active,
     }
     return render(request, 'xbtzmenarenapp/withdrawal.html', context)
@@ -459,12 +459,21 @@ def withdrawal_btc(request):
     address_btc = request.POST['address_btc']
     if not is_valid_btc_address(address_btc):
         return withdrawal(request, error_message='Nesprávna adresa', active='btc')
-    is_instant = True if 'is_instant_btc' in request.POST else False
     try:
         with transaction.atomic():
+            fee = bitcoin_driver.get_fee_per_kB()
             balance = Balance.objects.filter(user=request.user)
-            balance.update(btc=F('btc') - sum_btc)
-            if is_instant:
+            balance.update(btc=F('btc') - (sum_bt + fee))
+            if balance[0].btc < 0: raise ValueError
+            if bitcoin_driver.get_balance() < (sum_btc + fee):
+                Withdrawal_btc.objects.create(
+                    user=request.user,
+                    time_created=timezone.now(),
+                    btc=sum_btc,
+                    address=address_btc,
+                    is_pending=True,
+                )
+            else:
                 Withdrawal_btc.objects.create(
                     user=request.user,
                     time_created=timezone.now(),
@@ -473,16 +482,7 @@ def withdrawal_btc(request):
                     address=address_btc,
                     is_pending=False,
                 )
-                # do smtg
-            else:
-                Withdrawal_btc.objects.create(
-                    user=request.user,
-                    time_created=timezone.now(),
-                    btc=sum_btc,
-                    address=address_btc,
-                    is_pending=True,
-                )
-            if balance[0].btc < 0: raise ValueError
+                bitcoin_driver.send(address_btc, sum_btc, fee)
     except ValueError:
         return withdrawal(request, error_message='Nesprávna hodnota', active='btc')
     return withdrawal(request, ok_message='Požiadavka zaregistrovaná', active='btc')

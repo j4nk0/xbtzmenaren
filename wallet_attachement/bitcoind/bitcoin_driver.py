@@ -8,19 +8,6 @@ from django.utils import timezone
 TRESHOLD_CONFIRMATIONS = 6
 CHECK_CONFIRMATIONS = 10
 
-def get_balance():
-    return RawProxy().getbalance()
-
-def get_fee_per_kB():
-    return RawProxy().estimatesmartfee(5)['feerate']
-
-def send(address, amount, fee_per_kB):
-    RawProxy().settxfee(fee_per_kB)
-    RawProxy().sendtoaddtess(address, amount)
-
-def get_new_address():
-    return RawProxy().getnewaddress('', 'bech32')
-
 def get_blockhash(blockhash):
     while True:
         yield blockhash
