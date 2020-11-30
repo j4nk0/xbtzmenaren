@@ -362,7 +362,7 @@ def registration_attempt(request):
     Address.objects.create(
         user=CustomUser.objects.get(email=email),
         vs=f'{CustomUser.objects.get(email=email).id:010}',
-        btc='BTC_address:' + email[:88],
+        btc=bitcoin_driver.get_new_address(),
         ltc='LTC_address:' + email[:88],
     )
     Balance.objects.create(
