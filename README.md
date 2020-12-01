@@ -73,3 +73,5 @@ systemctl start apache2.service
 systemctl stop apache2.service
 systemctl restart apache2.service
 ```
+
+disable default apache page: `sudo a2dissite 000-default.conf`
