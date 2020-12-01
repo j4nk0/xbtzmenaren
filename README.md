@@ -55,7 +55,7 @@ Restart apache: `systemctl restart apache2`
 
 Check apache status: `systemctl status apache2.service | less`
 
-### Reinstall dependencies:
+#### Reinstall dependencies:
 ```
 sudo python -m pip install django      #web framework 
 sudo python -m pip install psycopg2    #postgresql driver
@@ -65,4 +65,11 @@ sudo python -m pip install schwifty==2020.1.1    #IBAN validation
 sudo python -m pip install ~/xbtzmenaren/coinaddr-master   #BTC, LTC address validation
 sudo python -m pip install pycoingecko #coingecko api wrapper
 sudo python -m pip install python-bitcoinlib #bitcoin.rpc caller
+```
+
+### Start / stop / restart apache2:
+```
+systemctl start apache2.service
+systemctl stop apache2.service
+systemctl restart apache2.service
 ```
