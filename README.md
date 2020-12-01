@@ -21,6 +21,7 @@ sudo apt install libapache2-mod-wsgi-py3
 ```
 ### Setup:
 Copy `xbtzmenaren/xbtzmenarendjango/` to `/var/www/xbtzmenarendjango/`
+
 Create `/var/www/logs`
 
 To file:`/etc/apache2/sites-available$ sudo vim new_config.conf`
@@ -40,7 +41,8 @@ Insert:
     </Directory>
 
     DocumentRoot /var/www/xbtzmenarendjango/
-                                                                                    ErrorLog /var/www/logs/error.log
+    
+    ErrorLog /var/www/logs/error.log
     CustomLog /var/www/logs/custom.log combined
 </VirtualHost>
 ```
