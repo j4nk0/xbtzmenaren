@@ -48,6 +48,19 @@ Insert:
 ```
 
 Load the new conf file: `sudo a2ensite new_config.conf`
-restart apache: `systemctl restart apache2`
-check apache status: `systemctl status apache2.service | less`
 
+Restart apache: `systemctl restart apache2`
+
+Check apache status: `systemctl status apache2.service | less`
+
+### Reinstall dependencies:
+```
+sudo python -m pip install django      #web framework 
+sudo python -m pip install psycopg2    #postgresql driver
+sudo python -m pip install requests    #for calls to external API
+sudo python -m pip install django-axes #login throttling
+sudo python -m pip install schwifty    #IBAN validation
+sudo python -m pip install ~/xbtzmenaren/coinaddr-master   #BTC, LTC address validation
+sudo python -m pip install pycoingecko #coingecko api wrapper
+sudo python -m pip install python-bitcoinlib #bitcoin.rpc caller
+```
