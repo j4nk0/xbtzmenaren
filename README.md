@@ -75,3 +75,66 @@ systemctl restart apache2.service
 ```
 
 disable default apache page: `sudo a2dissite 000-default.conf`
+
+### Enable SSL:
+
+```
+<VirtualHost _default_:443>
+        ServerName xbtzmenaren.ddns.net
+        ServerAlias localhost
+
+        Alias /static /var/www/xbtzmenarendjango/static/
+        WSGIScriptAlias / /var/www/xbtzmenarendjango/xbtzmenarendjango/wsgi.py
+
+        <Directory /var/www/xbtzmenarendjango/>
+                Order deny,allow
+                Allow from all
+        </Directory>
+
+        DocumentRoot /var/www/xbtzmenarendjango/
+
+        ErrorLog /var/www/logs/error.log
+        CustomLog /var/www/logs/custom.log combined
+
+        SSLEngine on
+        SSLCertificateFile /var/www/xbtzmenarendjango/cert.pem
+        SSLCertificateKeyFile /var/www/xbtzmenarendjango/privkey.pem
+
+        SSLCipherSuite HIGH:!aNULL:!MD5
+</VirtualHost>
+
+```
+
+then: `systemctl reload apache2`
+
+#### Enable redirect from http -> https
+
+```
+<VirtualHost *:80>
+        ServerName xbtzmenaren.ddns.net
+        Redirect permanent / https://xbtzmenaren.ddns.net/
+</VirtualHost>
+<VirtualHost _default_:443>
+        ServerName xbtzmenaren.ddns.net
+        ServerAlias localhost
+
+        Alias /static /var/www/xbtzmenarendjango/static/
+        WSGIScriptAlias / /var/www/xbtzmenarendjango/xbtzmenarendjango/wsgi.py
+
+        <Directory /var/www/xbtzmenarendjango/>
+                Order deny,allow
+                Allow from all
+        </Directory>
+
+        DocumentRoot /var/www/xbtzmenarendjango/
+
+        ErrorLog /var/www/logs/error.log
+        CustomLog /var/www/logs/custom.log combined
+
+        SSLEngine on
+        SSLCertificateFile /var/www/xbtzmenarendjango/cert.pem
+        SSLCertificateKeyFile /var/www/xbtzmenarendjango/privkey.pem
+
+        SSLCipherSuite HIGH:!aNULL:!MD5
+</VirtualHost>
+```
