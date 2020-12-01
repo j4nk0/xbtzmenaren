@@ -7,24 +7,25 @@ from django.utils import timezone
 
 TRESHOLD_CONFIRMATIONS = 6
 CHECK_CONFIRMATIONS = 10
+CONF_PATH = '/home/j4nk0/.bitcoin/bitcoin.conf'
 
 def get_balance():
-    return RawProxy().getbalance()
+    return RawProxy(btc_conf_file=CONF_PATH).getbalance()
 
 def get_fee_per_kB():
-    return RawProxy().estimatesmartfee(5)['feerate']
+    return RawProxy(btc_conf_file=CONF_PATH).estimatesmartfee(5)['feerate']
 
 def send(address, amount, fee_per_kB):
-    RawProxy().settxfee(fee_per_kB)
-    RawProxy().sendtoaddtess(address, amount)
+    RawProxy(btc_conf_file=CONF_PATH).settxfee(fee_per_kB)
+    RawProxy(btc_conf_file=CONF_PATH).sendtoaddtess(address, amount)
 
 def get_new_address():
-    return RawProxy().getnewaddress('', 'bech32')
+    return RawProxy(btc_conf_file=CONF_PATH).getnewaddress('', 'bech32')
 
 def get_blockhash(blockhash):
     while True:
         yield blockhash
-        blockhash = RawProxy().getblock(blockhash)['previousblockhash']
+        blockhash = RawProxy(btc_conf_file=CONF_PATH).getblock(blockhash)['previousblockhash']
 
 def listen():
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -46,8 +47,8 @@ def listen():
         if 'NEWTX' in res:
             txid = res[res.find(':') +1:]
             try:
-                raw_tx = RawProxy().getrawtransaction(txid)
-                tx = RawProxy().decoderawtransaction(raw_tx)
+                raw_tx = RawProxy(btc_conf_file=CONF_PATH).getrawtransaction(txid)
+                tx = RawProxy(btc_conf_file=CONF_PATH).decoderawtransaction(raw_tx)
                 for output in tx['vout']:
                     for address in output['scriptPubKey']['addresses']:
                         if address in Address.objects.all().values_list('btc', flat=True):
@@ -59,7 +60,7 @@ def listen():
                                 txid=txid
                             )
                             displayed_address = Address.objects.get(btc=address)
-                            displayed_address.btc = RawProxy().getnewaddress('', 'bech32')
+                            displayed_address.btc = RawProxy(btc_conf_file=CONF_PATH).getnewaddress('', 'bech32')
                             displayed_address.save()
             except JSONRPCError:
                 pass
@@ -68,8 +69,8 @@ def listen():
             for txid in Incoming_btc.objects.all().values_list('txid', flat=True):
                 for (blockhash, _) in zip(get_blockhash(new_blockhash), range(CHECK_CONFIRMATIONS)):
                     try:
-                        RawProxy().getrawtransaction(txid, False, blockhash)
-                        confirmations = RawProxy().getblock(blockhash)['confirmations']
+                        RawProxy(btc_conf_file=CONF_PATH).getrawtransaction(txid, False, blockhash)
+                        confirmations = RawProxy(btc_conf_file=CONF_PATH).getblock(blockhash)['confirmations']
                         Incoming_btc.objects.filter(txid=txid).update(confirmations=confirmations)
                         if confirmations >= TRESHOLD_CONFIRMATIONS:
                             for record in Incoming_btc.objects.filter(txid=txid).values('user', 'address', 'btc'):
