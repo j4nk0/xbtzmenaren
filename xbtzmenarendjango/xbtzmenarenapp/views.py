@@ -381,13 +381,17 @@ def portfolio(request):
     for o in orders: eur_in_orders += o.btc * o.price
     orders = Order_buy_ltc.objects.filter(user=request.user)
     for o in orders: eur_in_orders += o.ltc * o.price
+    btc_in_orders = Order_sell_btc.objects.filter(user=request.user).aggregate(Sum('btc'))['btc__sum']
+    if btc_in_orders == None: btc_in_orders = D(0)
+    ltc_in_orders = Order_sell_ltc.objects.filter(user=request.user).aggregate(Sum('ltc'))['ltc__sum']
+    if ltc_in_orders == None: ltc_in_orders = D(0)
     context = {
-        'eur': request.user.balance.eur,
-        'btc': request.user.balance.btc,
-        'ltc': request.user.balance.ltc,
+        'eur': rates.r(request.user.balance.eur),
+        'btc': rates.r(request.user.balance.btc),
+        'ltc': rates.r(request.user.balance.ltc),
         'eur_in_orders': rates.r(eur_in_orders),
-        'btc_in_orders': Order_sell_btc.objects.aggregate(Sum('btc'))['btc__sum'],
-        'ltc_in_orders': Order_sell_ltc.objects.aggregate(Sum('ltc'))['ltc__sum'],
+        'btc_in_orders': rates.r(btc_in_orders),
+        'ltc_in_orders': rates.r(ltc_in_orders),
     }
     return render(request, 'xbtzmenarenapp/portfolio.html', context)
 
@@ -634,12 +638,45 @@ def management_deposit_attempt(request):
 @user_passes_test(staff_check)
 @login_required
 def management_balances(request):
+    eur_in_orders_staff = D(0)
+    eur_in_orders_non_staff = D(0)
+    orders = Order_buy_btc.objects.all()
+    staff = CustomUser.objects.filter(is_staff=True)
+    for o in orders:
+        if o.user in staff:
+            eur_in_orders_staff += o.btc * o.price
+        else:
+            eur_in_orders_non_staff += o.btc * o.price
+    orders = Order_buy_ltc.objects.filter(user=request.user)
+    for o in orders:
+        if o.user in staff:
+            eur_in_orders_staff += o.btc * o.price
+        else:
+            eur_in_orders_non_staff += o.btc * o.price
+    btc_in_orders_staff = D(0)
+    btc_in_orders_non_staff = D(0)
+    for user in CustomUser.objects.all():
+        if user in staff:
+            amount = Order_sell_btc.objects.filter(user=user).aggregate(Sum('btc'))['btc__sum']
+            if amount: btc_in_orders_staff += amount
+        else:
+            amount = Order_sell_btc.objects.filter(user=user).aggregate(Sum('btc'))['btc__sum']
+            if amount: btc_in_orders_non_staff += amount
+    ltc_in_orders_staff = D(0)
+    ltc_in_orders_non_staff = D(0)
+    for user in CustomUser.objects.all():
+        if user in staff:
+            amount = Order_sell_ltc.objects.filter(user=user).aggregate(Sum('ltc'))['ltc__sum']
+            if amount: ltc_in_orders_staff += amount
+        else:
+            amount = Order_sell_ltc.objects.filter(user=user).aggregate(Sum('ltc'))['ltc__sum']
+            if amount: ltc_in_orders_non_staff += amount
     total_eur = Balance.objects.aggregate(Sum('eur'))['eur__sum']
     total_btc = Balance.objects.aggregate(Sum('btc'))['btc__sum']
     total_ltc = Balance.objects.aggregate(Sum('ltc'))['ltc__sum']
-    staff_eur = 0
-    staff_btc = 0
-    staff_ltc = 0
+    staff_eur = D(0)
+    staff_btc = D(0)
+    staff_ltc = D(0)
     staff_users = CustomUser.objects.filter(is_staff=True)
     for user in staff_users:
         staff_eur += user.balance.eur
@@ -649,15 +686,24 @@ def management_balances(request):
     non_staff_btc = total_btc - staff_btc
     non_staff_ltc = total_ltc - staff_ltc
     context = {
-        'non_staff_eur': non_staff_eur,
-        'staff_eur': staff_eur,
-        'total_eur': total_eur,
-        'non_staff_btc': non_staff_btc,
-        'staff_btc': staff_btc,
-        'total_btc': total_btc,
-        'non_staff_ltc': non_staff_ltc,
-        'staff_ltc': staff_ltc,
-        'total_ltc': total_ltc,
+        'eur_in_orders_staff': rates.r(eur_in_orders_staff),
+        'eur_in_orders_non_staff': rates.r(eur_in_orders_non_staff),
+        'eur_in_orders_total': rates.r(eur_in_orders_staff + eur_in_orders_non_staff),
+        'btc_in_orders_staff': rates.r(btc_in_orders_staff),
+        'btc_in_orders_non_staff': rates.r(btc_in_orders_non_staff),
+        'btc_in_orders_total': rates.r(btc_in_orders_staff + btc_in_orders_non_staff),
+        'ltc_in_orders_staff': rates.r(ltc_in_orders_staff),
+        'ltc_in_orders_non_staff': rates.r(ltc_in_orders_non_staff),
+        'ltc_in_orders_total': rates.r(ltc_in_orders_staff + ltc_in_orders_non_staff),
+        'non_staff_eur': rates.r(non_staff_eur),
+        'staff_eur': rates.r(staff_eur),
+        'total_eur': rates.r(total_eur),
+        'non_staff_btc': rates.r(non_staff_btc),
+        'staff_btc': rates.r(staff_btc),
+        'total_btc': rates.r(total_btc),
+        'non_staff_ltc': rates.r(non_staff_ltc),
+        'staff_ltc': rates.r(staff_ltc),
+        'total_ltc': rates.r(total_ltc),
     }
     return render(request, 'xbtzmenarenapp/management/balances.html', context)
 

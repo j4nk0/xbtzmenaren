@@ -2,6 +2,7 @@
 
 {% block content %}
   <div class="container">
+    <p><b>Balances:</b></p>
     <table class="table">
       <thead>
         <tr>
@@ -29,6 +30,37 @@
           <td>{{ non_staff_ltc }}</td>
           <td>{{ staff_ltc }}</td>
           <td>{{ total_ltc }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><b>In orders:</b></p>
+    <table class="table">
+      <thead>
+        <tr>
+          <td><b>Mena</b></td>
+          <td><b>Non-staff</b></td>
+          <td><b>Staff</b></td>
+          <td><b>Spolu</b></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>EUR</b></td>
+          <td>{{ eur_in_orders_non_staff }}</td>
+          <td>{{ eur_in_orders_staff }}</td>
+          <td>{{ eur_in_orders_total }}</td>
+        </tr>
+        <tr>
+          <td><b>BTC</b></td>
+          <td>{{ btc_in_orders_non_staff }}</td>
+          <td>{{ btc_in_orders_staff }}</td>
+          <td>{{ btc_in_orders_total }}</td>
+        </tr>
+        <tr>
+          <td><b>LTC</b></td>
+          <td>{{ ltc_in_orders_non_staff }}</td>
+          <td>{{ ltc_in_orders_staff }}</td>
+          <td>{{ ltc_in_orders_total }}</td>
         </tr>
       </tbody>
     </table>
