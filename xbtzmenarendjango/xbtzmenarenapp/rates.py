@@ -92,6 +92,7 @@ def market_buy_btc(user, sum_eur):
     bal = Balance.objects.filter(user=user)
     with transaction.atomic():
         bal.update(eur=F('eur') - D(sum_eur))
+        if bal.eur < 0: raise ValueError('Not enough funds')
         Order_sell_btc.objects.all().select_for_update()
         sum_eur = D(sum_eur) - fee_market_buy_btc(sum_eur)
         sum_btc = 0
@@ -125,6 +126,7 @@ def market_buy_ltc(user, sum_eur):
     bal = Balance.objects.filter(user=user)
     with transaction.atomic():
         bal.update(eur=F('eur') - D(sum_eur))
+        if bal.eur < 0: raise ValueError('Not enough funds')
         Order_sell_ltc.objects.all().select_for_update()
         sum_eur = D(sum_eur) - fee_market_buy_ltc(sum_eur)
         sum_ltc = 0
@@ -205,6 +207,7 @@ def market_sell_btc(user, sum_btc):
     bal = Balance.objects.filter(user=user)
     with transaction.atomic():
         bal.update(btc=F('btc') - sum_btc)
+        if bal.btc < 0: raise ValueError('Not enough funds')
         Order_buy_btc.objects.all().select_for_update()
         sum_eur = 0
         for order in Order_buy_btc.objects.all().order_by('-price'):
@@ -239,6 +242,7 @@ def market_sell_ltc(user, sum_ltc):
     bal = Balance.objects.filter(user=user)
     with transaction.atomic():
         bal.update(ltc=F('ltc') - sum_ltc)
+        if bal.ltc < 0: raise ValueError('Not enough funds')
         Order_buy_ltc.objects.all().select_for_update()
         sum_eur = 0
         for order in Order_buy_ltc.objects.all().order_by('-price'):
