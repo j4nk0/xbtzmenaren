@@ -167,3 +167,11 @@ class Incoming_btc(models.Model):
     btc = models.DecimalField(max_digits=MAX_DIGITS_BTC, decimal_places=DECIMAL_PLACES_BTC)
     confirmations = models.IntegerField()
     txid = models.CharField(max_length=64)
+
+class Incoming_ltc(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    address = models.CharField(max_length=100)
+    ltc = models.DecimalField(max_digits=MAX_DIGITS_LTC, decimal_places=DECIMAL_PLACES_LTC)
+    confirmations = models.IntegerField()
+    txid = models.CharField(max_length=64)
+

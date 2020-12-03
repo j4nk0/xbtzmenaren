@@ -92,6 +92,10 @@ class Incoming_btcAdmin(admin.ModelAdmin):
     list_display = ('user', 'address', 'btc', 'confirmations', 'txid')
     search_fields = ('user', 'address', 'btc', 'confirmations', 'txid')
 
+class Incoming_ltcAdmin(admin.ModelAdmin):
+    list_display = ('user', 'address', 'ltc', 'confirmations', 'txid')
+    search_fields = ('user', 'address', 'ltc', 'confirmations', 'txid')
+
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Address, AddressAdmin)
 admin.site.register(Balance, BalanceAdmin)
@@ -110,4 +114,5 @@ admin.site.register(Order_sell_btc, Order_sell_btcAdmin)
 admin.site.register(Order_buy_ltc, Order_buy_ltcAdmin)
 admin.site.register(Order_sell_ltc, Order_sell_ltcAdmin)
 admin.site.register(Incoming_btc, Incoming_btcAdmin)
+admin.site.register(Incoming_ltc, Incoming_ltcAdmin)
 

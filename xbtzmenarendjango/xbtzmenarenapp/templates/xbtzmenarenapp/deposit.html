@@ -43,6 +43,25 @@
       <div id="Litecoin" class="tab-pane">
         <p>Zašlite na adresu:</p>
 	<p><b>{{ ltc_address }}</b></p>
+        <p>Prichádzajúce platby (na pripísanie sumy je treba 6 potvrdení):</p>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Adresa</th>
+              <th>Suma LTC</th>
+              <th>Potvrdení</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for incoming in incoming_ltc %}
+              <tr>
+                <td>{{ incoming.address }}</td>
+                <td>{{ incoming.ltc }}</td>
+                <td>{{ incoming.confirmations }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
 
     </div>

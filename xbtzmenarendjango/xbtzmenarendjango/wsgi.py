@@ -20,5 +20,7 @@ import os
 os.chdir('..')
 import threading
 from xbtzmenarenapp.bitcoin_driver import listen as btc_listen
+from xbtzmenarenapp.litecoin_driver import listen as ltc_listen
 
 threading.Thread(target=btc_listen, daemon=True).start()
+threading.Thread(target=ltc_listen, daemon=True).start()

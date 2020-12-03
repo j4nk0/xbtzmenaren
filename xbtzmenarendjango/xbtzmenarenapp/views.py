@@ -15,6 +15,7 @@ from schwifty import IBAN
 from .check_address import is_valid_btc_address, is_valid_ltc_address
 import json
 from . import bitcoin_driver
+from . import litecoin_driver
 
 def dec(n, decimal_places):
     try:
@@ -363,7 +364,7 @@ def registration_attempt(request):
         user=CustomUser.objects.get(email=email),
         vs=f'{CustomUser.objects.get(email=email).id:010}',
         btc=bitcoin_driver.get_new_address(),
-        ltc='LTC_address:' + email[:88],
+        ltc=litecoin_driver.get_new_address(),
     )
     Balance.objects.create(
         user=CustomUser.objects.get(email=email),
@@ -407,7 +408,8 @@ def deposit(request):
         'vs': request.user.address.vs, 
         'btc_address': request.user.address.btc, 
         'ltc_address': request.user.address.ltc,
-        'incoming_btc': Incoming_btc.objects.filter(user=request.user)
+        'incoming_btc': Incoming_btc.objects.filter(user=request.user),
+        'incoming_ltc': Incoming_ltc.objects.filter(user=request.user),
     }
     return render(request, 'xbtzmenarenapp/deposit.html', context)
 
@@ -418,7 +420,7 @@ def withdrawal(request, error_message=None, ok_message=None, active='eur'):
         'ok_message': ok_message,
         'max_sum_eur': request.user.balance.eur,
         'max_sum_btc': request.user.balance.btc - bitcoin_driver.get_fee_per_kB(),
-        'max_sum_ltc': request.user.balance.ltc,
+        'max_sum_ltc': request.user.balance.ltc - litecoin_driver.get_fee_per_kB(),
         'active': active,
     }
     return render(request, 'xbtzmenarenapp/withdrawal.html', context)
@@ -496,12 +498,21 @@ def withdrawal_ltc(request):
     address_ltc = request.POST['address_ltc']
     if not is_valid_ltc_address(address_ltc):
         return withdrawal(request, error_message='Nesprávna adresa', active='ltc')
-    is_instant = True if 'is_instant_ltc' in request.POST else False
     try:
         with transaction.atomic():
+            fee = litecoin_driver.get_fee_per_kB()
             balance = Balance.objects.filter(user=request.user)
-            balance.update(ltc=F('ltc') - sum_ltc)
-            if is_instant:
+            balance.update(ltc=F('ltc') - (sum_ltc + fee))
+            if balance[0].btc < 0: raise ValueError
+            if litecoin_driver.get_balance() < (sum_ltc + fee):
+                Withdrawal_ltc.objects.create(
+                    user=request.user,
+                    time_created=timezone.now(),
+                    ltc=sum_ltc,
+                    address=address_ltc,
+                    is_pending=True,
+                )
+            else:
                 Withdrawal_ltc.objects.create(
                     user=request.user,
                     time_created=timezone.now(),
@@ -510,16 +521,7 @@ def withdrawal_ltc(request):
                     address=address_ltc,
                     is_pending=False,
                 )
-                # do smtg
-            else:
-                Withdrawal_ltc.objects.create(
-                    user=request.user,
-                    time_created=timezone.now(),
-                    ltc=sum_ltc,
-                    address=address_ltc,
-                    is_pending=True,
-                )
-            if balance[0].ltc < 0: raise ValueError
+                litecoin_driver.send(address_ltc, sum_ltc, fee)
     except ValueError:
         return withdrawal(request, error_message='Nesprávna hodnota', active='ltc')
     return withdrawal(request, ok_message='Požiadavka zaregistrovaná', active='ltc')
