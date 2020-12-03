@@ -16,7 +16,11 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'xbtzmenarendjango.settings')
 application = get_wsgi_application()
 
 # j4nk0:
-import logging
+import os
+os.chdir('..')
+import threading
+from xbtzmenarenapp.bitcoin_driver import listen as btc_listen
+from xbtzmenarenapp.litecoin_driver import listen as ltc_listen
 
-logger = logging.getLogger(__name__)
-logger.error('running code in wsgi')
+threading.Thread(target=btc_listen, daemon=True).start()
+threading.Thread(target=ltc_listen, daemon=True).start()
