@@ -376,10 +376,18 @@ def registration_attempt(request):
 
 @login_required
 def portfolio(request):
+    eur_in_orders = 0
+    orders = Order_buy_btc.objects.filter(user=request.user)
+    for o in orders: eur_in_orders += o.btc * o.price
+    orders = Order_buy_ltc.objects.filter(user=request.user)
+    for o in orders: eur_in_orders += o.ltc * o.price
     context = {
         'eur': request.user.balance.eur,
         'btc': request.user.balance.btc,
         'ltc': request.user.balance.ltc,
+        'eur_in_orders': rates.r(eur_in_orders),
+        'btc_in_orders': Order_sell_btc.objects.aggregate(Sum('btc'))['btc__sum'],
+        'ltc_in_orders': Order_sell_ltc.objects.aggregate(Sum('ltc'))['ltc__sum'],
     }
     return render(request, 'xbtzmenarenapp/portfolio.html', context)
 
