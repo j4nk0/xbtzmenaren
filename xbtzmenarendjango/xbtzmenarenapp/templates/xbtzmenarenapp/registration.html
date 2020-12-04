@@ -7,17 +7,41 @@
   <div class="container">
     <form action="{% url 'registration-attempt' %}" method="post">
       {% csrf_token %}
-      <div class="form-group">
-        <label for="usr">E-mail:</label>
-        <input type="text" class="form-control" name="email"/>
+      <div class="container">
+        <div class="form-group">
+          <label for="usr">E-mail:</label>
+          <input type="text" class="form-control" name="email"/>
+        </div>
+        <div class="form-group">
+          <label for="password">Heslo:</label>
+          <input type="password" class="form-control" name="password"/>
+        </div>
+        <div class="form-group">
+          <label for="password">Heslo znova:</label>
+          <input type="password" class="form-control" name="password-again"/>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="password">Heslo:</label>
-        <input type="password" class="form-control" name="password"/>
+      <div class="container">
+        <label for="img">Vyberte foto OP spredu:</label>
+        <input type="file" id="ID_1_img" name="ID_1_img" accept="image/*"/>
+        <label for="img">Vyberte foto OP zozadu:</label>
+        <input type="file" id="ID_2_img" name="ID_2_img" accept="image/*"/>
+        <label for="img">Vyberte foto tváre</label>
+        <input type="file" id="Face_img" name="Face_img" accept="image/*"/>
       </div>
-      <div class="form-group">
-        <label for="password">Heslo znova:</label>
-        <input type="password" class="form-control" name="password-again"/>
+      <div class="container">
+        <div class="btn-group" data-toggle="buttons">
+          <p><b>Otazka 1</b></p>
+          <label class="btn btn-primary active">
+            <input type="radio" name="options" id="option1" autocomplete="off" checked> Radio 1 (preselected)
+          </label>
+          <label class="btn btn-primary">
+            <input type="radio" name="options" id="option2" autocomplete="off"> Radio 2
+          </label>
+          <label class="btn btn-primary">
+            <input type="radio" name="options" id="option3" autocomplete="off"> Radio 3
+          </label>
+        </div>
       </div>
       <button type="submit" class="btn btn-default">Registrovať</button>
     </form>
