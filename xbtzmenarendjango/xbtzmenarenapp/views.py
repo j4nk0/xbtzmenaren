@@ -16,6 +16,7 @@ from .check_address import is_valid_btc_address, is_valid_ltc_address
 import json
 from . import bitcoin_driver
 from . import litecoin_driver
+from django import forms
 
 def dec(n, decimal_places):
     try:
@@ -339,9 +340,116 @@ def terms_and_conditions(request):
 def contacts(request):
     return render(request, 'xbtzmenarenapp/contacts.html', {})
 
+class QuestionareForm(forms.Form):
+    id_img_front = forms.ImageField(label='Foto Občianskeho Preukazu spredu')
+    id_img_back = forms.ImageField(label='Foto Občianskeho Preukazu zozadu')
+    face_img = forms.ImageField(label='Foto tváre')
+    q1 = forms.ChoiceField(
+        label='Koľko EUR mienite investovať jednorázovo?',
+        widget=forms.RadioSelect,
+        choices=(
+            ('1', '< 100'),
+            ('2', '100 - 500'),
+            ('3', '500 - 1 000'),
+            ('4', '> 1 000'),
+        ) 
+    )
+    q2 = forms.ChoiceField(
+        label='Koľko EUR mienite investovať pravidelne mesačne?',
+        widget=forms.RadioSelect,
+        choices=(
+            ('1', '< 100'),
+            ('2', '100 - 500'),
+            ('3', '500 - 1 000'),
+            ('4', '> 1000'),
+        ) 
+    )
+    q3 = forms.ChoiceField(
+        label='Aká je priemerná výška vašich pravidelných ročných príjmov v EUR po zdanení? Uveďte prosím odhad vašeho priemerného ročného čistého príjmu. Jednorázové príjmy, vzniknuté napríklad predajom nehnuteľnosti, pozemkov, iných investícií a pod., nezapočítavajte.',
+        widget=forms.RadioSelect,
+        choices=(
+            ('1', '< 4 000'),
+            ('2', '4 000 - 20 000'),
+            ('3', '20 000 - 40 000'),
+            ('4', '> 40 000'),
+        ) 
+    )
+    q4 = forms.ChoiceField(
+        label='Na koľko EUR odhadujete hodnotu svojho majetku? Vrátane hotovosti, hnuteľných vecí, investícií a nehnuteľností. Skúste odhadnúť množstvo peňazí, ktoré by ste získali, ak by ste všetok svoj majetok naraz predali.',
+        widget=forms.RadioSelect,
+        choices=(
+            ('1', '< 4 000'),
+            ('2', '4 000 - 20 000'),
+            ('3', '20 000 - 40 000'),
+            ('4', '40 000 - 400 000'),
+            ('5', '> 400 000'),
+        ) 
+    )
+    q5 = forms.ChoiceField(
+        label='Pravidelné splátky mojich súčasných finančných záväzkov (splátka hypotéky, leasingu, iného úveru a pod.) v percentách čistého príjmu dosahujú:',
+        widget=forms.RadioSelect,
+        choices=(
+            ('1', '< 35 %'),
+            ('2', '35 % - 50 %'),
+            ('3', '> 50 %'),
+        ) 
+    )
+    q6 = forms.ChoiceField(
+        label='Čo je účelom vašich investícií?',
+        widget=forms.RadioSelect,
+        choices=(
+            ('1', 'Primárne ochrániť svoje investované prostriedky.'),
+            ('2', 'Mierne zhodnotiť svoje prostriedky a minimalizovať riziká.'),
+            ('3', 'Zhodnotiť svoje prostriedky a znášať primerané riziko.'),
+            ('4', 'Výrazne zhodnotiť svoje prostriedky aj za cenu veľmi vysokej kolísavosti hodnoty portfólia.'),
+        ) 
+    )
+    q7 = forms.ChoiceField(
+        label='Ako veľmi vám vadí krátkodobé a mnohokrát značné kolísanie hodnoty vášho portfólia oboma smermi?',
+        widget=forms.RadioSelect,
+        choices=(
+            ('1', 'Vôbec mi nevadí.'),
+            ('2', 'Skôr mi nevadí.'),
+            ('3', 'Mám k tomu neutrálny postoj.'),
+            ('4', 'Skôr mi vadí.'),
+            ('5', 'Rozhodne mi vadí.'),
+        ) 
+    )
+    q8 = forms.ChoiceField(
+        label='Hodnota investície môže rásť aj klesať. O koľko by sa celková hodnota vašej investície musela znížiť, aby ste začali premýšľať o tom, že investíciu zrušíte?',
+        widget=forms.RadioSelect,
+        choices=(
+            ('1', 'O 10 % a viac.'),
+            ('2', 'O 20 % a viac.'),
+            ('3', 'O 33 % a viac.'),
+            ('4', 'O 50 % a viac.'),
+            ('5', 'O rušení nepremýšľam, kým nevyprší plánovaný investičný horizont.'),
+        ) 
+    )
+    q9 = forms.ChoiceField(
+        label='Aká by bola vaša reakcia, ak by sa hodnota vášho portfólia prepadla o 10% v priebehu niekoľkých dní?',
+        widget=forms.RadioSelect,
+        choices=(
+            ('1', 'Okamžite predám celé svoje portfólio a zabránim ďalším stratám.'),
+            ('2', 'Predám časť svojho portfólia.'),
+            ('3', 'Počkám na ďalší vývoj, kým sa hodnota nevráti.'),
+            ('4', 'Využijem túto príležitosť a nakúpim viac za nižšie ceny.'),
+        ) 
+    )
+    q10 = forms.ChoiceField(
+        label='Ako by ovplyvnilo vašu životnú úroveň, ak by sa hodnota vašej investície významne znížila?',
+        widget=forms.RadioSelect,
+        choices=(
+            ('1', 'Zásadne negatívne. Moja celková životná úroveň by sa znížila.'),
+            ('2', 'Mierne. Moju životnú úroveň by to mohlo ohroziť.'),
+            ('3', 'Neovplyvnilo. Dopad by bol zanedbateľný.'),
+        ) 
+    )
+            
 def registration(request, error_message=None):
     context = {
         'error_message': error_message,
+        'questionare': QuestionareForm(),
     }
     return render(request, 'xbtzmenarenapp/registration.html', context)
 
@@ -374,7 +482,19 @@ def registration_attempt(request):
         btc=0,
         ltc=0,
     )
-    return redirect('login')
+    return HttpResponse(
+        'q1:' + str(request.POST['q1']) + '\n' \
+        + 'q2:' + str(request.POST['q2']) + '\n' \
+        + 'q3:' + str(request.POST['q3']) + '\n' \
+        + 'q4:' + str(request.POST['q4']) + '\n' \
+        + 'q5:' + str(request.POST['q5']) + '\n' \
+        + 'q6:' + str(request.POST['q6']) + '\n' \
+        + 'q7:' + str(request.POST['q7']) + '\n' \
+        + 'q8:' + str(request.POST['q8']) + '\n' \
+        + 'q9:' + str(request.POST['q9']) + '\n' \
+        + 'q10:' + str(request.POST['q10']) + '\n'
+    )
+    #return redirect('login')
 
 
 @login_required
