@@ -340,8 +340,10 @@ def contacts(request):
     return render(request, 'xbtzmenarenapp/contacts.html', {})
 
 def registration(request, error_message=None):
-    context = { 'error_message': error_message }
-    return render(request, 'xbtzmenarenapp/registration.html', context)
+    return render(request, 'xbtzmenarenapp/registration_documents.html', {})
+
+def registration_questionare(request):
+    return render(request, 'xbtzmenarenapp/registration_questionare.html', {})
         
 def registration_attempt(request):
     if request.POST['password'] != request.POST['password-again']:
@@ -356,6 +358,7 @@ def registration_attempt(request):
         validate_password(password, request.user)
     except ValidationError:
         return registration(request, 'Slabé heslo')
+######################
     try:
         CustomUser.objects.create_user(email, password=password)
     except:
@@ -372,7 +375,11 @@ def registration_attempt(request):
         btc=0,
         ltc=0,
     )
-    return redirect('login')
+    context = { 'error_message': error_message }
+    return render(request, 'xbtzmenarenapp/registration.html', context)
+    #return reqistration_documents(request)
+    #return redirect('login')
+
 
 @login_required
 def portfolio(request):
