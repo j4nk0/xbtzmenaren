@@ -175,3 +175,15 @@ class Incoming_ltc(models.Model):
     confirmations = models.IntegerField()
     txid = models.CharField(max_length=64)
 
+class Questionare(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
+    question1 = models.IntegerField()
+    question2 = models.IntegerField()
+    question3 = models.IntegerField()
+    question4 = models.IntegerField()
+    question5 = models.IntegerField()
+    question6 = models.IntegerField()
+    question7 = models.IntegerField()
+    question8 = models.IntegerField()
+    question9 = models.IntegerField()
+    question10 = models.IntegerField()

@@ -470,31 +470,36 @@ def registration_attempt(request):
         CustomUser.objects.create_user(email, password=password)
     except:
         return registration(request, 'Email je už registrovaný')
-    Address.objects.create(
-        user=CustomUser.objects.get(email=email),
-        vs=f'{CustomUser.objects.get(email=email).id:010}',
-        btc=bitcoin_driver.get_new_address(),
-        ltc=litecoin_driver.get_new_address(),
-    )
-    Balance.objects.create(
-        user=CustomUser.objects.get(email=email),
-        eur=0,
-        btc=0,
-        ltc=0,
-    )
-    return HttpResponse(
-        'q1:' + str(request.POST['q1']) + '\n' \
-        + 'q2:' + str(request.POST['q2']) + '\n' \
-        + 'q3:' + str(request.POST['q3']) + '\n' \
-        + 'q4:' + str(request.POST['q4']) + '\n' \
-        + 'q5:' + str(request.POST['q5']) + '\n' \
-        + 'q6:' + str(request.POST['q6']) + '\n' \
-        + 'q7:' + str(request.POST['q7']) + '\n' \
-        + 'q8:' + str(request.POST['q8']) + '\n' \
-        + 'q9:' + str(request.POST['q9']) + '\n' \
-        + 'q10:' + str(request.POST['q10']) + '\n'
-    )
-    #return redirect('login')
+    try:
+        Address.objects.create(
+            user=CustomUser.objects.get(email=email),
+            vs=f'{CustomUser.objects.get(email=email).id:010}',
+            btc=bitcoin_driver.get_new_address(),
+            ltc=litecoin_driver.get_new_address(),
+        )
+        Balance.objects.create(
+            user=CustomUser.objects.get(email=email),
+            eur=0,
+            btc=0,
+            ltc=0,
+        )
+        Questionare.objects.create(
+            user=CustomUser.objects.get(email=email),
+            question1=int(request.POST['q1']),
+            question2=int(request.POST['q2']),
+            question3=int(request.POST['q3']),
+            question4=int(request.POST['q4']),
+            question5=int(request.POST['q5']),
+            question6=int(request.POST['q6']),
+            question7=int(request.POST['q7']),
+            question8=int(request.POST['q8']),
+            question9=int(request.POST['q9']),
+            question10=int(request.POST['q10']),
+        )
+    except:
+        CustomUser.objects.filter(email=email).delete()
+        return registration(request, 'Chyba')
+    return redirect('login')
 
 
 @login_required
