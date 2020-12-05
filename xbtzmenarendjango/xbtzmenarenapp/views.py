@@ -30,6 +30,10 @@ def dec(n, decimal_places):
         raise ValueError
     return decimal
 
+def verification_check(user):
+    return user.is_verified
+
+@user_passes_test(verification_check)
 @login_required
 def buy(request, success=None, active='btc'):
     sum_eur = request.user.balance.eur
@@ -47,6 +51,7 @@ def buy(request, success=None, active='btc'):
         context.update({'error_message': 'Nesprávna hodnota'})
     return render(request, 'xbtzmenarenapp/buy.html', context)
 
+@user_passes_test(verification_check)
 @login_required
 def buy_btc(request):
     try:
@@ -66,6 +71,7 @@ def buy_btc_json(request):
     res['Content-Type'] = 'application/json'
     return res
 
+@user_passes_test(verification_check)
 @login_required
 def buy_ltc(request):
     try:
@@ -85,6 +91,7 @@ def buy_ltc_json(request):
     res['Content-Type'] = 'application/json'
     return res
 
+@user_passes_test(verification_check)
 @login_required
 def sell(request, success=None, active='btc'):
     sum_btc = request.user.balance.btc
@@ -106,6 +113,7 @@ def sell(request, success=None, active='btc'):
         context.update({'error_message': 'Nesprávna hodnota'})
     return render(request, 'xbtzmenarenapp/sell.html', context)
 
+@user_passes_test(verification_check)
 @login_required
 def sell_btc(request):
     try:
@@ -126,6 +134,7 @@ def sell_btc_json(request):
     res['Content-Type'] = 'application/json'
     return res
 
+@user_passes_test(verification_check)
 @login_required
 def sell_ltc(request):
     try:
@@ -146,6 +155,7 @@ def sell_ltc_json(request):
     res['Content-Type'] = 'application/json'
     return res
 
+@user_passes_test(verification_check)
 @login_required
 def limit_order_buy(request, success=None, active='btc'):
     context = {
@@ -160,6 +170,7 @@ def limit_order_buy(request, success=None, active='btc'):
         context.update({'error_message': 'Nesprávna hodnota'})
     return render(request, 'xbtzmenarenapp/limitOrderBuy.html', context)
 
+@user_passes_test(verification_check)
 @login_required
 def limit_order_buy_btc(request):
     try:
@@ -182,6 +193,7 @@ def limit_order_buy_btc_json(request):
     res['Content-Type'] = 'application/json'
     return res
 
+@user_passes_test(verification_check)
 @login_required
 def limit_order_buy_btc_delete(request, order_id):
     if request.user != Order_buy_btc.objects.get(id=order_id).user:
@@ -192,6 +204,7 @@ def limit_order_buy_btc_delete(request, order_id):
         return limit_order_buy(request, False, 'btc')
     return limit_order_buy(request, True, 'btc')
 
+@user_passes_test(verification_check)
 @login_required
 def limit_order_buy_ltc(request):
     try:
@@ -202,6 +215,7 @@ def limit_order_buy_ltc(request):
         return limit_order_buy(request, False, 'ltc')
     return limit_order_buy(request, True, 'ltc')
 
+@user_passes_test(verification_check)
 @login_required
 def limit_order_buy_ltc_json(request):
     sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
@@ -215,6 +229,7 @@ def limit_order_buy_ltc_json(request):
     res['Content-Type'] = 'application/json'
     return res
 
+@user_passes_test(verification_check)
 @login_required
 def limit_order_buy_ltc_delete(request, order_id):
     if request.user != Order_buy_ltc.objects.get(id=order_id).user:
@@ -226,6 +241,7 @@ def limit_order_buy_ltc_delete(request, order_id):
     return limit_order_buy(request, True, 'ltc')
 
 
+@user_passes_test(verification_check)
 @login_required
 def limit_order_sell(request, success=None, active='btc'):
     context = {
@@ -241,6 +257,7 @@ def limit_order_sell(request, success=None, active='btc'):
         context.update({'error_message': 'Nesprávna hodnota'})
     return render(request, 'xbtzmenarenapp/limitOrderSell.html', context)
 
+@user_passes_test(verification_check)
 @login_required
 def limit_order_sell_btc(request):
     try:
@@ -263,6 +280,7 @@ def limit_order_sell_btc_json(request):
     res['Content-Type'] = 'application/json'
     return res
 
+@user_passes_test(verification_check)
 @login_required
 def limit_order_sell_btc_delete(request, order_id):
     if request.user != Order_sell_btc.objects.get(id=order_id).user:
@@ -273,6 +291,7 @@ def limit_order_sell_btc_delete(request, order_id):
         return limit_order_sell(request, False, 'btc')
     return limit_order_sell(request, True, 'btc')
 
+@user_passes_test(verification_check)
 @login_required
 def limit_order_sell_ltc(request):
     try:
@@ -295,6 +314,7 @@ def limit_order_sell_ltc_json(request):
     res['Content-Type'] = 'application/json'
     return res
 
+@user_passes_test(verification_check)
 @login_required
 def limit_order_sell_ltc_delete(request, order_id):
     if request.user != Order_sell_ltc.objects.get(id=order_id).user:
@@ -305,6 +325,7 @@ def limit_order_sell_ltc_delete(request, order_id):
         return limit_order_sell(request, False, 'ltc')
     return limit_order_sell(request, True, 'ltc')
 
+@user_passes_test(verification_check)
 @login_required
 def private_rates(request):
     context = {
@@ -476,9 +497,9 @@ def registration_attempt(request):
     except:
         return registration(request, 'Email je už registrovaný')
     try:
-        handle_uploaded_file(email, 'id_img_front', request.FILES['id_img_front'])
-        handle_uploaded_file(email, 'id_img_back', request.FILES['id_img_back'])
-        handle_uploaded_file(email, 'face_img', request.FILES['face_img'])
+        handle_uploaded_file(email, '_id_img_front', request.FILES['id_img_front'])
+        handle_uploaded_file(email, '_id_img_back', request.FILES['id_img_back'])
+        handle_uploaded_file(email, '_face_img', request.FILES['face_img'])
         Address.objects.create(
             user=CustomUser.objects.get(email=email),
             vs=f'{CustomUser.objects.get(email=email).id:010}',
@@ -511,6 +532,7 @@ def registration_attempt(request):
     return redirect('login')
 
 
+@user_passes_test(verification_check)
 @login_required
 def portfolio(request):
     eur_in_orders = 0
@@ -532,11 +554,13 @@ def portfolio(request):
     }
     return render(request, 'xbtzmenarenapp/portfolio.html', context)
 
+@user_passes_test(verification_check)
 @login_required
 def change_password(request, error_message=None):
     context = { 'error_message': error_message }
     return render(request, 'xbtzmenarenapp/changePassword.html', context)
 
+@user_passes_test(verification_check)
 @login_required
 def change_password_attempt(request):
     if request.POST['password'] != request.POST['password-again']:
@@ -551,6 +575,7 @@ def change_password_attempt(request):
     user.save()
     return redirect('logout')
 
+@user_passes_test(verification_check)
 @login_required
 def deposit(request):
     context = { 
@@ -562,6 +587,7 @@ def deposit(request):
     }
     return render(request, 'xbtzmenarenapp/deposit.html', context)
 
+@user_passes_test(verification_check)
 @login_required
 def withdrawal(request, error_message=None, ok_message=None, active='eur'):
     context = {
@@ -574,6 +600,7 @@ def withdrawal(request, error_message=None, ok_message=None, active='eur'):
     }
     return render(request, 'xbtzmenarenapp/withdrawal.html', context)
 
+@user_passes_test(verification_check)
 @login_required
 def withdrawal_eur(request):
     try:
@@ -601,6 +628,7 @@ def withdrawal_eur(request):
         return withdrawal(request, error_message='Nesprávna hodnota', active='eur')
     return withdrawal(request, ok_message='Požiadavka zaregistrovaná', active='eur')
 
+@user_passes_test(verification_check)
 @login_required
 def withdrawal_btc(request):
     try:
@@ -638,6 +666,7 @@ def withdrawal_btc(request):
         return withdrawal(request, error_message='Nesprávna hodnota', active='btc')
     return withdrawal(request, ok_message='Požiadavka zaregistrovaná', active='btc')
 
+@user_passes_test(verification_check)
 @login_required
 def withdrawal_ltc(request):
     try:
@@ -679,16 +708,20 @@ def withdrawal_ltc(request):
 def staff_check(user):
     return user.is_staff
 
+@user_passes_test(verification_check)
 @user_passes_test(staff_check)
 @login_required
 def management_verification(request, success=None):
-    context = {}
+    context = {
+        'unverified': CustomUser.objects.filter(is_verified=False)
+    }
     if success == True:
         context.update({'ok_message': "Užívateľ overený"})
     if success == False:
         context.update({'error_message': "Užívateľ nenájdený"})
     return render(request, 'xbtzmenarenapp/management/verification.html', context)
 
+@user_passes_test(verification_check)
 @user_passes_test(staff_check)
 @login_required
 def management_verification_attempt(request):
@@ -701,6 +734,7 @@ def management_verification_attempt(request):
     user.save()
     return management_verification(request, True)
 
+@user_passes_test(verification_check)
 @user_passes_test(staff_check)
 @login_required
 def management_withdrawals(request, active='eur'):
@@ -715,6 +749,7 @@ def management_withdrawals(request, active='eur'):
     }
     return render(request, 'xbtzmenarenapp/management/withdrawals.html', context)
 
+@user_passes_test(verification_check)
 @user_passes_test(staff_check)
 @login_required
 def management_withdrawal_eur_check(request, withdrawal_id):
@@ -724,6 +759,7 @@ def management_withdrawal_eur_check(request, withdrawal_id):
     withdrawal.save()
     return management_withdrawals(request, 'eur')
 
+@user_passes_test(verification_check)
 @user_passes_test(staff_check)
 @login_required
 def management_withdrawal_btc_check(request, withdrawal_id):
@@ -733,6 +769,7 @@ def management_withdrawal_btc_check(request, withdrawal_id):
     withdrawal.save()
     return management_withdrawals(request, 'btc')
 
+@user_passes_test(verification_check)
 @user_passes_test(staff_check)
 @login_required 
 def management_withdrawal_ltc_check(request, withdrawal_id):
@@ -742,6 +779,7 @@ def management_withdrawal_ltc_check(request, withdrawal_id):
     withdrawal.save()
     return management_withdrawals(request, 'ltc')
 
+@user_passes_test(verification_check)
 @user_passes_test(staff_check)
 @login_required
 def management_deposits(request, error_message=None):
@@ -752,6 +790,7 @@ def management_deposits(request, error_message=None):
     return render(request, 'xbtzmenarenapp/management/deposits.html', context)
 
 
+@user_passes_test(verification_check)
 @user_passes_test(staff_check)
 @login_required
 def management_deposit_attempt(request):
@@ -772,6 +811,7 @@ def management_deposit_attempt(request):
         return management_deposits(request, 'Neplatný variabilný symbol')
     return management_deposits(request)
 
+@user_passes_test(verification_check)
 @user_passes_test(staff_check)
 @login_required
 def management_balances(request):
@@ -844,6 +884,7 @@ def management_balances(request):
     }
     return render(request, 'xbtzmenarenapp/management/balances.html', context)
 
+@user_passes_test(verification_check)
 @user_passes_test(staff_check)
 @login_required
 def management_buys(request):
@@ -853,6 +894,7 @@ def management_buys(request):
     }
     return render(request, 'xbtzmenarenapp/management/buys.html', context)
 
+@user_passes_test(verification_check)
 @user_passes_test(staff_check)
 @login_required
 def management_sells(request):
@@ -862,6 +904,7 @@ def management_sells(request):
     }
     return render(request, 'xbtzmenarenapp/management/sells.html', context)
 
+@user_passes_test(verification_check)
 @user_passes_test(staff_check)
 @login_required
 def management_orderbook(request):
@@ -872,3 +915,7 @@ def management_orderbook(request):
         'sell_ltc': Order_sell_ltc.objects.all().order_by('price')[:100],
     }
     return render(request, 'xbtzmenarenapp/management/orderbook.html', context)
+
+@login_required
+def wait_for_verification(request):
+    return render(request, 'xbtzmenarenapp/waitForVerification.html', {})

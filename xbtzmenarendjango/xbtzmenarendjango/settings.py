@@ -143,7 +143,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
-LOGIN_REDIRECT_URL = '/buy'
+LOGIN_REDIRECT_URL = '/wait'
 
 # Use custom user model
 AUTH_USER_MODEL = 'xbtzmenarenapp.CustomUser'
