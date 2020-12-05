@@ -140,3 +140,32 @@ then: `systemctl reload apache2`
         SSLCipherSuite HIGH:!aNULL:!MD5
 </VirtualHost>
 ```
+### Fix ...ModuleNotFoundError: No module named 'xbtzmenarendjango'...
+
+Do edit:
+`/var/www/xbtzmenarendjango/xbtzmenarendjango/wsgi.py` to contain: `sys.path.append('/var/www/xbtzmenarendjango')`
+
+for example:
+
+```
+import os
+import sys
+
+sys.path.append('/var/www/xbtzmenarendjango')
+
+from django.core.wsgi import get_wsgi_application
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'xbtzmenarendjango.settings')
+
+application = get_wsgi_application()
+
+# j4nk0:
+import os
+os.chdir('..')
+import threading
+from xbtzmenarenapp.bitcoin_driver import listen as btc_listen
+from xbtzmenarenapp.litecoin_driver import listen as ltc_listen
+
+threading.Thread(target=btc_listen, daemon=True).start()
+threading.Thread(target=ltc_listen, daemon=True).start()
+```
