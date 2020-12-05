@@ -96,6 +96,18 @@ class Incoming_ltcAdmin(admin.ModelAdmin):
     list_display = ('user', 'address', 'ltc', 'confirmations', 'txid')
     search_fields = ('user', 'address', 'ltc', 'confirmations', 'txid')
 
+class QuestionareAdmin(admin.ModelAdmin):
+    list_display = ('user',
+        'question1', 'question2', 'question3', 'question4', \
+        'question5', 'question6', 'question7', 'question8', \
+        'question9', 'question10'
+    )
+    search_fields = ('user',
+        'question1', 'question2', 'question3', 'question4', \
+        'question5', 'question6', 'question7', 'question8', \
+        'question9', 'question10'
+    )
+
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Address, AddressAdmin)
 admin.site.register(Balance, BalanceAdmin)
@@ -115,4 +127,5 @@ admin.site.register(Order_buy_ltc, Order_buy_ltcAdmin)
 admin.site.register(Order_sell_ltc, Order_sell_ltcAdmin)
 admin.site.register(Incoming_btc, Incoming_btcAdmin)
 admin.site.register(Incoming_ltc, Incoming_ltcAdmin)
+admin.site.register(Questionare, QuestionareAdmin)
 
