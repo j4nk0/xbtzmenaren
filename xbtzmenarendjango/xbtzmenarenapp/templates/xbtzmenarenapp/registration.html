@@ -5,20 +5,24 @@
     <div class="alert alert-danger"> {{ error_message }} </div>
   {% endif %}
   <div class="container">
-    <form action="{% url 'registration-attempt' %}" method="post">
+    <h1>Registrácia</h1>
+    <form action="{% url 'registration-attempt' %}" method="post" enctype="multipart/form-data">
       {% csrf_token %}
-      <div class="form-group">
-        <label for="usr">E-mail:</label>
-        <input type="text" class="form-control" name="email"/>
+      <div class="container">
+        <div class="form-group">
+          <label for="usr">E-mail:</label>
+          <input type="text" class="form-control" name="email"/>
+        </div>
+        <div class="form-group">
+          <label for="password">Heslo:</label>
+          <input type="password" class="form-control" name="password"/>
+        </div>
+        <div class="form-group">
+          <label for="password">Heslo znova:</label>
+          <input type="password" class="form-control" name="password-again"/>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="password">Heslo:</label>
-        <input type="password" class="form-control" name="password"/>
-      </div>
-      <div class="form-group">
-        <label for="password">Heslo znova:</label>
-        <input type="password" class="form-control" name="password-again"/>
-      </div>
+      {{ questionare }}
       <button type="submit" class="btn btn-default">Registrovať</button>
     </form>
   </div>

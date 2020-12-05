@@ -5,6 +5,8 @@ from . import views
 urlpatterns = [
     path('', views.public_rates, name='public-rates'),
 
+    path('wait/', views.wait_for_verification, name='wait'),
+
     path('buy/', views.buy, name='buy'),
     path('buy-btc/', views.buy_btc, name='buy-btc'),
     path('buy-ltc/', views.buy_ltc, name='buy-ltc'),
