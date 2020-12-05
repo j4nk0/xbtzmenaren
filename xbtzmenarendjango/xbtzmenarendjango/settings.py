@@ -151,3 +151,6 @@ AUTH_USER_MODEL = 'xbtzmenarenapp.CustomUser'
 # django-axes clears failed login attempts after 1 hour of inactivity
 AXES_COOLOFF_TIME = 1
 
+# File storage:
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

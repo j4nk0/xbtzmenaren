@@ -453,6 +453,11 @@ def registration(request, error_message=None):
     }
     return render(request, 'xbtzmenarenapp/registration.html', context)
 
+def handle_uploaded_file(email, file_description, new_file):
+    with open('media/' + email + file_description, 'wb+') as destination:
+        for chunk in new_file.chunks():
+            destination.write(chunk)
+
 def registration_attempt(request):
     if request.POST['password'] != request.POST['password-again']:
         return registration(request, 'Heslá sa nezhodujú')
@@ -471,6 +476,9 @@ def registration_attempt(request):
     except:
         return registration(request, 'Email je už registrovaný')
     try:
+        handle_uploaded_file(email, 'id_img_front', request.FILES['id_img_front'])
+        handle_uploaded_file(email, 'id_img_back', request.FILES['id_img_back'])
+        handle_uploaded_file(email, 'face_img', request.FILES['face_img'])
         Address.objects.create(
             user=CustomUser.objects.get(email=email),
             vs=f'{CustomUser.objects.get(email=email).id:010}',
@@ -497,6 +505,7 @@ def registration_attempt(request):
             question10=int(request.POST['q10']),
         )
     except:
+        raise
         CustomUser.objects.filter(email=email).delete()
         return registration(request, 'Chyba')
     return redirect('login')
