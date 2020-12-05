@@ -5,6 +5,7 @@
     <div class="alert alert-danger"> {{ error_message }} </div>
   {% endif %}
   <div class="container">
+    <h1>Registrácia</h1>
     <form action="{% url 'registration-attempt' %}" method="post" enctype="multipart/form-data">
       {% csrf_token %}
       <div class="container">
