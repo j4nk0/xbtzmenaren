@@ -169,3 +169,12 @@ from xbtzmenarenapp.litecoin_driver import listen as ltc_listen
 threading.Thread(target=btc_listen, daemon=True).start()
 threading.Thread(target=ltc_listen, daemon=True).start()
 ```
+
+## Enable file upload:
+
+Add to settings.py:
+```
+MEDIA_ROOT = '/var/www/xbtzmenarendjango/media/'
+MEDIA_URL = 'https://xbtzmenaren.ddns.net/media/'
+```
+and use this syntax inviews.py:`with open('/var/www/xbtzmenarendjango/media/' + email + file_description, 'wb+') as destination:`
