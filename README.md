@@ -178,3 +178,67 @@ MEDIA_ROOT = '/var/www/xbtzmenarendjango/media/'
 MEDIA_URL = 'https://xbtzmenaren.ddns.net/media/'
 ```
 and use this syntax in views.py:`with open('/var/www/xbtzmenarendjango/media/' + email + file_description, 'wb+') as destination:`
+
+
+## Adding new currency - DOGE:
+
+### Adding models:
+
+to `xbtzmenarendjango/zbtzmenarenapp/models`  add:
+```
+DECIMAL_PLACES_DOGE = 8
+DECIMAL_PLACES_DOGE = 18
+
+class Address(models.Model):
+    ...
+    doge = models.CharField(max_length=100, unique=True)
+
+class Balance(models.Model):
+    ...
+    doge = models.DecimalField(max_digits=MAX_DIGITS_DOGE, decimal_places=DECIMAL_PLACES_DOGE)
+
+class Withdrawal_doge(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    time_created = models.DateTimeField()
+    time_processed = models.DateTimeField(null=True)
+    doge = models.DecimalField(max_digits=MAX_DIGITS_DOGE, decimal_places=DECIMAL_PLACES_DOGE)
+    address = models.CharField(max_length=100)
+    is_pending = models.BooleanField(default=True)
+
+class Buy_doge(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    datetime = models.DateTimeField()
+    doge = models.DecimalField(max_digits=MAX_DIGITS_DOGE, decimal_places=DECIMAL_PLACES_DOGE)
+    eur = models.DecimalField(max_digits=MAX_DIGITS_EUR, decimal_places=DECIMAL_PLACES_EUR)
+
+class Sell_doge(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    datetime = models.DateTimeField()
+    doge = models.DecimalField(max_digits=MAX_DIGITS_DOGE, decimal_places=DECIMAL_PLACES_DOGE)
+    eur = models.DecimalField(max_digits=MAX_DIGITS_EUR, decimal_places=DECIMAL_PLACES_EUR)
+
+class Deposit_doge(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    address = models.CharField(max_length=100)
+    doge = models.DecimalField(max_digits=MAX_DIGITS_DOGE, decimal_places=DECIMAL_PLACES_DOGE)
+    datetime = models.DateTimeField()
+
+class Order_buy_doge(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    doge = models.DecimalField(max_digits=MAX_DIGITS_DOGE, decimal_places=DECIMAL_PLACES_DOGE)
+    price = models.DecimalField(max_digits=MAX_DIGITS_PRICE, decimal_places=DECIMAL_PLACES_PRICE)
+    datetime = models.DateTimeField()
+
+class Order_sell_doge(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    doge = models.DecimalField(max_digits=MAX_DIGITS_DOGE, decimal_places=DECIMAL_PLACES_DOGE)
+    price = models.DecimalField(max_digits=MAX_DIGITS_PRICE, decimal_places=DECIMAL_PLACES_PRICE)
+    datetime = models.DateTimeField()
+
+class Incoming_doge(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    address = models.CharField(max_length=100)
+    doge = models.DecimalField(max_digits=MAX_DIGITS_DOGE, decimal_places=DECIMAL_PLACES_DOGE)
+    confirmations = models.IntegerField()
+    txid = models.CharField(max_length=64)
+```
