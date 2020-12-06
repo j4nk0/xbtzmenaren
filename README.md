@@ -184,7 +184,7 @@ and use this syntax in views.py:`with open('/var/www/xbtzmenarendjango/media/' +
 
 ### Adding models:
 
-to `xbtzmenarendjango/zbtzmenarenapp/models`  add:
+to `xbtzmenarendjango/zbtzmenarenapp/models.py` add:
 ```
 DECIMAL_PLACES_DOGE = 8
 DECIMAL_PLACES_DOGE = 18
@@ -242,3 +242,53 @@ class Incoming_doge(models.Model):
     confirmations = models.IntegerField()
     txid = models.CharField(max_length=64)
 ```
+
+### Registering models in admin.py:
+
+```
+class AddressAdmin(admin.ModelAdmin):
+    list_display = ('user', 'vs', 'btc', 'ltc', 'doge',)
+    search_fields = ('vs',)
+
+class BalanceAdmin(admin.ModelAdmin):
+    list_display = ('user', 'eur', 'btc', 'ltc', 'doge',)
+    search_fields = ('eur', 'btc', 'ltc', 'doge',)
+
+class Withdrawal_dogeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'time_created', 'time_processed', 'address', 'doge', 'is_pending')
+    search_fields = ('address', 'doge',)
+    list_filter = ('is_pending',)
+
+class Buy_dogeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'datetime', 'doge', 'eur',)
+    search_fields = ('user', 'doge', 'eur')
+
+class Sell_dogeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'datetime', 'doge', 'eur',)
+    search_fields = ('user', 'doge', 'eur')
+
+class Deposit_dogeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'address', 'doge', 'datetime',)
+    search_fields = ('user', 'address', 'doge', 'datetime',)
+
+class Order_buy_dogeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'doge', 'price', 'datetime',)
+    search_fields = ('user', 'doge', 'price', 'datetime',)
+
+class Order_sell_dogeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'doge', 'price', 'datetime',)
+    search_fields = ('user', 'doge', 'price', 'datetime',)
+
+class Incoming_dogeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'address', 'doge', 'confirmations', 'txid')
+    search_fields = ('user', 'address', 'doge', 'confirmations', 'txid')
+
+admin.site.register(Withdrawal_doge, Withdrawal_dogeAdmin)
+admin.site.register(Buy_doge, Buy_dogeAdmin)
+admin.site.register(Sell_doge, Sell_dogeAdmin)
+admin.site.register(Deposit_doge, Deposit_dogeAdmin)
+admin.site.register(Order_buy_doge, Order_buy_dogeAdmin)
+admin.site.register(Order_sell_doge, Order_sell_dogeAdmin)
+admin.site.register(Incoming_doge, Incoming_dogeAdmin)
+```
+
