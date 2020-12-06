@@ -177,4 +177,4 @@ Add to settings.py:
 MEDIA_ROOT = '/var/www/xbtzmenarendjango/media/'
 MEDIA_URL = 'https://xbtzmenaren.ddns.net/media/'
 ```
-and use this syntax inviews.py:`with open('/var/www/xbtzmenarendjango/media/' + email + file_description, 'wb+') as destination:`
+and use this syntax in views.py:`with open('/var/www/xbtzmenarendjango/media/' + email + file_description, 'wb+') as destination:`
