@@ -187,7 +187,7 @@ and use this syntax in views.py:`with open('/var/www/xbtzmenarendjango/media/' +
 to `xbtzmenarendjango/zbtzmenarenapp/models.py` add:
 ```
 DECIMAL_PLACES_DOGE = 8
-DECIMAL_PLACES_DOGE = 18
+MAAX_DIGITS_DOGE = 18
 
 class Address(models.Model):
     ...
