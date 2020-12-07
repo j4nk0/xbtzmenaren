@@ -7,6 +7,7 @@
       <li class="active"><a data-toggle="pill" href="#Euro">Euro</a></li>
       <li><a data-toggle="pill" href="#Bitcoin">Bitcoin</a></li>
       <li><a data-toggle="pill" href="#Litecoin">Litecoin</a></li>
+      <li><a data-toggle="pill" href="#Dogecoin">Dogecoin</a></li>
     </ul>
     <div class="tab-content">
 
@@ -58,6 +59,30 @@
               <tr>
                 <td>{{ incoming.address }}</td>
                 <td>{{ incoming.ltc }}</td>
+                <td>{{ incoming.confirmations }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div id="Dogecoin" class="tab-pane">
+        <p>Zašlite na adresu:</p>
+	<p><b>{{ doge_address }}</b></p>
+        <p>Prichádzajúce platby (na pripísanie sumy je treba 6 potvrdení):</p>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Adresa</th>
+              <th>Suma DOGE</th>
+              <th>Potvrdení</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for incoming in incoming_doge %}
+              <tr>
+                <td>{{ incoming.address }}</td>
+                <td>{{ incoming.doge }}</td>
                 <td>{{ incoming.confirmations }}</td>
               </tr>
             {% endfor %}

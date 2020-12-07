@@ -809,3 +809,96 @@ def management_orderbook(request):
         'sell_doge': Order_sell_doge.objects.all().order_by('price')[:100],
 ```
 
+### add to templates:
+
+#### buy.html:
+
+```
+      ...
+      {% if active == "doge" %}
+        <li class="active" >
+      {% else %}
+        <li>
+      {% endif %}
+          <a data-toggle="pill" href="#Dogecoin">Dogecoin</a>
+        </li>
+      ...
+      {% if active == "doge" %}
+      <div id="Dogecoin" class="tab-pane active">
+      {% else %}
+      <div id="Dogecoin" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'buy-doge' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Nakúpiť za EUR:</label>
+            <input id="sum_eur_doge" type="text" class="form-control" name="sum_eur"/>
+          </div>
+          <div>Poplatky: <b id="fee_doge">{{ fee_doge }}</b> EUR</div>
+          <div>Nákup: <b>~</b><b id="sum_doge">{{ sum_doge }}</b> DOGE</div>
+          <button type="submit" class="btn btn-default">Kúpiť</button>
+        </form>
+      </div>
+      ...
+    $('#sum_eur_doge').on("change paste keyup", function() {
+      if(isNaN($('#sum_eur_doge').val()) 
+        || $('#sum_eur_doge').val() == ""
+        || $('#sum_eur_doge').val() == 0) 
+      {
+        $('#sum_doge').text("-");
+        $('#fee_doge').text("-");
+      };
+      $.post("{% url 'buy-doge-json' %}",
+        { sum_eur: $('#sum_eur_doge').val(), csrfmiddlewaretoken: '{{ csrf_token }}' },
+        function(data) {
+          $('#sum_doge').text(data.doge);
+          $('#fee_doge').text(data.fee);
+        }
+      );
+    });
+```
+
+#### deposit.html:
+
+```
+
+    ...
+      <li><a data-toggle="pill" href="#Dogecoin">Dogecoin</a></li>
+    ...
+      <div id="Dogecoin" class="tab-pane">
+        <p>Zašlite na adresu:</p>
+	<p><b>{{ doge_address }}</b></p>
+        <p>Prichádzajúce platby (na pripísanie sumy je treba 6 potvrdení):</p>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Adresa</th>
+              <th>Suma DOGE</th>
+              <th>Potvrdení</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for incoming in incoming_doge %}
+              <tr>
+                <td>{{ incoming.address }}</td>
+                <td>{{ incoming.doge }}</td>
+                <td>{{ incoming.confirmations }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+```
+
+#### limitOrderBuy.html:
+
+```
+```
+
+#### limitOrderSell.html
+#### portfolio.html
+#### privateRates.html
+#### publicRates.html
+#### sell.html
+#### withdrawal.html
+#### management/...
