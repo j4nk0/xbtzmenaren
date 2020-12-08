@@ -893,12 +893,524 @@ def management_orderbook(request):
 #### limitOrderBuy.html:
 
 ```
+      ...
+      {% if active == "doge" %}
+        <li class="active" >
+      {% else %}
+        <li>
+      {% endif %}
+          <a data-toggle="pill" href="#Dogecoin">Dogecoin</a>
+        </li>
+      ...
+      {% if active == "doge" %}
+      <div id="Dogecoin" class="tab-pane active">
+      {% else %}
+      <div id="Dogecoin" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'limit-order-buy-doge' %}" method="post">
+          {% csrf_token %}
+          <div>Maximálna celková cena: <b id="max_sum_eur">{{ max_sum_eur }}</b> EUR</div>
+          <div class="form-group">
+            <label for="usr">Množstvo DOGE:</label>
+            <input id="sum_doge" type="text" class="form-control" name="sum_doge"/>
+          </div>
+          <div class="form-group">
+            <label for="usr">Cena DOGE-EUR:</label>
+            <input id="price_doge" type="text" class="form-control" name="price_doge"/>
+          </div>
+          <div>Poplatky: <b id="fee_eur_doge">-</b> EUR</div>
+          <div>Celková cena: <b id="sum_eur_doge">-</b> EUR</div>
+          <button type="submit" class="btn btn-default">Objednať</button>
+        </form>
+
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>DOGE</b></td>
+                <td><b>Cena</b></td>
+                <td><b>Čas</b></td>
+                <td><b>Zrušiť</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for order in orders_doge %}
+              <tr>
+                <td>{{ order.doge }}</td>
+                <td>{{ order.price }}</td>
+                <td>{{ order.datetime }}</td>
+                <td>
+                  <form action="{% url 'limit-order-buy-doge-delete' order.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-default">Zrušiť</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      ...
+    function onChangeDoge() {
+      if(isNaN($('#sum_doge').val()) 
+        || $('#sum_doge').val() == ""
+        || $('#sum_doge').val() == 0
+        || isNaN($('#price_doge').val()) 
+        || $('#price_doge').val() == ""
+        || $('#price_doge').val() == 0)
+      {
+        $('#fee_eur_doge').text("-");
+        $('#sum_eur_doge').text("-");
+      } else {
+        $.post("{% url 'limit-order-buy-doge-json' %}",
+          { 
+            sum_doge: $('#sum_doge').val(),
+            price_doge: $('#price_doge').val(),
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+          },
+          function(data) {
+            $('#fee_eur_doge').text(data.fee);
+            $('#sum_eur_doge').text(data.eur);
+          }
+        );
+      }
+    }
+    $('#sum_doge').on("change paste keyup", onChangeDoge);
+    $('#price_doge').on("change paste keyup", onChangeDoge);
 ```
 
 #### limitOrderSell.html
+
+```
+      ...
+      {% if active == "doge" %}
+        <li class="active" >
+      {% else %}
+        <li>
+      {% endif %}
+          <a data-toggle="pill" href="#Dogecoin">Dogecoin</a>
+        </li>
+      ...
+      {% if active == "doge" %}
+      <div id="Dogecoin" class="tab-pane active">
+      {% else %}
+      <div id="Dogecoin" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'limit-order-sell-doge' %}" method="post">
+          {% csrf_token %}
+          <div>Maximálne množstvo: <b id="max_sum_doge">{{ max_sum_doge }}</b> DOGE</div>
+          <div class="form-group">
+            <label for="usr">Množstvo DOGE:</label>
+            <input id="sum_doge" type="text" class="form-control" name="sum_doge"/>
+          </div>
+          <div class="form-group">
+            <label for="usr">Cena DOGE-EUR:</label>
+            <input id="price_doge" type="text" class="form-control" name="price_doge"/>
+          </div>
+          <div>Poplatky: <b id="fee_eur_doge">-</b> EUR</div>
+          <div>Celková cena: <b id="sum_eur_doge">-</b> EUR</div>
+          <button type="submit" class="btn btn-default">Objednať</button>
+        </form>
+        
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>DOGE</b></td>
+                <td><b>Cena</b></td>
+                <td><b>Čas</b></td>
+                <td><b>Zrušiť</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for order in orders_doge %}
+              <tr>
+                <td>{{ order.doge }}</td>
+                <td>{{ order.price }}</td>
+                <td>{{ order.datetime }}</td>
+                <td>
+                  <form action="{% url 'limit-order-sell-doge-delete' order.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-default">Zrušiť</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      ...
+    function onChangeDoge() {
+      if(isNaN($('#sum_doge').val()) 
+        || $('#sum_doge').val() == ""
+        || $('#sum_doge').val() == 0
+        || isNaN($('#price_doge').val()) 
+        || $('#price_doge').val() == ""
+        || $('#price_doge').val() == 0)
+      {
+        $('#fee_eur_doge').text("-");
+        $('#sum_eur_doge').text("-");
+      } else {
+        $.post("{% url 'limit-order-sell-doge-json' %}",
+          { 
+            sum_doge: $('#sum_doge').val(),
+            price_doge: $('#price_doge').val(),
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+          },
+          function(data) {
+            $('#fee_eur_doge').text(data.fee);
+            $('#sum_eur_doge').text(data.eur);
+          }
+        );
+      }
+    }
+    $('#sum_doge').on("change paste keyup", onChangeDoge);
+    $('#price_doge').on("change paste keyup", onChangeDoge);
+```
+
 #### portfolio.html
-#### privateRates.html
-#### publicRates.html
+
+```
+        ...
+        <tr>
+          <td><b>{{ doge }}</b></td>
+          <td><b>DOGE</b></td>
+        </tr>
+        ...
+         <tr>
+          <td><b>{{ doge_in_orders }}</b></td>
+          <td><b>DOGE</b></td>
+        </tr>
+        ...
+```
+
+#### privateRates.html and publicRates.html
+
+```
+        ...
+        <tr>
+          <td><b>DOGE-EUR</b></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Nakúpite za</td>
+          <td><b id="dogeeur-buy">{{ dogeeur_buy }}</b></td>
+        </tr>
+        <tr>
+          <td>Predáte za</td>
+          <td><b id="dogeeur-sell">{{ dogeeur_sell }}</b></td>
+        </tr>
+        ...
+        $('#dogeeur-buy').text(response["DOGE-EUR"].buy);
+        $('#dogeeur-sell').text(response["DOGE-EUR"].sell);
+        ...
+```
+ 
 #### sell.html
+
+```
+      ...
+      {% if active == "doge" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#Dogecoin">Dogecoin</a></li>
+      ...
+      {% if active == "doge" %}
+      <div id="Dogecoin" class="tab-pane active">
+      {% else %}
+      <div id="Dogecoin" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'sell-doge' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Predať DOGE:</label>
+            <input type="text" class="form-control" name="sum_doge" id="sum_doge"/>
+          </div>
+          <div>Poplatky: <b id="fee_doge">{{ fee_doge }}</b> EUR</div>
+          <div>Predaj za: <b>~</b><b id="sum_eur_doge">{{ sum_eur_doge }}</b> EUR</div>
+          <button type="submit" class="btn btn-default">Predať</button>
+        </form>
+      </div>
+      ...
+    $('#sum_doge').val('{{ max_sum_doge }}');
+    ...
+    $('#sum_doge').on("change paste keyup", function() {
+      if(isNaN($('#sum_doge').val()) 
+        || $('#sum_doge').val() == ""
+        || $('#sum_doge').val() == 0)
+      {
+        $('#sum_eur_doge').text("-");
+        $('#fee_doge').text("-");
+      };
+      $.post("{% url 'sell-doge-json' %}",
+        { sum_doge: $('#sum_doge').val(), csrfmiddlewaretoken: '{{ csrf_token }}' },
+        function(data) {
+          $('#sum_eur_doge').text(data.eur);
+          $('#fee_doge').text(data.fee);
+        }
+      );
+    });
+    ...
+```
+
 #### withdrawal.html
-#### management/...
+
+```
+      ...
+      {% if active == "doge" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#Dogecoin">Dogecoin</a></li>
+      ...
+      {% if active == "doge" %}
+      <div id="Dogecoin" class="tab-pane active">
+      {% else %}
+      <div id="Dogecoin" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'withdrawal-doge' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Vybrať DOGE:</label>
+            <input type="text" class="form-control" name="sum_doge" id="sum_doge"/>
+            <script>$('#sum_doge').val('{{ max_sum_doge }}');</script>
+          </div>
+          <div class="form-group">
+            <label for="usr">Zaslať na adresu:</label>
+            <input type="text" class="form-control"
+	      name="address_doge" id="address_doge"/>
+          </div>
+          <button type="submit" class="btn btn-default">Vybrať</button>
+        </form>
+      </div>
+      ...
+```
+
+#### management/balances.html
+
+```
+        ...
+        <tr>
+          <td><b>DOGE</b></td>
+          <td>{{ non_staff_doge }}</td>
+          <td>{{ staff_doge }}</td>
+          <td>{{ total_doge }}</td>
+        </tr>
+        ...
+        <tr>
+          <td><b>DOGE</b></td>
+          <td>{{ doge_in_orders_non_staff }}</td>
+          <td>{{ doge_in_orders_staff }}</td>
+          <td>{{ doge_in_orders_total }}</td>
+        </tr>
+      </tbody>
+      ...
+```
+
+#### management/buys.html
+
+```
+      ...
+      <li><a data-toggle="pill" href="#Dogecoin">Dogecoin</a></li>
+      ...
+      <div id="Dogecoin" class="tab-pane">
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>Čas</b></td>
+                <td><b>DOGE</b></td>
+                <td><b>EUR</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for buy in buys_doge %}
+              <tr>
+                <td>{{ buy.user }}</td>
+                <td>{{ buy.datetime }}</td>
+                <td>{{ buy.doge }}</td>
+                <td>{{ buy.eur }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      ...
+```
+
+#### management/orderbook.html
+
+```
+      ...
+      <li><a data-toggle="pill" href="#Dogecoin">Dogecoin</a></li>
+      ...
+      <div id="Dogecoin" class="tab-pane">
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Nákupy<b></td>
+              </tr>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>DOGE</b></td>
+                <td><b>Cena</b></td>
+                <td><b>Čas</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for order in buy_doge %}
+              <tr>
+                <td>{{ order.user }}</td>
+                <td>{{ order.doge }}</td>
+                <td>{{ order.price }}</td>
+                <td>{{ order.datetime }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Predaje<b></td>
+              </tr>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>DOGE</b></td>
+                <td><b>Cena</b></td>
+                <td><b>Čas</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for order in sell_doge %}
+              <tr>
+                <td>{{ order.user }}</td>
+                <td>{{ order.doge }}</td>
+                <td>{{ order.price }}</td>
+                <td>{{ order.datetime }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      ...
+```
+
+#### management/sells.html
+
+```
+      ...
+      <li><a data-toggle="pill" href="#Dogecoin">Dogecoin</a></li>
+      ...
+      <div id="Dogecoin" class="tab-pane">
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>Čas</b></td>
+                <td><b>DOGE</b></td>
+                <td><b>EUR</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for sell in sells_doge %}
+              <tr>
+                <td>{{ sell.user }}</td>
+                <td>{{ sell.datetime }}</td>
+                <td>{{ sell.doge }}</td>
+                <td>{{ sell.eur }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      ...
+```
+
+#### management/withdrawals.html
+
+```
+      ...
+      {% if active == "doge" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#Dogecoin">Dogecoin</a></li>
+      ...
+      {% if active == "doge" %}
+      <div id="Dogecoin" class="tab-pane active">
+      {% else %}
+      <div id="Dogecoin" class="tab-pane">
+      {% endif %}
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>Adresa</b></td>
+                <td><b>Suma</b></td>
+                <td><b>Vytvorené</b></td>
+                <td><b>Vybavené</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for withdrawal in old_withdrawals_doge %}
+              <tr>
+                <td>{{ withdrawal.user }}</td>
+                <td>{{ withdrawal.address }}</td>
+                <td>{{ withdrawal.doge }}</td>
+                <td>{{ withdrawal.time_created }}</td>
+                <td>{{ withdrawal.time_processed }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>Adresa</b></td>
+                <td><b>Suma</b></td>
+                <td><b>Vytvorené</b></td>
+                <td><b>Vybavené</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for withdrawal in withdrawals_doge %}
+              <tr>
+                <td>{{ withdrawal.user }}</td>
+                <td>{{ withdrawal.address }}</td>
+                <td>{{ withdrawal.doge }}</td>
+                <td>{{ withdrawal.time_created }}</td>
+                <td>
+                  <form action="{% url 'management-withdrawal-doge-check' withdrawal.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-default">Vybavené</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      ...
+```
+
+### Add to URLS:
+
+```
+    ...
+    path('buy-doge/', views.buy_doge, name='buy-doge'),
+    path('sell-doge/', views.sell_doge, name='sell-doge'),
+    path('limit-order-buy-doge/', views.limit_order_buy_doge, name='limit-order-buy-doge'),
+    path('limit-order-buy-doge/json', views.limit_order_buy_doge_json, name='limit-order-buy-doge-json'),
+    path('limit-order-sell-doge/', views.limit_order_sell_doge, name='limit-order-sell-doge'),
+    path('limit-order-sell-doge/json', views.limit_order_sell_doge_json, name='limit-order-sell-doge-json'),
+    path('limit-order-buy-doge-delete/<int:order_id>', views.limit_order_buy_doge_delete, name='limit-order-buy-doge-delete'),
+    path('limit-order-sell-doge-delete/<int:order_id>', views.limit_order_sell_doge_delete, name='limit-order-sell-doge-delete'),
+    path('buy-doge/json', views.buy_doge_json, name='buy-doge-json'),
+    path('sell-doge/json', views.sell_doge_json, name='sell-doge-json'),
+    path('withdrawal-doge/', views.withdrawal_doge, name='withdrawal-doge'),
+    path('management/withdrawal-doge-check/<int:withdrawal_id>', views.management_withdrawal_doge_check, name='management-withdrawal-doge-check'),
+    ...
+```

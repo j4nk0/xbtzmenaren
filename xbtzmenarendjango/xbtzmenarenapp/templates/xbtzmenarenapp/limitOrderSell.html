@@ -24,6 +24,13 @@
       {% endif %}
           <a data-toggle="pill" href="#Litecoin">Litecoin</a>
         </li>
+      {% if active == "doge" %}
+        <li class="active" >
+      {% else %}
+        <li>
+      {% endif %}
+          <a data-toggle="pill" href="#Dogecoin">Dogecoin</a>
+        </li>
     </ul>
     <div class="tab-content">
 
@@ -123,6 +130,54 @@
         </table>
       </div>
 
+      {% if active == "doge" %}
+      <div id="Dogecoin" class="tab-pane active">
+      {% else %}
+      <div id="Dogecoin" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'limit-order-sell-doge' %}" method="post">
+          {% csrf_token %}
+          <div>Maximálne množstvo: <b id="max_sum_doge">{{ max_sum_doge }}</b> DOGE</div>
+          <div class="form-group">
+            <label for="usr">Množstvo DOGE:</label>
+            <input id="sum_doge" type="text" class="form-control" name="sum_doge"/>
+          </div>
+          <div class="form-group">
+            <label for="usr">Cena DOGE-EUR:</label>
+            <input id="price_doge" type="text" class="form-control" name="price_doge"/>
+          </div>
+          <div>Poplatky: <b id="fee_eur_doge">-</b> EUR</div>
+          <div>Celková cena: <b id="sum_eur_doge">-</b> EUR</div>
+          <button type="submit" class="btn btn-default">Objednať</button>
+        </form>
+        
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>DOGE</b></td>
+                <td><b>Cena</b></td>
+                <td><b>Čas</b></td>
+                <td><b>Zrušiť</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for order in orders_doge %}
+              <tr>
+                <td>{{ order.doge }}</td>
+                <td>{{ order.price }}</td>
+                <td>{{ order.datetime }}</td>
+                <td>
+                  <form action="{% url 'limit-order-sell-doge-delete' order.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-default">Zrušiť</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
     </div>
   </div>
   <script>
@@ -179,5 +234,32 @@
     }
     $('#sum_ltc').on("change paste keyup", onChangeLtc);
     $('#price_ltc').on("change paste keyup", onChangeLtc);
+
+    function onChangeDoge() {
+      if(isNaN($('#sum_doge').val()) 
+        || $('#sum_doge').val() == ""
+        || $('#sum_doge').val() == 0
+        || isNaN($('#price_doge').val()) 
+        || $('#price_doge').val() == ""
+        || $('#price_doge').val() == 0)
+      {
+        $('#fee_eur_doge').text("-");
+        $('#sum_eur_doge').text("-");
+      } else {
+        $.post("{% url 'limit-order-sell-doge-json' %}",
+          { 
+            sum_doge: $('#sum_doge').val(),
+            price_doge: $('#price_doge').val(),
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+          },
+          function(data) {
+            $('#fee_eur_doge').text(data.fee);
+            $('#sum_eur_doge').text(data.eur);
+          }
+        );
+      }
+    }
+    $('#sum_doge').on("change paste keyup", onChangeDoge);
+    $('#price_doge').on("change paste keyup", onChangeDoge);
   </script>
 {% endblock %}
