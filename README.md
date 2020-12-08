@@ -11,6 +11,7 @@ pip install ./coinaddr-master   #BTC, LTC address validation
 pip install pycoingecko #coingecko api wrapper
 pip install python-bitcoinlib #bitcoin rpc caller
 pip install litecoin-requests #litecoin rpc caller
+pip install dogecoin-python   #dogecoin rpc caller
 ```
 
 ## Web server:
@@ -65,8 +66,9 @@ sudo python -m pip install django-axes #login throttling
 sudo python -m pip install schwifty==2020.1.1    #IBAN validation
 sudo python -m pip install ~/xbtzmenaren/coinaddr-master   #BTC, LTC address validation
 sudo python -m pip install pycoingecko #coingecko api wrapper
-sudo python -m pip install python-bitcoinlib #bitcoin.rpc caller
-sudo python -m pip install litecoin-requests
+sudo python -m pip install python-bitcoinlib #bitcoin rpc caller
+sudo python -m pip install litecoin-requests #litecoin rpc caller
+sudo python -m pip install dogecoin-python   #dogecoin rpc caller
 ```
 
 ### Start / stop / restart apache2:
