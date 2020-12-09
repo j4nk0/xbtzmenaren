@@ -11,7 +11,8 @@ pip install ./coinaddr-master   #BTC, LTC address validation
 pip install pycoingecko #coingecko api wrapper
 pip install python-bitcoinlib #bitcoin rpc caller
 pip install litecoin-requests #litecoin rpc caller
-pip install dogecoin-python   #dogecoin rpc caller
+#pip install dogecoin-python   #dogecoin rpc caller - not working
+pip install requests
 ```
 
 ## Web server:
@@ -69,6 +70,7 @@ sudo python -m pip install pycoingecko #coingecko api wrapper
 sudo python -m pip install python-bitcoinlib #bitcoin rpc caller
 sudo python -m pip install litecoin-requests #litecoin rpc caller
 sudo python -m pip install dogecoin-python   #dogecoin rpc caller
+sudo python -m pip install requests
 ```
 
 ### Start / stop / restart apache2:

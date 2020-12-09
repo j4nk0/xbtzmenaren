@@ -12,10 +12,11 @@ from django.db.models import F, Sum
 from decimal import Decimal as D
 from decimal import InvalidOperation
 from schwifty import IBAN
-from .check_address import is_valid_btc_address, is_valid_ltc_address
+from .check_address import is_valid_btc_address, is_valid_ltc_address, is_valid_doge_address
 import json
 from . import bitcoin_driver
 from . import litecoin_driver
+from . import dogecoin_driver
 from django import forms
 
 def dec(n, decimal_places):
@@ -729,7 +730,7 @@ def withdrawal(request, error_message=None, ok_message=None, active='eur'):
         'max_sum_eur': request.user.balance.eur,
         'max_sum_btc': request.user.balance.btc - bitcoin_driver.get_fee_per_kB(),
         'max_sum_ltc': request.user.balance.ltc - litecoin_driver.get_fee_per_kB(),
-        'max_sum_doge': request.user.balance.doge - dogecoin_driver.get_fee_per_kB(),
+        'max_sum_doge': request.user.balance.doge + dogecoin_driver.get_fee_per_kB(),
         'active': active,
     }
     return render(request, 'xbtzmenarenapp/withdrawal.html', context)
@@ -867,7 +868,7 @@ def withdrawal_doge(request):
                     user=request.user,
                     time_created=timezone.now(),
                     time_processed=timezone.now(),
-                    ltc=sum_doge,
+                    doge=sum_doge,
                     address=address_doge,
                     is_pending=False,
                 )

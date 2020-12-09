@@ -3,7 +3,6 @@ import json
 from .models import Incoming_doge, Deposit_doge, Address, Balance
 from django.db.models import F
 from django.utils import timezone
-import requests
 
 TRESHOLD_CONFIRMATIONS = 6
 CHECK_CONFIRMATIONS = 10
@@ -39,7 +38,7 @@ class conn():
         response = requests.post(url=self.url, auth=self.auth, data=payload, headers=self.headers)
         return response.json()['result']
 
-    def getbalance(self):
+    def getbalamce(self):
         payload = json.dumps({"method": 'getbalance', "params": []})
         response = requests.post(url=self.url, auth=self.auth, data=payload, headers=self.headers)
         return response.json()['result']
@@ -52,7 +51,7 @@ class conn():
     def send(self, address, amount, fee_per_kB):
         payload = json.dumps({"method": 'settxfee', "params": [fee_per_kB]})
         response = requests.post(url=self.url, auth=self.auth, data=payload, headers=self.headers)
-        payload = json.dumps({"method": 'sendtoaddress', "params": [address, str(amount)]})
+        payload = json.dumps({"method": 'sendtoaddress', "params": [address, amount]})
         response = requests.post(url=self.url, auth=self.auth, data=payload, headers=self.headers)
 
     def get_new_address(self):
@@ -64,7 +63,7 @@ def get_balance():
     return conn().getbalance()
 
 def get_fee_per_kB():
-    return conn().get_fee_per_kB()
+    return conn().get_fe_per_kB()
 
 def send(address, amount, fee_per_kB):
     conn().send(address, amount, fee_per_kB)
