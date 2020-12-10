@@ -21,6 +21,12 @@
       <li>
       {% endif %}
       <a data-toggle="pill" href="#Litecoin">Litecoin</a></li>
+      {% if active == "doge" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#Dogecoin">Dogecoin</a></li>
     </ul>
     <div class="tab-content">
       {% if active == "eur" %}
@@ -181,6 +187,62 @@
                 <td>{{ withdrawal.time_created }}</td>
                 <td>
                   <form action="{% url 'management-withdrawal-ltc-check' withdrawal.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-default">Vybavené</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if active == "doge" %}
+      <div id="Dogecoin" class="tab-pane active">
+      {% else %}
+      <div id="Dogecoin" class="tab-pane">
+      {% endif %}
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>Adresa</b></td>
+                <td><b>Suma</b></td>
+                <td><b>Vytvorené</b></td>
+                <td><b>Vybavené</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for withdrawal in old_withdrawals_doge %}
+              <tr>
+                <td>{{ withdrawal.user }}</td>
+                <td>{{ withdrawal.address }}</td>
+                <td>{{ withdrawal.doge }}</td>
+                <td>{{ withdrawal.time_created }}</td>
+                <td>{{ withdrawal.time_processed }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>Adresa</b></td>
+                <td><b>Suma</b></td>
+                <td><b>Vytvorené</b></td>
+                <td><b>Vybavené</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for withdrawal in withdrawals_doge %}
+              <tr>
+                <td>{{ withdrawal.user }}</td>
+                <td>{{ withdrawal.address }}</td>
+                <td>{{ withdrawal.doge }}</td>
+                <td>{{ withdrawal.time_created }}</td>
+                <td>
+                  <form action="{% url 'management-withdrawal-doge-check' withdrawal.id %}" method="post">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-default">Vybavené</button>
                   </form>

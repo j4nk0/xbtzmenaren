@@ -21,3 +21,10 @@ def is_valid_ltc_address(address):
     except:
         pass
     return False
+
+def is_valid_doge_address(address):
+    try:
+        if coinaddr.validate('doge', address.encode('UTF-8')).valid == True: return True
+    except:
+        pass
+    return False

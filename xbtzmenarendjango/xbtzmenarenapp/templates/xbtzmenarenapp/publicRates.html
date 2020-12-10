@@ -33,6 +33,18 @@
           <td>Predáte za</td>
           <td><b id="ltceur-sell">{{ ltceur_sell }}</b></td>
         </tr>
+        <tr>
+          <td><b>DOGE-EUR</b></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Nakúpite za</td>
+          <td><b id="dogeeur-buy">{{ dogeeur_buy }}</b></td>
+        </tr>
+        <tr>
+          <td>Predáte za</td>
+          <td><b id="dogeeur-sell">{{ dogeeur_sell }}</b></td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -43,6 +55,8 @@
         $('#btceur-sell').text(response["BTC-EUR"].sell);
         $('#ltceur-buy').text(response["LTC-EUR"].buy);
         $('#ltceur-sell').text(response["LTC-EUR"].sell);
+        $('#dogeeur-buy').text(response["DOGE-EUR"].buy);
+        $('#dogeeur-sell').text(response["DOGE-EUR"].sell);
       });
     };
     setInterval(reload, 3000);

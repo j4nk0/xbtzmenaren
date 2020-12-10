@@ -1,4 +1,5 @@
 import socket
+from decimal import Decimal as D
 from litecoin_requests import LitecoinRPC
 from litecoin_requests.litecoin import JSONRPCError
 import json
@@ -14,7 +15,12 @@ def get_balance():
     return rpc.getbalance()
 
 def get_fee_per_kB():
-    return rpc.estimatesmartfee(5)['feerate']
+    fee = D('0.002')
+    try:
+        fee = rpc.estimatesmartfee(5)['feerate']
+    except:
+        pass
+    return fee
 
 def send(address, amount, fee_per_kB):
     rpc.settxfee(fee_per_kB)
