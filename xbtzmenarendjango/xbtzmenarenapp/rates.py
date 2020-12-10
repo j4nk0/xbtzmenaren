@@ -91,7 +91,7 @@ def market_buy_''' + c + '''(user, sum_eur):
     bal = Balance.objects.filter(user=user)
     with transaction.atomic():
         bal.update(eur=F('eur') - D(sum_eur))
-        if bal.eur < 0: raise ValueError('Not enough funds')
+        if bal[0].eur < 0: raise ValueError('Not enough funds')
         Order_sell_''' + c + '''.objects.all().select_for_update()
         sum_eur = D(sum_eur) - fee_market_buy_''' + c + '''(sum_eur)
         sum_''' + c + ''' = 0
@@ -156,7 +156,7 @@ def market_sell_''' + c + '''(user, sum_''' + c + '''):
     bal = Balance.objects.filter(user=user)
     with transaction.atomic():
         bal.update(''' + c + '''=F("''' + c + '''") - sum_''' + c + ''')
-        if bal.''' + c + ''' < 0: raise ValueError('Not enough funds')
+        if bal[0].''' + c + ''' < 0: raise ValueError('Not enough funds')
         Order_buy_''' + c + '''.objects.all().select_for_update()
         sum_eur = 0
         for order in Order_buy_''' + c + '''.objects.all().order_by('-price'):
@@ -277,5 +277,4 @@ def delete_limit_order_sell_''' + c + '''(order_id):
         bal.update(''' + c + '''=F("''' + c + '''") + order.''' + c + ''')
 
 ''')
-
 
