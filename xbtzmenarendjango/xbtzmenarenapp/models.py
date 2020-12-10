@@ -83,147 +83,11 @@ class Withdrawal_eur(models.Model):
     iban = models.CharField(max_length=42)
     is_pending = models.BooleanField(default=True)
 
-class Withdrawal_btc(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    time_created = models.DateTimeField()
-    time_processed = models.DateTimeField(null=True)
-    btc = models.DecimalField(max_digits=MAX_DIGITS_BTC, decimal_places=DECIMAL_PLACES_BTC)
-    address = models.CharField(max_length=100)
-    is_pending = models.BooleanField(default=True)
-
-class Withdrawal_ltc(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    time_created = models.DateTimeField()
-    time_processed = models.DateTimeField(null=True)
-    ltc = models.DecimalField(max_digits=MAX_DIGITS_LTC, decimal_places=DECIMAL_PLACES_LTC)
-    address = models.CharField(max_length=100)
-    is_pending = models.BooleanField(default=True)
-
-class Withdrawal_doge(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    time_created = models.DateTimeField()
-    time_processed = models.DateTimeField(null=True)
-    doge = models.DecimalField(max_digits=MAX_DIGITS_DOGE, decimal_places=DECIMAL_PLACES_DOGE)
-    address = models.CharField(max_length=100)
-    is_pending = models.BooleanField(default=True)
-
-class Buy_btc(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    datetime = models.DateTimeField()
-    btc = models.DecimalField(max_digits=MAX_DIGITS_BTC, decimal_places=DECIMAL_PLACES_BTC)
-    eur = models.DecimalField(max_digits=MAX_DIGITS_EUR, decimal_places=DECIMAL_PLACES_EUR)
-
-class Sell_btc(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    datetime = models.DateTimeField()
-    btc = models.DecimalField(max_digits=MAX_DIGITS_BTC, decimal_places=DECIMAL_PLACES_BTC)
-    eur = models.DecimalField(max_digits=MAX_DIGITS_EUR, decimal_places=DECIMAL_PLACES_EUR)
-
-class Buy_ltc(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    datetime = models.DateTimeField()
-    ltc = models.DecimalField(max_digits=MAX_DIGITS_LTC, decimal_places=DECIMAL_PLACES_LTC)
-    eur = models.DecimalField(max_digits=MAX_DIGITS_EUR, decimal_places=DECIMAL_PLACES_EUR)
-
-class Sell_ltc(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    datetime = models.DateTimeField()
-    ltc = models.DecimalField(max_digits=MAX_DIGITS_LTC, decimal_places=DECIMAL_PLACES_LTC)
-    eur = models.DecimalField(max_digits=MAX_DIGITS_EUR, decimal_places=DECIMAL_PLACES_EUR)
-
-class Buy_doge(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    datetime = models.DateTimeField()
-    doge = models.DecimalField(max_digits=MAX_DIGITS_DOGE, decimal_places=DECIMAL_PLACES_DOGE)
-    eur = models.DecimalField(max_digits=MAX_DIGITS_EUR, decimal_places=DECIMAL_PLACES_EUR)
-
-class Sell_doge(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    datetime = models.DateTimeField()
-    doge = models.DecimalField(max_digits=MAX_DIGITS_DOGE, decimal_places=DECIMAL_PLACES_DOGE)
-    eur = models.DecimalField(max_digits=MAX_DIGITS_EUR, decimal_places=DECIMAL_PLACES_EUR)
-
 class Deposit_eur(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     vs = models.CharField(max_length=10)
     eur = models.DecimalField(max_digits=MAX_DIGITS_EUR, decimal_places=DECIMAL_PLACES_EUR)
     datetime = models.DateTimeField()
-
-class Deposit_btc(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    address = models.CharField(max_length=100)
-    btc = models.DecimalField(max_digits=MAX_DIGITS_BTC, decimal_places=DECIMAL_PLACES_BTC)
-    datetime = models.DateTimeField()
-
-class Deposit_ltc(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    address = models.CharField(max_length=100)
-    ltc = models.DecimalField(max_digits=MAX_DIGITS_LTC, decimal_places=DECIMAL_PLACES_LTC)
-    datetime = models.DateTimeField()
-
-class Deposit_doge(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    address = models.CharField(max_length=100)
-    doge = models.DecimalField(max_digits=MAX_DIGITS_DOGE, decimal_places=DECIMAL_PLACES_DOGE)
-    datetime = models.DateTimeField()
-
-class Order_buy_btc(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    btc = models.DecimalField(max_digits=MAX_DIGITS_BTC, decimal_places=DECIMAL_PLACES_BTC)
-    price = models.DecimalField(max_digits=MAX_DIGITS_PRICE, decimal_places=DECIMAL_PLACES_PRICE)
-    datetime = models.DateTimeField()
-
-class Order_sell_btc(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    btc = models.DecimalField(max_digits=MAX_DIGITS_BTC, decimal_places=DECIMAL_PLACES_BTC)
-    price = models.DecimalField(max_digits=MAX_DIGITS_PRICE, decimal_places=DECIMAL_PLACES_PRICE)
-    datetime = models.DateTimeField()
-
-class Order_buy_ltc(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    ltc = models.DecimalField(max_digits=MAX_DIGITS_LTC, decimal_places=DECIMAL_PLACES_LTC)
-    price = models.DecimalField(max_digits=MAX_DIGITS_PRICE, decimal_places=DECIMAL_PLACES_PRICE)
-    datetime = models.DateTimeField()
-
-class Order_sell_ltc(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    ltc = models.DecimalField(max_digits=MAX_DIGITS_LTC, decimal_places=DECIMAL_PLACES_LTC)
-    price = models.DecimalField(max_digits=MAX_DIGITS_PRICE, decimal_places=DECIMAL_PLACES_PRICE)
-    datetime = models.DateTimeField()
-
-class Order_buy_doge(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    doge = models.DecimalField(max_digits=MAX_DIGITS_DOGE, decimal_places=DECIMAL_PLACES_DOGE)
-    price = models.DecimalField(max_digits=MAX_DIGITS_PRICE, decimal_places=DECIMAL_PLACES_PRICE)
-    datetime = models.DateTimeField()
-
-class Order_sell_doge(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    doge = models.DecimalField(max_digits=MAX_DIGITS_DOGE, decimal_places=DECIMAL_PLACES_DOGE)
-    price = models.DecimalField(max_digits=MAX_DIGITS_PRICE, decimal_places=DECIMAL_PLACES_PRICE)
-    datetime = models.DateTimeField()
-
-class Incoming_btc(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    address = models.CharField(max_length=100)
-    btc = models.DecimalField(max_digits=MAX_DIGITS_BTC, decimal_places=DECIMAL_PLACES_BTC)
-    confirmations = models.IntegerField()
-    txid = models.CharField(max_length=64)
-
-class Incoming_ltc(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    address = models.CharField(max_length=100)
-    ltc = models.DecimalField(max_digits=MAX_DIGITS_LTC, decimal_places=DECIMAL_PLACES_LTC)
-    confirmations = models.IntegerField()
-    txid = models.CharField(max_length=64)
-
-class Incoming_doge(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    address = models.CharField(max_length=100)
-    doge = models.DecimalField(max_digits=MAX_DIGITS_DOGE, decimal_places=DECIMAL_PLACES_DOGE)
-    confirmations = models.IntegerField()
-    txid = models.CharField(max_length=64)
-
 
 class Questionare(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
@@ -237,3 +101,75 @@ class Questionare(models.Model):
     question8 = models.IntegerField()
     question9 = models.IntegerField()
     question10 = models.IntegerField()
+
+#======================= Generated code below: =======================#
+
+CURRENCIES = [
+    'btc',
+    'ltc',
+    'doge'
+]
+
+DECIMAL_PLACES = {
+    'btc': '8',
+    'ltc': '8',
+    'doge': '8',
+}
+
+MAX_DIGITS = {
+    'btc': '11',
+    'ltc': '14',
+    'doge': '18',
+}
+
+for c in CURRENCIES:
+    exec('''
+class Withdrawal_''' + c + '''(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    time_created = models.DateTimeField()
+    time_processed = models.DateTimeField(null=True)
+    ''' + c + ''' = models.DecimalField(max_digits=''' + MAX_DIGITS[c] + ''', decimal_places=''' + DECIMAL_PLACES[c] + ''')
+    address = models.CharField(max_length=100)
+    is_pending = models.BooleanField(default=True)
+
+class Buy_''' + c + '''(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    datetime = models.DateTimeField()
+    ''' + c + ''' = models.DecimalField(max_digits=''' + MAX_DIGITS[c] + ''', decimal_places=''' + DECIMAL_PLACES[c] + ''')
+    eur = models.DecimalField(max_digits=MAX_DIGITS_EUR, decimal_places=DECIMAL_PLACES_EUR)
+
+class Sell_''' + c + '''(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    datetime = models.DateTimeField()
+    ''' + c + ''' = models.DecimalField(max_digits=''' + MAX_DIGITS[c] + ''', decimal_places=''' + DECIMAL_PLACES[c] + ''')
+    eur = models.DecimalField(max_digits=MAX_DIGITS_EUR, decimal_places=DECIMAL_PLACES_EUR)
+
+class Deposit_''' + c + '''(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    address = models.CharField(max_length=100)
+    ''' + c + ''' = models.DecimalField(max_digits=''' + MAX_DIGITS[c] + ''', decimal_places=''' + DECIMAL_PLACES[c] + ''')
+    datetime = models.DateTimeField()
+
+class Order_buy_''' + c + '''(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    ''' + c + ''' = models.DecimalField(max_digits=''' + MAX_DIGITS[c] + ''', decimal_places=''' + DECIMAL_PLACES[c] + ''')
+    price = models.DecimalField(max_digits=MAX_DIGITS_PRICE, decimal_places=DECIMAL_PLACES_PRICE)
+    datetime = models.DateTimeField()
+
+class Order_sell_''' + c + '''(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    ''' + c + ''' = models.DecimalField(max_digits=''' + MAX_DIGITS[c] + ''', decimal_places=''' + DECIMAL_PLACES[c] + ''')
+    price = models.DecimalField(max_digits=MAX_DIGITS_PRICE, decimal_places=DECIMAL_PLACES_PRICE)
+    datetime = models.DateTimeField()
+
+class Incoming_''' + c + '''(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    address = models.CharField(max_length=100)
+    ''' + c + ''' = models.DecimalField(max_digits=''' + MAX_DIGITS[c] + ''', decimal_places=''' + DECIMAL_PLACES[c] + ''')
+    confirmations = models.IntegerField()
+    txid = models.CharField(max_length=64)
+
+
+''')
+
+
