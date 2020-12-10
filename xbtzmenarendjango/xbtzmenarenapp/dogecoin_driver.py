@@ -58,7 +58,7 @@ class conn():
     def get_new_address(self):
         payload = json.dumps({"method": 'getnewaddress', "params": []})
         response = requests.post(url=self.url, auth=self.auth, data=payload, headers=self.headers)
-        return response.json()['result']['feerate']
+        return response.json()['result']
 
 def get_balance():
     return conn().getbalance()
@@ -75,7 +75,7 @@ def get_new_address():
 def get_blockhash(blockhash):
     while True:
         yield blockhash
-        blockhash = RawProxy(btc_conf_file=CONF_PATH).getblock(blockhash)['previousblockhash']
+        blockhash = conn().getblock(blockhash)['previousblockhash']
 
 def listen():
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -102,17 +102,18 @@ def listen():
                 for output in tx['vout']:
                     for address in output['scriptPubKey']['addresses']:
                         if address in Address.objects.all().values_list('doge', flat=True):
-                            Incoming_btc.objects.create(
-                                user=Address.objects.get(btc=address).user,
+                            Incoming_doge.objects.create(
+                                user=Address.objects.get(doge=address).user,
                                 address=address,
-                                btc=output['value'],
+                                doge=output['value'],
                                 confirmations=0,
                                 txid=txid
                             )
                             displayed_address = Address.objects.get(doge=address)
-                            displayed_address.doge = conn().getnewaddress()
+                            displayed_address.doge = conn().get_new_address()
                             displayed_address.save()
             except:
+                raise
                 pass
         elif 'NEWBLOCK' in res:
             new_blockhash = res[res.find(':') +1:]
@@ -123,7 +124,7 @@ def listen():
                         Incoming_doge.objects.filter(txid=txid).update(confirmations=confirmations)
                         if confirmations >= TRESHOLD_CONFIRMATIONS:
                             for record in Incoming_doge.objects.filter(txid=txid).values('user', 'address', 'doge'):
-                                    Deposit_btc.objects.create(
+                                    Deposit_doge.objects.create(
                                         address=record['address'],
                                         doge=record['doge'],
                                         datetime=timezone.now(),
