@@ -14,9 +14,9 @@ from decimal import InvalidOperation
 from schwifty import IBAN
 from .check_address import is_valid_btc_address, is_valid_ltc_address, is_valid_doge_address
 import json
-from . import bitcoin_driver
-from . import litecoin_driver
-from . import dogecoin_driver
+from . import bitcoin_driver as btc_driver
+from . import litecoin_driver as ltc_driver
+from . import dogecoin_driver as doge_driver
 from django import forms
 
 def dec(n, decimal_places):
@@ -420,9 +420,9 @@ def registration_attempt(request):
         Address.objects.create(
             user=CustomUser.objects.get(email=email),
             vs=f'{CustomUser.objects.get(email=email).id:010}',
-            btc=bitcoin_driver.get_new_address(),
-            ltc=litecoin_driver.get_new_address(),
-            doge=dogecoin_driver.get_new_address(),
+            btc=btc_driver.get_new_address(),
+            ltc=ltc_driver.get_new_address(),
+            doge=doge_driver.get_new_address(),
         )
         Balance.objects.create(
             user=CustomUser.objects.get(email=email),
@@ -518,9 +518,9 @@ def withdrawal(request, error_message=None, ok_message=None, active='eur'):
         'error_message': error_message,
         'ok_message': ok_message,
         'max_sum_eur': request.user.balance.eur,
-        'max_sum_btc': request.user.balance.btc - bitcoin_driver.get_fee_per_kB(),
-        'max_sum_ltc': request.user.balance.ltc - litecoin_driver.get_fee_per_kB(),
-        'max_sum_doge': request.user.balance.doge + dogecoin_driver.get_fee_per_kB(),
+        'max_sum_btc': max(request.user.balance.btc - btc_driver.get_fee_per_kB(), 0),
+        'max_sum_ltc': max(request.user.balance.ltc - ltc_driver.get_fee_per_kB(), 0),
+        'max_sum_doge': max(request.user.balance.doge + doge_driver.get_fee_per_kB(), 0),
         'active': active,
     }
     return render(request, 'xbtzmenarenapp/withdrawal.html', context)
@@ -553,119 +553,46 @@ def withdrawal_eur(request):
         return withdrawal(request, error_message='Nesprávna hodnota', active='eur')
     return withdrawal(request, ok_message='Požiadavka zaregistrovaná', active='eur')
 
+for c in CURRENCIES:
+    exec('''
 @user_passes_test(verification_check)
 @login_required
-def withdrawal_btc(request):
+def withdrawal_''' + c + '''(request):
     try:
-        sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
+        sum_''' + c + ''' = dec(request.POST['sum_''' + c + ''''], ''' + DECIMAL_PLACES[c] + ''')
     except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota', active='btc')
-    address_btc = request.POST['address_btc']
-    if not is_valid_btc_address(address_btc):
-        return withdrawal(request, error_message='Nesprávna adresa', active='btc')
+        return withdrawal(request, error_message='Nesprávna hodnota', active="''' + c + '''")
+    address_''' + c + ''' = request.POST['address_''' + c + '''']
+    if not is_valid_''' + c + '''_address(address_''' + c + '''):
+        return withdrawal(request, error_message='Nesprávna adresa', active="''' + c + '''")
     try:
         with transaction.atomic():
-            fee = bitcoin_driver.get_fee_per_kB()
+            fee = ''' + c + '''_driver.get_fee_per_kB()
             balance = Balance.objects.filter(user=request.user)
-            balance.update(btc=F('btc') - (sum_bt + fee))
-            if balance[0].btc < 0: raise ValueError
-            if bitcoin_driver.get_balance() < (sum_btc + fee):
-                Withdrawal_btc.objects.create(
+            balance.update(''' + c + '''=F("''' + c + '''") - (sum_''' + c + ''' + fee))
+            if balance[0].''' + c + ''' < 0: raise ValueError
+            if ''' + c + '''_driver.get_balance() < (sum_''' + c + ''' + fee):
+                Withdrawal_''' + c + '''.objects.create(
                     user=request.user,
                     time_created=timezone.now(),
-                    btc=sum_btc,
-                    address=address_btc,
+                    ''' + c + '''=sum_''' + c + ''',
+                    address=address_''' + c + ''',
                     is_pending=True,
                 )
             else:
-                Withdrawal_btc.objects.create(
+                Withdrawal_''' + c + '''.objects.create(
                     user=request.user,
                     time_created=timezone.now(),
                     time_processed=timezone.now(),
-                    btc=sum_btc,
-                    address=address_btc,
+                    ''' + c + '''=sum_''' + c + ''',
+                    address=address_''' + c + ''',
                     is_pending=False,
                 )
-                bitcoin_driver.send(address_btc, sum_btc, fee)
+                ''' + c + '''_driver.send(address_''' + c + ''', sum_''' + c + ''', fee)
     except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota', active='btc')
-    return withdrawal(request, ok_message='Požiadavka zaregistrovaná', active='btc')
-
-@user_passes_test(verification_check)
-@login_required
-def withdrawal_ltc(request):
-    try:
-        sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
-    except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota', active='ltc')
-    address_ltc = request.POST['address_ltc']
-    if not is_valid_ltc_address(address_ltc):
-        return withdrawal(request, error_message='Nesprávna adresa', active='ltc')
-    try:
-        with transaction.atomic():
-            fee = litecoin_driver.get_fee_per_kB()
-            balance = Balance.objects.filter(user=request.user)
-            balance.update(ltc=F('ltc') - (sum_ltc + fee))
-            if balance[0].ltc < 0: raise ValueError
-            if litecoin_driver.get_balance() < (sum_ltc + fee):
-                Withdrawal_ltc.objects.create(
-                    user=request.user,
-                    time_created=timezone.now(),
-                    ltc=sum_ltc,
-                    address=address_ltc,
-                    is_pending=True,
-                )
-            else:
-                Withdrawal_ltc.objects.create(
-                    user=request.user,
-                    time_created=timezone.now(),
-                    time_processed=timezone.now(),
-                    ltc=sum_ltc,
-                    address=address_ltc,
-                    is_pending=False,
-                )
-                litecoin_driver.send(address_ltc, sum_ltc, fee)
-    except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota', active='ltc')
-    return withdrawal(request, ok_message='Požiadavka zaregistrovaná', active='ltc')
-
-@user_passes_test(verification_check)
-@login_required
-def withdrawal_doge(request):
-    try:
-        sum_doge = dec(request.POST['sum_doge'], DECIMAL_PLACES_DOGE)
-    except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota', active='doge')
-    address_doge = request.POST['address_doge']
-    if not is_valid_doge_address(address_doge):
-        return withdrawal(request, error_message='Nesprávna adresa', active='doge')
-    try:
-        with transaction.atomic():
-            fee = dogecoin_driver.get_fee_per_kB()
-            balance = Balance.objects.filter(user=request.user)
-            balance.update(doge=F('doge') - (sum_doge + fee))
-            if balance[0].doge < 0: raise ValueError
-            if dogecoin_driver.get_balance() < (sum_doge + fee):
-                Withdrawal_doge.objects.create(
-                    user=request.user,
-                    time_created=timezone.now(),
-                    doge=sum_doge,
-                    address=address_doge,
-                    is_pending=True,
-                )
-            else:
-                Withdrawal_doge.objects.create(
-                    user=request.user,
-                    time_created=timezone.now(),
-                    time_processed=timezone.now(),
-                    doge=sum_doge,
-                    address=address_doge,
-                    is_pending=False,
-                )
-                dogecoin_driver.send(address_doge, sum_doge, fee)
-    except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota', active='doge')
-    return withdrawal(request, ok_message='Požiadavka zaregistrovaná', active='doge')
+        return withdrawal(request, error_message='Nesprávna hodnota', active="''' + c + '''")
+    return withdrawal(request, ok_message='Požiadavka zaregistrovaná', active="''' + c + '''")
+''')
 
 def staff_check(user):
     return user.is_staff
