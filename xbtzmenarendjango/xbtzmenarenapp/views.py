@@ -445,7 +445,6 @@ def registration_attempt(request):
             question10=int(request.POST['q10']),
         )
     except:
-        raise
         CustomUser.objects.filter(email=email).delete()
         return registration(request, 'Chyba')
     return redirect('login')
