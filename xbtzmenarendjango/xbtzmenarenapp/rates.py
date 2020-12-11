@@ -61,565 +61,220 @@ def rates():
 
 #=======================BUYS========================================================================
 
-def fee_market_buy_btc(sum_eur):
+def fee_market_buy(sum_eur):
     fee = D(sum_eur) * D(0.02)
     if fee < D(1): fee = D(1)
     if fee > D(sum_eur): fee = D(sum_eur)
     return r(fee.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
 
-def fee_market_buy_ltc(sum_eur):
-    fee = D(sum_eur) * D(0.02)
-    if fee < D(1): fee = D(1)
-    if fee > D(sum_eur): fee = D(sum_eur)
-    return r(fee.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
 
-def fee_market_buy_doge(sum_eur):
-    fee = D(sum_eur) * D(0.02)
-    if fee < D(1): fee = D(1)
-    if fee > D(sum_eur): fee = D(sum_eur)
-    return r(fee.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
+for c in CURRENCIES:
+    exec('''
+def fee_market_buy_''' + c + '''(sum_eur):
+    return fee_market_buy(sum_eur)
 
-def preview_market_buy_btc(sum_eur):
+def preview_market_buy_''' + c + '''(sum_eur):
     sum_eur = D(sum_eur) - fee_market_buy_btc(sum_eur)
-    sum_btc = 0
-    for order in Order_sell_btc.objects.all().order_by('price'):
-        if order.btc * order.price > sum_eur:
-           sum_btc += sum_eur / order.price
+    sum_''' + c + ''' = 0
+    for order in Order_sell_''' + c + '''.objects.all().order_by('price'):
+        if order.''' + c + ''' * order.price > sum_eur:
+           sum_''' + c + ''' += sum_eur / order.price
            break
         else:
-            sum_eur -= order.btc * order.price
-            sum_btc += order.btc
-    if sum_btc <= 0: return 0
-    return r(sum_btc.quantize(D(0.1) ** DECIMAL_PLACES_BTC))
+            sum_eur -= order.''' + c + ''' * order.price
+            sum_''' + c + ''' += order.''' + c + '''
+    if sum_''' + c + ''' <= 0: return 0
+    return r(sum_''' + c + '''.quantize(D(0.1) ** ''' + DECIMAL_PLACES[c] + '''))
 
-def preview_market_buy_ltc(sum_eur):
-    sum_eur = D(sum_eur) - fee_market_buy_ltc(sum_eur)
-    sum_ltc = 0
-    for order in Order_sell_ltc.objects.all().order_by('price'):
-        if order.ltc * order.price > sum_eur:
-           sum_ltc += sum_eur / order.price
-           break
-        else:
-            sum_eur -= order.ltc * order.price
-            sum_ltc += order.ltc
-    if sum_ltc <= 0: return 0
-    return r(sum_ltc.quantize(D(0.1) ** DECIMAL_PLACES_LTC))
-
-def preview_market_buy_doge(sum_eur):
-    sum_eur = D(sum_eur) - fee_market_buy_doge(sum_eur)
-    sum_doge = 0
-    for order in Order_sell_doge.objects.all().order_by('price'):
-        if order.doge * order.price > sum_eur:
-           sum_doge += sum_eur / order.price
-           break
-        else:
-            sum_eur -= order.doge * order.price
-            sum_doge += order.doge
-    if sum_doge <= 0: return 0
-    return r(sum_doge.quantize(D(0.1) ** DECIMAL_PLACES_DOGE))
-
-def market_buy_btc(user, sum_eur):
+def market_buy_''' + c + '''(user, sum_eur):
     sum_eur_before_fees = D(sum_eur)
     bal = Balance.objects.filter(user=user)
     with transaction.atomic():
         bal.update(eur=F('eur') - D(sum_eur))
-        if bal.eur < 0: raise ValueError('Not enough funds')
-        Order_sell_btc.objects.all().select_for_update()
-        sum_eur = D(sum_eur) - fee_market_buy_btc(sum_eur)
-        sum_btc = 0
-        for order in Order_sell_btc.objects.all().order_by('price'):
-            if order.btc * order.price >= sum_eur:
-                sum_btc += sum_eur / order.price
-                order.btc -= sum_eur / order.price 
+        if bal[0].eur < 0: raise ValueError('Not enough funds')
+        Order_sell_''' + c + '''.objects.all().select_for_update()
+        sum_eur = D(sum_eur) - fee_market_buy_''' + c + '''(sum_eur)
+        sum_''' + c + ''' = 0
+        for order in Order_sell_''' + c + '''.objects.all().order_by('price'):
+            if order.''' + c + ''' * order.price >= sum_eur:
+                sum_''' + c + ''' += sum_eur / order.price
+                order.''' + c + ''' -= sum_eur / order.price 
                 order.save()
-                if order.btc == 0: order.delete()
+                if order.''' + c + ''' == 0: order.delete()
                 bal_maker = Balance.objects.filter(user=order.user)
                 bal_maker.update(eur=F('eur') + sum_eur)
                 break
             else:
-                sum_eur -= order.btc * order.price
-                sum_btc += order.btc
+                sum_eur -= order.''' + c + ''' * order.price
+                sum_''' + c + ''' += order.''' + c + '''
                 order.delete()
                 bal_maker = Balance.objects.filter(user=order.user)
-                bal_maker.update(eur=F('eur') + order.btc * order.price)
+                bal_maker.update(eur=F('eur') + order.''' + c + ''' * order.price)
         else:
             raise ValueError('Market order too big, not enough sell orders to accomodate')
-        bal.update(btc=F('btc') + D(sum_btc))
-        Buy_btc.objects.create(
+        bal.update(''' + c + '''=F("''' + c + '''") + D(sum_''' + c + '''))
+        Buy_''' + c + '''.objects.create(
             user=user,
             datetime=timezone.now(),
-            btc=sum_btc,
+            ''' + c + '''=sum_''' + c + ''',
             eur=sum_eur_before_fees,
         )
-
-def market_buy_ltc(user, sum_eur):
-    sum_eur_before_fees = D(sum_eur)
-    bal = Balance.objects.filter(user=user)
-    with transaction.atomic():
-        bal.update(eur=F('eur') - D(sum_eur))
-        if bal.eur < 0: raise ValueError('Not enough funds')
-        Order_sell_ltc.objects.all().select_for_update()
-        sum_eur = D(sum_eur) - fee_market_buy_ltc(sum_eur)
-        sum_ltc = 0
-        for order in Order_sell_ltc.objects.all().order_by('price'):
-            if order.ltc * order.price >= sum_eur:
-                sum_ltc += sum_eur / order.price
-                order.ltc -= sum_eur / order.price 
-                order.save()
-                if order.ltc == 0: order.delete()
-                bal_maker = Balance.objects.filter(user=order.user)
-                bal_maker.update(eur=F('eur') + sum_eur)
-                break
-            else:
-                sum_eur -= order.ltc * order.price
-                sum_ltc += order.ltc
-                order.delete()
-                bal_maker = Balance.objects.filter(user=order.user)
-                bal_maker.update(eur=F('eur') + order.ltc * order.price)
-        else:
-            raise ValueError('Market order too big, not enough sell orders to accomodate')
-        bal.update(ltc=F('ltc') + D(sum_ltc))
-        Buy_ltc.objects.create(
-            user=user,
-            datetime=timezone.now(),
-            ltc=sum_ltc,
-            eur=sum_eur_before_fees,
-        )
-
-def market_buy_doge(user, sum_eur):
-    sum_eur_before_fees = D(sum_eur)
-    bal = Balance.objects.filter(user=user)
-    with transaction.atomic():
-        bal.update(eur=F('eur') - D(sum_eur))
-        if bal.eur < 0: raise ValueError('Not enough funds')
-        Order_sell_doge.objects.all().select_for_update()
-        sum_eur = D(sum_eur) - fee_market_buy_doge(sum_eur)
-        sum_doge = 0
-        for order in Order_sell_doge.objects.all().order_by('price'):
-            if order.doge * order.price >= sum_eur:
-                sum_doge += sum_eur / order.price
-                order.doge -= sum_eur / order.price 
-                order.save()
-                if order.doge == 0: order.delete()
-                bal_maker = Balance.objects.filter(user=order.user)
-                bal_maker.update(eur=F('eur') + sum_eur)
-                break
-            else:
-                sum_eur -= order.doge * order.price
-                sum_ltc += order.doge
-                order.delete()
-                bal_maker = Balance.objects.filter(user=order.user)
-                bal_maker.update(eur=F('eur') + order.doge * order.price)
-        else:
-            raise ValueError('Market order too big, not enough sell orders to accomodate')
-        bal.update(ltc=F('doge') + D(sum_doge))
-        Buy_doge.objects.create(
-            user=user,
-            datetime=timezone.now(),
-            doge=sum_doge,
-            eur=sum_eur_before_fees,
-        )
+''')
 
 #=======================SELLS=======================================================================
 
-def fee_market_sell_btc(sum_eur):
+def fee_market_sell(sum_eur):
     fee = D(sum_eur) * D(0.02)
     if fee < D(1): fee = D(1)
     if fee > D(sum_eur): fee = D(sum_eur)
     return r(fee.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
 
-def fee_market_sell_ltc(sum_eur):
-    fee = D(sum_eur) * D(0.02)
-    if fee < D(1): fee = D(1)
-    if fee > D(sum_eur): fee = D(sum_eur)
-    return r(fee.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
+for c in CURRENCIES:
+    exec('''
+def fee_market_sell_''' + c + '''(sum_eur):
+    return fee_market_sell(sum_eur)
 
-def fee_market_sell_doge(sum_eur):
-    fee = D(sum_eur) * D(0.02)
-    if fee < D(1): fee = D(1)
-    if fee > D(sum_eur): fee = D(sum_eur)
-    return r(fee.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
-
-def preview_market_sell_btc(sum_btc):
-    sum_btc = D(sum_btc)
+def preview_market_sell_''' + c + '''(sum_''' + c + '''):
+    sum_''' + c + ''' = D(sum_''' + c + ''')
     sum_eur = 0
-    for order in Order_buy_btc.objects.all().order_by('-price'):
-        if order.btc > sum_btc:
-            sum_eur += sum_btc * order.price
+    for order in Order_buy_''' + c + '''.objects.all().order_by('-price'):
+        if order.''' + c + ''' > sum_''' + c + ''':
+            sum_eur += sum_''' + c + ''' * order.price
             break
         else:
-            sum_btc -= order.btc
-            sum_eur += order.btc * order.price
-    fee = r(fee_market_sell_btc(sum_eur))
+            sum_''' + c + ''' -= order.''' + c + '''
+            sum_eur += order.''' + c + ''' * order.price
+    fee = r(fee_market_sell_''' + c + '''(sum_eur))
     sum_eur -= fee
     sum_eur = r(sum_eur.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
     if sum_eur < 0: sum_eur = 0
     return (fee, sum_eur)
 
-def preview_market_sell_ltc(sum_ltc):
-    sum_ltc = D(sum_ltc)
-    sum_eur = 0
-    for order in Order_buy_ltc.objects.all().order_by('-price'):
-        if order.ltc > sum_ltc:
-            sum_eur += sum_ltc * order.price
-            break
-        else:
-            sum_ltc -= order.ltc
-            sum_eur += order.ltc * order.price
-    fee = r(fee_market_sell_ltc(sum_eur))
-    sum_eur -= fee
-    sum_eur = r(sum_eur.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
-    if sum_eur < 0: sum_eur = 0
-    return (fee, sum_eur)
-
-def preview_market_sell_doge(sum_doge):
-    sum_doge = D(sum_doge)
-    sum_eur = 0
-    for order in Order_buy_doge.objects.all().order_by('-price'):
-        if order.doge > sum_doge:
-            sum_eur += sum_doge * order.price
-            break
-        else:
-            sum_doge -= order.doge
-            sum_eur += order.doge * order.price
-    fee = r(fee_market_sell_doge(sum_eur))
-    sum_eur -= fee
-    sum_eur = r(sum_eur.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
-    if sum_eur < 0: sum_eur = 0
-    return (fee, sum_eur)
-
-
-def market_sell_btc(user, sum_btc):
-    sum_btc = D(sum_btc)
-    original_sum_btc = sum_btc
+def market_sell_''' + c + '''(user, sum_''' + c + '''):
+    sum_''' + c + ''' = D(sum_''' + c + ''')
+    original_sum_''' + c + ''' = sum_''' + c + '''
     bal = Balance.objects.filter(user=user)
     with transaction.atomic():
-        bal.update(btc=F('btc') - sum_btc)
-        if bal.btc < 0: raise ValueError('Not enough funds')
-        Order_buy_btc.objects.all().select_for_update()
+        bal.update(''' + c + '''=F("''' + c + '''") - sum_''' + c + ''')
+        if bal[0].''' + c + ''' < 0: raise ValueError('Not enough funds')
+        Order_buy_''' + c + '''.objects.all().select_for_update()
         sum_eur = 0
-        for order in Order_buy_btc.objects.all().order_by('-price'):
-            if order.btc >= sum_btc:
-                sum_eur += sum_btc * order.price
-                order.btc -= sum_btc
+        for order in Order_buy_''' + c + '''.objects.all().order_by('-price'):
+            if order.''' + c + ''' >= sum_''' + c + ''':
+                sum_eur += sum_''' + c + ''' * order.price
+                order.''' + c + ''' -= sum_''' + c + '''
                 order.save()
-                if order.btc == 0: order.delete()
+                if order.''' + c + ''' == 0: order.delete()
                 bal_maker = Balance.objects.filter(user=order.user)
-                bal_maker.update(btc=F('btc') + sum_btc)
+                bal_maker.update(''' + c + '''=F("''' + c + '''") + sum_''' + c + ''')
                 break
             else:
-                sum_btc -= order.btc
-                sum_eur += order.btc * order.price
+                sum_''' + c + ''' -= order.''' + c + '''
+                sum_eur += order.''' + c + ''' * order.price
                 order.delete()
                 bal_maker = Balance.objects.filter(user=order.user)
-                bal_maker.update(btc=F('btc') + order.btc)
+                bal_maker.update(''' + c + '''=F("''' + c + '''") + order.''' + c + ''')
         else:
             raise ValueError('Market order too big, not enough buy orders to accomodate')
-        sum_eur -= fee_market_sell_btc(sum_eur)
+        sum_eur -= fee_market_sell_''' + c + '''(sum_eur)
         bal.update(eur=F('eur') + sum_eur)
-        Sell_btc.objects.create(
+        Sell_''' + c + '''.objects.create(
             user=user,
             datetime=timezone.now(),
-            btc=original_sum_btc,
+            ''' + c + '''=original_sum_''' + c + ''',
             eur=sum_eur,
         )
-
-def market_sell_ltc(user, sum_ltc):
-    sum_ltc = D(sum_ltc)
-    original_sum_ltc = sum_ltc
-    bal = Balance.objects.filter(user=user)
-    with transaction.atomic():
-        bal.update(ltc=F('ltc') - sum_ltc)
-        if bal.ltc < 0: raise ValueError('Not enough funds')
-        Order_buy_ltc.objects.all().select_for_update()
-        sum_eur = 0
-        for order in Order_buy_ltc.objects.all().order_by('-price'):
-            if order.ltc >= sum_ltc:
-                sum_eur += sum_ltc * order.price
-                order.ltc -= sum_ltc
-                order.save()
-                if order.ltc == 0: order.delete()
-                bal_maker = Balance.objects.filter(user=order.user)
-                bal_maker.update(ltc=F('ltc') + sum_ltc)
-                break
-            else:
-                sum_ltc -= order.ltc
-                sum_eur += order.ltc * order.price
-                order.delete()
-                bal_maker = Balance.objects.filter(user=order.user)
-                bal_maker.update(ltc=F('ltc') + order.ltc)
-        else:
-            raise ValueError('Market order too big, not enough buy orders to accomodate')
-        sum_eur -= fee_market_sell_ltc(sum_eur)
-        bal.update(eur=F('eur') + sum_eur)
-        Sell_ltc.objects.create(
-            user=user,
-            datetime=timezone.now(),
-            ltc=original_sum_ltc,
-            eur=sum_eur,
-        )
-
-def market_sell_doge(user, sum_doge):
-    sum_doge = D(sum_doge)
-    original_sum_doge = sum_doge
-    bal = Balance.objects.filter(user=user)
-    with transaction.atomic():
-        bal.update(doge=F('doge') - sum_doge)
-        if bal.doge < 0: raise ValueError('Not enough funds')
-        Order_buy_doge.objects.all().select_for_update()
-        sum_eur = 0
-        for order in Order_buy_doge.objects.all().order_by('-price'):
-            if order.doge >= sum_doge:
-                sum_eur += sum_doge * order.price
-                order.doge -= sum_doge
-                order.save()
-                if order.doge == 0: order.delete()
-                bal_maker = Balance.objects.filter(user=order.user)
-                bal_maker.update(doge=F('doge') + sum_doge)
-                break
-            else:
-                sum_doge -= order.doge
-                sum_eur += order.doge * order.price
-                order.delete()
-                bal_maker = Balance.objects.filter(user=order.user)
-                bal_maker.update(doge=F('doge') + order.doge)
-        else:
-            raise ValueError('Market order too big, not enough buy orders to accomodate')
-        sum_eur -= fee_market_sell_doge(sum_eur)
-        bal.update(eur=F('eur') + sum_eur)
-        Sell_doge.objects.create(
-            user=user,
-            datetime=timezone.now(),
-            doge=original_sum_doge,
-            eur=sum_eur,
-        )
+''')
 
 #=======================LIMIT ORDER BUYS============================================================
 
-def fee_limit_order_buy_btc(sum_eur):
+def fee_limit_order_buy(sum_eur):
     return D(0)
+    
+for c in CURRENCIES:
+    exec('''
+def fee_limit_order_buy_''' + c + '''(sum_eur):
+    return fee_limit_order_buy(sum_eur)
 
-def fee_limit_order_buy_ltc(sum_eur):
-    return D(0)
-
-def fee_limit_order_buy_doge(sum_eur):
-    return D(0)
-
-def preview_limit_order_buy_btc(sum_btc, price_btc):
-    sum_eur = sum_btc * price_btc
-    fee = r(fee_limit_order_buy_btc(sum_eur))
+def preview_limit_order_buy_''' + c + '''(sum_''' + c + ''', price_''' + c + '''):
+    sum_eur = sum_''' + c + ''' * price_''' + c + '''
+    fee = r(fee_limit_order_buy_''' + c + '''(sum_eur))
     sum_eur -= fee
     sum_eur = r(sum_eur.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
     if sum_eur < 0: sum_eur = 0
     return fee, sum_eur
 
-def preview_limit_order_buy_ltc(sum_ltc, price_ltc):
-    sum_eur = sum_ltc * price_ltc
-    fee = r(fee_limit_order_buy_ltc(sum_eur))
-    sum_eur -= fee
-    sum_eur = r(sum_eur.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
-    if sum_eur < 0: sum_eur = 0
-    return fee, sum_eur
-
-def preview_limit_order_buy_doge(sum_doge, price_doge):
-    sum_eur = sum_doge * price_doge
-    fee = r(fee_limit_order_buy_doge(sum_eur))
-    sum_eur -= fee
-    sum_eur = r(sum_eur.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
-    if sum_eur < 0: sum_eur = 0
-    return fee, sum_eur
-
-def limit_order_buy_btc(user, sum_btc, price_btc):
+def limit_order_buy_''' + c + '''(user, sum_''' + c + ''', price_''' + c + '''):
     try:
-        if price_btc >= Order_sell_btc.objects.all().order_by('price')[0].price: raise ValueError
+        if price_''' + c + ''' >= Order_sell_''' + c + '''.objects.all().order_by('price')[0].price: raise ValueError
     except IndexError:
         pass
-    sum_eur = sum_btc * price_btc
-    sum_eur_after_fees = sum_eur - fee_limit_order_buy_btc(sum_eur)
-    sum_btc_after_fees = sum_eur_after_fees / price_btc
+    sum_eur = sum_''' + c + ''' * price_''' + c + '''
+    sum_eur_after_fees = sum_eur - fee_limit_order_buy_''' + c + '''(sum_eur)
+    sum_''' + c + '''_after_fees = sum_eur_after_fees / price_''' + c + '''
     with transaction.atomic():
         bal = Balance.objects.filter(user=user)
         bal.update(eur=F('eur') - sum_eur)
         if bal[0].eur < 0: raise ValueError
-        Order_buy_btc.objects.create(
+        Order_buy_''' + c + '''.objects.create(
             user=user,
-            btc=sum_btc_after_fees,
-            price=price_btc,
+            ''' + c + '''=sum_''' + c + '''_after_fees,
+            price=price_''' + c + ''',
             datetime=timezone.now()
         )
 
-def limit_order_buy_ltc(user, sum_ltc, price_ltc):
-    try:
-        if price_ltc >= Order_sell_ltc.objects.all().order_by('price')[0].price: raise ValueError
-    except IndexError:
-        pass
-    sum_eur = sum_ltc * price_ltc
-    sum_eur_after_fees = sum_eur - fee_limit_order_buy_ltc(sum_eur)
-    sum_ltc_after_fees = sum_eur_after_fees / price_ltc
-    with transaction.atomic():
-        bal = Balance.objects.filter(user=user)
-        bal.update(eur=F('eur') - sum_eur)
-        if bal[0].eur < 0: raise ValueError
-        Order_buy_ltc.objects.create(
-            user=user,
-            ltc=sum_ltc_after_fees,
-            price=price_ltc,
-            datetime=timezone.now()
-        )
-
-def limit_order_buy_doge(user, sum_doge, price_doge):
-    try:
-        if price_doge >= Order_sell_doge.objects.all().order_by('price')[0].price: raise ValueError
-    except IndexError:
-        pass
-    sum_eur = sum_doge * price_doge
-    sum_eur_after_fees = sum_eur - fee_limit_order_buy_doge(sum_eur)
-    sum_doge_after_fees = sum_eur_after_fees / price_doge
-    with transaction.atomic():
-        bal = Balance.objects.filter(user=user)
-        bal.update(eur=F('eur') - sum_eur)
-        if bal[0].eur < 0: raise ValueError
-        Order_buy_doge.objects.create(
-            user=user,
-            doge=sum_doge_after_fees,
-            price=price_doge,
-            datetime=timezone.now()
-        )
-
-def delete_limit_order_buy_btc(order_id):
-    order = Order_buy_btc.objects.get(id=order_id)
+def delete_limit_order_buy_''' + c + '''(order_id):
+    order = Order_buy_''' + c + '''.objects.get(id=order_id)
     bal = Balance.objects.filter(user=order.user)
-    sum_eur = order.btc * order.price
+    sum_eur = order.''' + c + ''' * order.price
     with transaction.atomic():
         order.delete()
         bal.update(eur=F('eur') + sum_eur)
-
-def delete_limit_order_buy_ltc(order_id):
-    order = Order_buy_ltc.objects.get(id=order_id)
-    bal = Balance.objects.filter(user=order.user)
-    sum_eur = order.ltc * order.price
-    with transaction.atomic():
-        order.delete()
-        bal.update(eur=F('eur') + sum_eur)
-
-def delete_limit_order_buy_doge(order_id):
-    order = Order_buy_doge.objects.get(id=order_id)
-    bal = Balance.objects.filter(user=order.user)
-    sum_eur = order.doge * order.price
-    with transaction.atomic():
-        order.delete()
-        bal.update(eur=F('eur') + sum_eur)
+''')
 
 #=======================LIMIT ORDER SELLS===========================================================
 
-def fee_limit_order_sell_btc(sum_eur):
+def fee_limit_order_sell(sum_eur):
     return D(0)
 
-def fee_limit_order_sell_ltc(sum_eur):
-    return D(0)
+for c in CURRENCIES:
+    exec('''
+def fee_limit_order_sell_''' + c + '''(sum_eur):
+    return fee_limit_order_sell(sum_eur)
 
-def fee_limit_order_sell_doge(sum_eur):
-    return D(0)
-
-def preview_limit_order_sell_btc(sum_btc, price_btc):
-    sum_eur = sum_btc * price_btc
+def preview_limit_order_sell_''' + c + '''(sum_''' + c + ''', price_''' + c + '''):
+    sum_eur = sum_''' + c + ''' * price_''' + c + '''
     fee = r(fee_limit_order_sell_btc(sum_eur))
     sum_eur -= fee
     sum_eur = r(sum_eur.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
     if sum_eur < 0: sum_eur = 0
     return fee, sum_eur
 
-def preview_limit_order_sell_ltc(sum_ltc, price_ltc):
-    sum_eur = sum_ltc * price_ltc
-    fee = r(fee_limit_order_sell_ltc(sum_eur))
-    sum_eur -= fee
-    sum_eur = r(sum_eur.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
-    if sum_eur < 0: sum_eur = 0
-    return fee, sum_eur
-
-def preview_limit_order_sell_doge(sum_doge, price_doge):
-    sum_eur = sum_doge * price_doge
-    fee = r(fee_limit_order_sell_doge(sum_eur))
-    sum_eur -= fee
-    sum_eur = r(sum_eur.quantize(D(0.1) ** DECIMAL_PLACES_EUR))
-    if sum_eur < 0: sum_eur = 0
-    return fee, sum_eur
-
-def limit_order_sell_btc(user, sum_btc, price_btc):
+def limit_order_sell_''' + c + '''(user, sum_''' + c + ''', price_''' + c + '''):
     try:
-        if price_btc <= Order_buy_btc.objects.all().order_by('-price')[0].price: raise ValueError
+        if price_''' + c + ''' <= Order_buy_''' + c + '''.objects.all().order_by('-price')[0].price: raise ValueError
     except IndexError:
         pass
-    sum_eur = sum_btc * price_btc
-    sum_eur_after_fees = sum_eur - fee_limit_order_sell_btc(sum_eur)
-    sum_btc_after_fees = sum_eur_after_fees / price_btc
+    sum_eur = sum_''' + c + ''' * price_''' + c + '''
+    sum_eur_after_fees = sum_eur - fee_limit_order_sell_''' + c + '''(sum_eur)
+    sum_''' + c + '''_after_fees = sum_eur_after_fees / price_''' + c + '''
     with transaction.atomic():
         bal = Balance.objects.filter(user=user)
-        bal.update(btc=F('btc') - sum_btc)
+        bal.update(''' + c + '''=F("''' + c + '''") - sum_''' + c + ''')
         if bal[0].btc < 0: raise ValueError
-        Order_sell_btc.objects.create(
+        Order_sell_''' + c + '''.objects.create(
             user=user,
-            btc=sum_btc_after_fees,
-            price=price_btc,
+            ''' + c + '''=sum_''' + c + '''_after_fees,
+            price=price_''' + c + ''',
             datetime=timezone.now()
         )
 
-def limit_order_sell_ltc(user, sum_ltc, price_ltc):
-    try:
-        if price_ltc <= Order_buy_ltc.objects.all().order_by('-price')[0].price: raise ValueError
-    except IndexError:
-        pass
-    sum_eur = sum_ltc * price_ltc
-    sum_eur_after_fees = sum_eur - fee_limit_order_sell_ltc(sum_eur)
-    sum_ltc_after_fees = sum_eur_after_fees / price_ltc
-    with transaction.atomic():
-        bal = Balance.objects.filter(user=user)
-        bal.update(ltc=F('ltc') - sum_ltc)
-        if bal[0].ltc < 0: raise ValueError
-        Order_sell_ltc.objects.create(
-            user=user,
-            ltc=sum_ltc_after_fees,
-            price=price_ltc,
-            datetime=timezone.now()
-        )
-
-def limit_order_sell_doge(user, sum_doge, price_doge):
-    try:
-        if price_doge <= Order_buy_doge.objects.all().order_by('-price')[0].price: raise ValueError
-    except IndexError:
-        pass
-    sum_eur = sum_doge * price_doge
-    sum_eur_after_fees = sum_eur - fee_limit_order_sell_doge(sum_eur)
-    sum_doge_after_fees = sum_eur_after_fees / price_doge
-    with transaction.atomic():
-        bal = Balance.objects.filter(user=user)
-        bal.update(doge=F('doge') - sum_doge)
-        if bal[0].ltc < 0: raise ValueError
-        Order_sell_ltc.objects.create(
-            user=user,
-            doge=sum_doge_after_fees,
-            price=price_doge,
-            datetime=timezone.now()
-        )
-
-def delete_limit_order_sell_btc(order_id):
-    order = Order_sell_btc.objects.get(id=order_id)
+def delete_limit_order_sell_''' + c + '''(order_id):
+    order = Order_sell_''' + c + '''.objects.get(id=order_id)
     bal = Balance.objects.filter(user=order.user)
     with transaction.atomic():
         order.delete()
-        bal.update(btc=F('btc') + order.btc)
+        bal.update(''' + c + '''=F("''' + c + '''") + order.''' + c + ''')
 
-def delete_limit_order_sell_ltc(order_id):
-    order = Order_sell_ltc.objects.get(id=order_id)
-    bal = Balance.objects.filter(user=order.user)
-    with transaction.atomic():
-        order.delete()
-        bal.update(ltc=F('ltc') + order.ltc)
-
-def delete_limit_order_sell_doge(order_id):
-    order = Order_sell_doge.objects.get(id=order_id)
-    bal = Balance.objects.filter(user=order.user)
-    with transaction.atomic():
-        order.delete()
-        bal.update(doge=F('doge') + order.doge)
+''')
 
