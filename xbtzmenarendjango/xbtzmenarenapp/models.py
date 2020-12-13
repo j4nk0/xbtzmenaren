@@ -38,12 +38,14 @@ DECIMAL_PLACES_EUR = 2
 DECIMAL_PLACES_BTC = 8
 DECIMAL_PLACES_LTC = 8
 DECIMAL_PLACES_DOGE = 8
+DECIMAL_PLACES_ETH = 18
 DECIMAL_PLACES_PRICE = 4
 # To store value up to 10 000 000 EUR:
 MAX_DIGITS_EUR = 9
 MAX_DIGITS_BTC = 11
 MAX_DIGITS_LTC = 14
 MAX_DIGITS_DOGE = 18
+MAX_DIGITS_ETH = 23
 MAX_DIGITS_PRICE = 11
 
 class CustomUser(AbstractUser):
@@ -67,6 +69,7 @@ class Address(models.Model):
     btc = models.CharField(max_length=100, unique=True)
     ltc = models.CharField(max_length=100, unique=True)
     doge = models.CharField(max_length=100, unique=True)
+    eth = models.CharField(max_length=100, unique=True)
 
 class Balance(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
@@ -74,6 +77,7 @@ class Balance(models.Model):
     btc = models.DecimalField(max_digits=MAX_DIGITS_BTC, decimal_places=DECIMAL_PLACES_BTC)
     ltc = models.DecimalField(max_digits=MAX_DIGITS_LTC, decimal_places=DECIMAL_PLACES_LTC)
     doge = models.DecimalField(max_digits=MAX_DIGITS_DOGE, decimal_places=DECIMAL_PLACES_DOGE)
+    eth = models.DecimalField(max_digits=MAX_DIGITS_ETH, decimal_places=DECIMAL_PLACES_ETH)
 
 class Withdrawal_eur(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -107,19 +111,22 @@ class Questionare(models.Model):
 CURRENCIES = [
     'btc',
     'ltc',
-    'doge'
+    'doge',
+    'eth',
 ]
 
 DECIMAL_PLACES = {
     'btc': '8',
     'ltc': '8',
     'doge': '8',
+    'eth': '18',
 }
 
 MAX_DIGITS = {
     'btc': '11',
     'ltc': '14',
     'doge': '18',
+    'eth': '23',
 }
 
 for c in CURRENCIES:
