@@ -682,6 +682,9 @@ def registration_attempt(request):
 
 def portfolio(request):
     ...
+    orders = Order_buy_doge.objects.filter(user=request.user)
+    for o in orders: eur_in_orders += o.doge * o.price
+    ...
     doge_in_orders = Order_sell_doge.objects.filter(user=request.user).aggregate(Sum('doge'))['doge__sum']
     if doge_in_orders == None: doge_in_orders = D(0)
     ...
