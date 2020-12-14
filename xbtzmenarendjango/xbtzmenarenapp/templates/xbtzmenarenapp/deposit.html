@@ -8,6 +8,7 @@
       <li><a data-toggle="pill" href="#Bitcoin">Bitcoin</a></li>
       <li><a data-toggle="pill" href="#Litecoin">Litecoin</a></li>
       <li><a data-toggle="pill" href="#Dogecoin">Dogecoin</a></li>
+      <li><a data-toggle="pill" href="#Ethereum">Ethereum</a></li>
     </ul>
     <div class="tab-content">
 
@@ -90,6 +91,31 @@
         </table>
       </div>
 
+      <div id="Ethereum" class="tab-pane">
+        <p>Zašlite na adresu:</p>
+	<p><b>{{ eth_address }}</b></p>
+        <p>Prichádzajúce platby (na pripísanie sumy je treba 6 potvrdení):</p>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Adresa</th>
+              <th>Suma ETH</th>
+              <th>Potvrdení</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for incoming in incoming_eth %}
+              <tr>
+                <td>{{ incoming.address }}</td>
+                <td>{{ incoming.eth }}</td>
+                <td>{{ incoming.confirmations }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
     </div>
   </div>
 {% endblock %}
+

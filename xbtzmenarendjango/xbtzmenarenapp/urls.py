@@ -11,11 +11,13 @@ urlpatterns = [
     path('buy-btc/', views.buy_btc, name='buy-btc'),
     path('buy-ltc/', views.buy_ltc, name='buy-ltc'),
     path('buy-doge/', views.buy_doge, name='buy-doge'),
+    path('buy-eth/', views.buy_eth, name='buy-eth'),
 
     path('sell/', views.sell, name='sell'),
     path('sell-btc/', views.sell_btc, name='sell-btc'),
     path('sell-ltc/', views.sell_ltc, name='sell-ltc'),
     path('sell-doge/', views.sell_doge, name='sell-doge'),
+    path('sell-eth/', views.sell_eth, name='sell-eth'),
 
     path('limit-order-buy/', views.limit_order_buy, name='limit-order-buy'),
     path('limit-order-sell/', views.limit_order_sell, name='limit-order-sell'),
@@ -25,27 +27,39 @@ urlpatterns = [
     path('limit-order-buy-ltc/json', views.limit_order_buy_ltc_json, name='limit-order-buy-ltc-json'),
     path('limit-order-buy-doge/', views.limit_order_buy_doge, name='limit-order-buy-doge'),
     path('limit-order-buy-doge/json', views.limit_order_buy_doge_json, name='limit-order-buy-doge-json'),
+    path('limit-order-buy-eth/', views.limit_order_buy_eth, name='limit-order-buy-eth'),
+    path('limit-order-buy-eth/json', views.limit_order_buy_eth_json, name='limit-order-buy-eth-json'),
+
     path('limit-order-sell-btc/', views.limit_order_sell_btc, name='limit-order-sell-btc'),
     path('limit-order-sell-btc/json', views.limit_order_sell_btc_json, name='limit-order-sell-btc-json'),
     path('limit-order-sell-ltc/', views.limit_order_sell_ltc, name='limit-order-sell-ltc'),
     path('limit-order-sell-ltc/json', views.limit_order_sell_ltc_json, name='limit-order-sell-ltc-json'),
     path('limit-order-sell-doge/', views.limit_order_sell_doge, name='limit-order-sell-doge'),
     path('limit-order-sell-doge/json', views.limit_order_sell_doge_json, name='limit-order-sell-doge-json'),
+    path('limit-order-sell-eth/', views.limit_order_sell_eth, name='limit-order-sell-eth'),
+    path('limit-order-sell-eth/json', views.limit_order_sell_eth_json, name='limit-order-sell-eth-json'),
+
     path('limit-order-buy-btc-delete/<int:order_id>', views.limit_order_buy_btc_delete, name='limit-order-buy-btc-delete'),
     path('limit-order-buy-ltc-delete/<int:order_id>', views.limit_order_buy_ltc_delete, name='limit-order-buy-ltc-delete'),
     path('limit-order-buy-doge-delete/<int:order_id>', views.limit_order_buy_doge_delete, name='limit-order-buy-doge-delete'),
+    path('limit-order-buy-eth-delete/<int:order_id>', views.limit_order_buy_eth_delete, name='limit-order-buy-eth-delete'),
+
     path('limit-order-sell-btc-delete/<int:order_id>', views.limit_order_sell_btc_delete, name='limit-order-sell-btc-delete'),
     path('limit-order-sell-ltc-delete/<int:order_id>', views.limit_order_sell_ltc_delete, name='limit-order-sell-ltc-delete'),
     path('limit-order-sell-doge-delete/<int:order_id>', views.limit_order_sell_doge_delete, name='limit-order-sell-doge-delete'),
+    path('limit-order-sell-eth-delete/<int:order_id>', views.limit_order_sell_eth_delete, name='limit-order-sell-eth-delete'),
 
     path('rates/', views.private_rates, name='rates'),
     path('rates/json', views.rates_json, name='rates-json'),
     path('buy-btc/json', views.buy_btc_json, name='buy-btc-json'),
     path('buy-ltc/json', views.buy_ltc_json, name='buy-ltc-json'),
     path('buy-doge/json', views.buy_doge_json, name='buy-doge-json'),
+    path('buy-eth/json', views.buy_eth_json, name='buy-eth-json'),
+
     path('sell-btc/json', views.sell_btc_json, name='sell-btc-json'),
     path('sell-ltc/json', views.sell_ltc_json, name='sell-ltc-json'),
     path('sell-doge/json', views.sell_doge_json, name='sell-doge-json'),
+    path('sell-eth/json', views.sell_eth_json, name='sell-eth-json'),
 
     path('terms/', views.terms_and_conditions, name='terms'),
 
@@ -66,6 +80,7 @@ urlpatterns = [
     path('withdrawal-btc/', views.withdrawal_btc, name='withdrawal-btc'),
     path('withdrawal-ltc/', views.withdrawal_ltc, name='withdrawal-ltc'),
     path('withdrawal-doge/', views.withdrawal_doge, name='withdrawal-doge'),
+    path('withdrawal-eth/', views.withdrawal_eth, name='withdrawal-eth'),
 
     path('management/verification/', views.management_verification, name='management-verification'),
     path('management/verification-attempt/', views.management_verification_attempt, name='management-verification-attempt'),
@@ -75,6 +90,7 @@ urlpatterns = [
     path('management/withdrawal-btc-check/<int:withdrawal_id>', views.management_withdrawal_btc_check, name='management-withdrawal-btc-check'),
     path('management/withdrawal-ltc-check/<int:withdrawal_id>', views.management_withdrawal_ltc_check, name='management-withdrawal-ltc-check'),
     path('management/withdrawal-doge-check/<int:withdrawal_id>', views.management_withdrawal_doge_check, name='management-withdrawal-doge-check'),
+    path('management/withdrawal-eth-check/<int:withdrawal_id>', views.management_withdrawal_eth_check, name='management-withdrawal-eth-check'),
 
     path('management/deposits/', views.management_deposits, name='management-deposits'),
     path('management/deposit-attempt/', views.management_deposit_attempt, name='deposit-eur-attempt'),

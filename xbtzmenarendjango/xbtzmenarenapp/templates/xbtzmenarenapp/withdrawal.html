@@ -34,9 +34,15 @@
       <li>
       {% endif %}
       <a data-toggle="pill" href="#Dogecoin">Dogecoin</a></li>
+      {% if active == "eth" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#Ethereum">Ethereum</a></li>
     </ul>
-    
     <div class="tab-content">
+
       {% if active == "eur" %}
       <div id="Euro" class="tab-pane active">
       {% else %}
@@ -116,6 +122,27 @@
             <label for="usr">Zaslať na adresu:</label>
             <input type="text" class="form-control"
 	      name="address_doge" id="address_doge"/>
+          </div>
+          <button type="submit" class="btn btn-default">Vybrať</button>
+        </form>
+      </div>
+
+      {% if active == "eth" %}
+      <div id="Ethereum" class="tab-pane active">
+      {% else %}
+      <div id="Ethereum" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'withdrawal-eth' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Vybrať ETH:</label>
+            <input type="text" class="form-control" name="sum_eth" id="sum_eth"/>
+            <script>$('#sum_eth').val('{{ max_sum_eth }}');</script>
+          </div>
+          <div class="form-group">
+            <label for="usr">Zaslať na adresu:</label>
+            <input type="text" class="form-control"
+	      name="address_eth" id="address_eth"/>
           </div>
           <button type="submit" class="btn btn-default">Vybrať</button>
         </form>

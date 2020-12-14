@@ -6,6 +6,7 @@
       <li class="active"><a data-toggle="pill" href="#Bitcoin">Bitcoin</a></li>
       <li><a data-toggle="pill" href="#Litecoin">Litecoin</a></li>
       <li><a data-toggle="pill" href="#Dogecoin">Dogecoin</a></li>
+      <li><a data-toggle="pill" href="#Ethereum">Ethereum</a></li>
     </ul>
     <div class="tab-content">
 
@@ -71,6 +72,29 @@
                 <td>{{ buy.user }}</td>
                 <td>{{ buy.datetime }}</td>
                 <td>{{ buy.doge }}</td>
+                <td>{{ buy.eur }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div id="Ethereum" class="tab-pane">
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>Čas</b></td>
+                <td><b>ETH</b></td>
+                <td><b>EUR</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for buy in buys_eth %}
+              <tr>
+                <td>{{ buy.user }}</td>
+                <td>{{ buy.datetime }}</td>
+                <td>{{ buy.eth }}</td>
                 <td>{{ buy.eur }}</td>
               </tr>
             {% endfor %}

@@ -31,6 +31,13 @@
       {% endif %}
           <a data-toggle="pill" href="#Dogecoin">Dogecoin</a>
         </li>
+      {% if active == "eth" %}
+        <li class="active" >
+      {% else %}
+        <li>
+      {% endif %}
+          <a data-toggle="pill" href="#Ethereum">Ethereum</a>
+        </li>
     </ul>
     <div class="tab-content">
 
@@ -85,6 +92,23 @@
         </form>
       </div>
 
+      {% if active == "eth" %}
+      <div id="Ethereum" class="tab-pane active">
+      {% else %}
+      <div id="Ethereum" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'buy-eth' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Nakúpiť za EUR:</label>
+            <input id="sum_eur_eth" type="text" class="form-control" name="sum_eur"/>
+          </div>
+          <div>Poplatky: <b id="fee_eth">{{ fee_eth }}</b> EUR</div>
+          <div>Nákup: <b>~</b><b id="sum_eth">{{ sum_eth }}</b> ETH</div>
+          <button type="submit" class="btn btn-default">Kúpiť</button>
+        </form>
+      </div>
+
     </div>
   </div>
   <script>
@@ -134,6 +158,22 @@
         function(data) {
           $('#sum_doge').text(data.doge);
           $('#fee_doge').text(data.fee);
+        }
+      );
+    });
+    $('#sum_eur_eth').on("change paste keyup", function() {
+      if(isNaN($('#sum_eur_eth').val()) 
+        || $('#sum_eur_eth').val() == ""
+        || $('#sum_eur_eth').val() == 0) 
+      {
+        $('#sum_eth').text("-");
+        $('#fee_eth').text("-");
+      };
+      $.post("{% url 'buy-eth-json' %}",
+        { sum_eur: $('#sum_eur_eth').val(), csrfmiddlewaretoken: '{{ csrf_token }}' },
+        function(data) {
+          $('#sum_eth').text(data.eth);
+          $('#fee_eth').text(data.fee);
         }
       );
     });

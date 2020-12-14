@@ -43,6 +43,15 @@ def rates():
         doge_sell = r(Order_buy_doge.objects.all().order_by('-price')[0].price)
     except:
         doge_sell = 'X'
+    try:
+        eth_buy = r(Order_sell_eth.objects.all().order_by('price')[0].price)
+    except:
+        eth_buy = 'X'
+    try:
+        eth_sell = r(Order_buy_eth.objects.all().order_by('-price')[0].price)
+    except:
+        eth_sell = 'X'
+ 
     res = {
         'BTC-EUR': {
              'buy': btc_buy,
@@ -55,7 +64,11 @@ def rates():
         'DOGE-EUR': {
              'buy': doge_buy,
              'sell': doge_sell,
-        }
+        },
+        'ETH-EUR': {
+             'buy': eth_buy,
+             'sell': eth_sell,
+        },
     }
     return res
 

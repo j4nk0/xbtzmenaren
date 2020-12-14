@@ -94,7 +94,7 @@ def sell(request, success=None, active='btc'):
         'max_sum_btc': sum_btc,
         'max_sum_ltc': sum_ltc,
         'max_sum_doge': sum_doge,
-        'max_sum_doge': sum_eth,
+        'max_sum_eth': sum_eth,
         'active': active,
         'fee_btc': fee_btc,
         'sum_eur_btc': sum_eur_btc,
