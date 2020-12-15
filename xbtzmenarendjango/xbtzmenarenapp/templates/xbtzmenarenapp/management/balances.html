@@ -2,7 +2,7 @@
 
 {% block content %}
   <div class="container">
-    <p><b>Balances:</b></p>
+    <p><b>Stavy účtov:</b></p>
     <table class="table">
       <thead>
         <tr>
@@ -43,9 +43,21 @@
           <td>{{ staff_eth }}</td>
           <td>{{ total_eth }}</td>
         </tr>
+        <tr>
+          <td><b>XLM</b></td>
+          <td>{{ non_staff_xlm }}</td>
+          <td>{{ staff_xlm }}</td>
+          <td>{{ total_xlm }}</td>
+        </tr>
+        <tr>
+          <td><b>ZRX</b></td>
+          <td>{{ non_staff_zrx }}</td>
+          <td>{{ staff_zrx }}</td>
+          <td>{{ total_zrx }}</td>
+        </tr>
       </tbody>
     </table>
-    <p><b>In orders:</b></p>
+    <p><b>V objednávkach:</b></p>
     <table class="table">
       <thead>
         <tr>
@@ -85,6 +97,18 @@
           <td>{{ eth_in_orders_non_staff }}</td>
           <td>{{ eth_in_orders_staff }}</td>
           <td>{{ eth_in_orders_total }}</td>
+        </tr>
+        <tr>
+          <td><b>XLM</b></td>
+          <td>{{ xlm_in_orders_non_staff }}</td>
+          <td>{{ xlm_in_orders_staff }}</td>
+          <td>{{ xlm_in_orders_total }}</td>
+        </tr>
+         <tr>
+          <td><b>ZRX</b></td>
+          <td>{{ zrx_in_orders_non_staff }}</td>
+          <td>{{ zrx_in_orders_staff }}</td>
+          <td>{{ zrx_in_orders_total }}</td>
         </tr>
       </tbody>
     </table>

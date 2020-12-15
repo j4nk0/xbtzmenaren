@@ -59,12 +59,45 @@
         </tr>
         <tr>
           <td>Nakúpite za</td>
-          <td><b id="dogeeur-buy">{{ etheur_buy }}</b></td>
+          <td><b id="etheur-buy">{{ etheur_buy }}</b></td>
         </tr>
         <tr>
           <td>Predáte za</td>
-          <td><b id="dogeeur-sell">{{ etheur_sell }}</b></td>
+          <td><b id="etheur-sell">{{ etheur_sell }}</b></td>
         </tr>
+        <tr>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><b>XLM-EUR</b></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Nakúpite za</td>
+          <td><b id="xlmeur-buy">{{ xlmeur_buy }}</b></td>
+        </tr>
+        <tr>
+          <td>Predáte za</td>
+          <td><b id="xmleur-sell">{{ xlmeur_sell }}</b></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><b>ZRX-EUR</b></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Nakúpite za</td>
+          <td><b id="zrxeur-buy">{{ zrxeur_buy }}</b></td>
+        </tr>
+        <tr>
+          <td>Predáte za</td>
+          <td><b id="zrxeur-sell">{{ zrxeur_sell }}</b></td>
+        </tr>
+ 
       </tbody>
     </table>
   </div>
@@ -79,6 +112,10 @@
         $('#dogeeur-sell').text(response["DOGE-EUR"].sell);
         $('#etheur-buy').text(response["ETH-EUR"].buy);
         $('#etheur-sell').text(response["ETH-EUR"].sell);
+        $('#xmleur-buy').text(response["XML-EUR"].buy);
+        $('#xmleur-sell').text(response["XML-EUR"].sell);
+        $('#zrxeur-buy').text(response["ZRX-EUR"].buy);
+        $('#zrxeur-sell').text(response["ZRX-EUR"].sell);
       });
     };
     setInterval(reload, 3000);

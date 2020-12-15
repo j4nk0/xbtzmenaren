@@ -38,6 +38,20 @@
       {% endif %}
           <a data-toggle="pill" href="#Ethereum">Ethereum</a>
         </li>
+      {% if active == "xlm" %}
+        <li class="active" >
+      {% else %}
+        <li>
+      {% endif %}
+          <a data-toggle="pill" href="#Stellar">Stellar</a>
+        </li>
+      {% if active == "zrx" %}
+        <li class="active" >
+      {% else %}
+        <li>
+      {% endif %}
+          <a data-toggle="pill" href="#0x">0x</a>
+        </li>
     </ul>
     <div class="tab-content">
 
@@ -233,6 +247,102 @@
         </table>
       </div>
 
+      {% if active == "xlm" %}
+      <div id="Stellar" class="tab-pane active">
+      {% else %}
+      <div id="Stellar" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'limit-order-sell-xlm' %}" method="post">
+          {% csrf_token %}
+          <div>Maximálne množstvo: <b id="max_sum_xlm">{{ max_sum_xlm }}</b> XLM</div>
+          <div class="form-group">
+            <label for="usr">Množstvo XLM:</label>
+            <input id="sum_xlm" type="text" class="form-control" name="sum_xlm"/>
+          </div>
+          <div class="form-group">
+            <label for="usr">Cena XLM-EUR:</label>
+            <input id="price_xlm" type="text" class="form-control" name="price_xlm"/>
+          </div>
+          <div>Poplatky: <b id="fee_eur_xlm">-</b> EUR</div>
+          <div>Celková cena: <b id="sum_eur_xlm">-</b> EUR</div>
+          <button type="submit" class="btn btn-default">Objednať</button>
+        </form>
+        
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>XLM</b></td>
+                <td><b>Cena</b></td>
+                <td><b>Čas</b></td>
+                <td><b>Zrušiť</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for order in orders_xlm %}
+              <tr>
+                <td>{{ order.xlm }}</td>
+                <td>{{ order.price }}</td>
+                <td>{{ order.datetime }}</td>
+                <td>
+                  <form action="{% url 'limit-order-sell-xlm-delete' order.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-default">Zrušiť</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if active == "zrx" %}
+      <div id="0x" class="tab-pane active">
+      {% else %}
+      <div id="0x" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'limit-order-sell-zrx' %}" method="post">
+          {% csrf_token %}
+          <div>Maximálne množstvo: <b id="max_sum_zrx">{{ max_sum_zrx }}</b> ZRX</div>
+          <div class="form-group">
+            <label for="usr">Množstvo ZRX:</label>
+            <input id="sum_zrx" type="text" class="form-control" name="sum_zrx"/>
+          </div>
+          <div class="form-group">
+            <label for="usr">Cena ZRX-EUR:</label>
+            <input id="price_zrx" type="text" class="form-control" name="price_zrx"/>
+          </div>
+          <div>Poplatky: <b id="fee_eur_zrx">-</b> EUR</div>
+          <div>Celková cena: <b id="sum_eur_zrx">-</b> EUR</div>
+          <button type="submit" class="btn btn-default">Objednať</button>
+        </form>
+        
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>ZRX</b></td>
+                <td><b>Cena</b></td>
+                <td><b>Čas</b></td>
+                <td><b>Zrušiť</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for order in orders_zrx %}
+              <tr>
+                <td>{{ order.zrx }}</td>
+                <td>{{ order.price }}</td>
+                <td>{{ order.datetime }}</td>
+                <td>
+                  <form action="{% url 'limit-order-sell-zrx-delete' order.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-default">Zrušiť</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
     </div>
   </div>
   <script>
@@ -343,5 +453,59 @@
     }
     $('#sum_eth').on("change paste keyup", onChangeEth);
     $('#price_eth').on("change paste keyup", onChangeEth);
+
+    function onChangeXlm() {
+      if(isNaN($('#sum_xlm').val()) 
+        || $('#sum_xlm').val() == ""
+        || $('#sum_xlm').val() == 0
+        || isNaN($('#price_xlm').val()) 
+        || $('#price_xlm').val() == ""
+        || $('#price_xlm').val() == 0)
+      {
+        $('#fee_eur_xlm').text("-");
+        $('#sum_eur_xlm').text("-");
+      } else {
+        $.post("{% url 'limit-order-sell-xlm-json' %}",
+          { 
+            sum_xlm: $('#sum_xlm').val(),
+            price_xlm: $('#price_xlm').val(),
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+          },
+          function(data) {
+            $('#fee_eur_xlm').text(data.fee);
+            $('#sum_eur_xlm').text(data.eur);
+          }
+        );
+      }
+    }
+    $('#sum_xlm').on("change paste keyup", onChangeXlm);
+    $('#price_xlm').on("change paste keyup", onChangeXlm);
+
+    function onChangeZrx() {
+      if(isNaN($('#sum_zrx').val()) 
+        || $('#sum_zrx').val() == ""
+        || $('#sum_zrx').val() == 0
+        || isNaN($('#price_zrx').val()) 
+        || $('#price_zrx').val() == ""
+        || $('#price_zrx').val() == 0)
+      {
+        $('#fee_eur_zrx').text("-");
+        $('#sum_eur_zrx').text("-");
+      } else {
+        $.post("{% url 'limit-order-sell-zrx-json' %}",
+          { 
+            sum_zrx: $('#sum_zrx').val(),
+            price_zrx: $('#price_zrx').val(),
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+          },
+          function(data) {
+            $('#fee_eur_zrx').text(data.fee);
+            $('#sum_eur_zrx').text(data.eur);
+          }
+        );
+      }
+    }
+    $('#sum_zrx').on("change paste keyup", onChangeZrx);
+    $('#price_zrx').on("change paste keyup", onChangeZrx);
   </script>
 {% endblock %}

@@ -38,6 +38,20 @@
       {% endif %}
           <a data-toggle="pill" href="#Ethereum">Ethereum</a>
         </li>
+      {% if active == "xlm" %}
+        <li class="active" >
+      {% else %}
+        <li>
+      {% endif %}
+          <a data-toggle="pill" href="#Stellar">Stellar</a>
+        </li>
+      {% if active == "zrx" %}
+        <li class="active" >
+      {% else %}
+        <li>
+      {% endif %}
+          <a data-toggle="pill" href="#0x">0x</a>
+        </li>
     </ul>
     <div class="tab-content">
 
@@ -109,6 +123,40 @@
         </form>
       </div>
 
+      {% if active == "xlm" %}
+      <div id="Stellar" class="tab-pane active">
+      {% else %}
+      <div id="Stellar" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'buy-xlm' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Nakúpiť za EUR:</label>
+            <input id="sum_eur_xlm" type="text" class="form-control" name="sum_eur"/>
+          </div>
+          <div>Poplatky: <b id="fee_xlm">{{ fee_xlm }}</b> EUR</div>
+          <div>Nákup: <b>~</b><b id="sum_xlm">{{ sum_xlm }}</b> XLM</div>
+          <button type="submit" class="btn btn-default">Kúpiť</button>
+        </form>
+      </div>
+
+      {% if active == "zrx" %}
+      <div id="0x" class="tab-pane active">
+      {% else %}
+      <div id="0x" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'buy-zrx' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Nakúpiť za EUR:</label>
+            <input id="sum_eur_zrx" type="text" class="form-control" name="sum_eur"/>
+          </div>
+          <div>Poplatky: <b id="fee_zrx">{{ fee_zrx }}</b> EUR</div>
+          <div>Nákup: <b>~</b><b id="sum_zrx">{{ sum_zrx }}</b> ZRX</div>
+          <button type="submit" class="btn btn-default">Kúpiť</button>
+        </form>
+      </div>
+
     </div>
   </div>
   <script>
@@ -174,6 +222,38 @@
         function(data) {
           $('#sum_eth').text(data.eth);
           $('#fee_eth').text(data.fee);
+        }
+      );
+    });
+    $('#sum_eur_xlm').on("change paste keyup", function() {
+      if(isNaN($('#sum_eur_xlm').val()) 
+        || $('#sum_eur_xlm').val() == ""
+        || $('#sum_eur_xlm').val() == 0) 
+      {
+        $('#sum_xlm').text("-");
+        $('#fee_xlm').text("-");
+      };
+      $.post("{% url 'buy-xlm-json' %}",
+        { sum_eur: $('#sum_eur_xlm').val(), csrfmiddlewaretoken: '{{ csrf_token }}' },
+        function(data) {
+          $('#sum_xlm').text(data.xlm);
+          $('#fee_xlm').text(data.fee);
+        }
+      );
+    });
+    $('#sum_eur_zrx').on("change paste keyup", function() {
+      if(isNaN($('#sum_eur_zrx').val()) 
+        || $('#sum_eur_zrx').val() == ""
+        || $('#sum_eur_zrx').val() == 0) 
+      {
+        $('#sum_zrx').text("-");
+        $('#fee_zrx').text("-");
+      };
+      $.post("{% url 'buy-zrx-json' %}",
+        { sum_eur: $('#sum_eur_zrx').val(), csrfmiddlewaretoken: '{{ csrf_token }}' },
+        function(data) {
+          $('#sum_zrx').text(data.zrx);
+          $('#fee_zrx').text(data.fee);
         }
       );
     });

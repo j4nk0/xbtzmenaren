@@ -33,6 +33,18 @@
       <li>
       {% endif %}
       <a data-toggle="pill" href="#Ethereum">Ethereum</a></li>
+      {% if active == "xlm" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#Stellar">Stellar</a></li>
+      {% if active == "zrx" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#0x">0x</a></li>
     </ul>
     <div class="tab-content">
 
@@ -306,6 +318,118 @@
                 <td>{{ withdrawal.time_created }}</td>
                 <td>
                   <form action="{% url 'management-withdrawal-eth-check' withdrawal.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-default">Vybavené</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if active == "xlm" %}
+      <div id="Stellar" class="tab-pane active">
+      {% else %}
+      <div id="Stellar" class="tab-pane">
+      {% endif %}
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>Adresa</b></td>
+                <td><b>Suma</b></td>
+                <td><b>Vytvorené</b></td>
+                <td><b>Vybavené</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for withdrawal in old_withdrawals_xlm %}
+              <tr>
+                <td>{{ withdrawal.user }}</td>
+                <td>{{ withdrawal.address }}</td>
+                <td>{{ withdrawal.xlm }}</td>
+                <td>{{ withdrawal.time_created }}</td>
+                <td>{{ withdrawal.time_processed }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>Adresa</b></td>
+                <td><b>Suma</b></td>
+                <td><b>Vytvorené</b></td>
+                <td><b>Vybavené</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for withdrawal in withdrawals_xlm %}
+              <tr>
+                <td>{{ withdrawal.user }}</td>
+                <td>{{ withdrawal.address }}</td>
+                <td>{{ withdrawal.xlm }}</td>
+                <td>{{ withdrawal.time_created }}</td>
+                <td>
+                  <form action="{% url 'management-withdrawal-xlm-check' withdrawal.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-default">Vybavené</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if active == "zrx" %}
+      <div id="0x" class="tab-pane active">
+      {% else %}
+      <div id="0x" class="tab-pane">
+      {% endif %}
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>Adresa</b></td>
+                <td><b>Suma</b></td>
+                <td><b>Vytvorené</b></td>
+                <td><b>Vybavené</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for withdrawal in old_withdrawals_zrx %}
+              <tr>
+                <td>{{ withdrawal.user }}</td>
+                <td>{{ withdrawal.address }}</td>
+                <td>{{ withdrawal.zrx }}</td>
+                <td>{{ withdrawal.time_created }}</td>
+                <td>{{ withdrawal.time_processed }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <table class="table">
+          <thead>
+              <tr>
+                <td><b>Užívateľ</b></td>
+                <td><b>Adresa</b></td>
+                <td><b>Suma</b></td>
+                <td><b>Vytvorené</b></td>
+                <td><b>Vybavené</b></td>
+              </tr>
+          </thead>
+          <tbody>
+            {% for withdrawal in withdrawals_zrx %}
+              <tr>
+                <td>{{ withdrawal.user }}</td>
+                <td>{{ withdrawal.address }}</td>
+                <td>{{ withdrawal.zrx }}</td>
+                <td>{{ withdrawal.time_created }}</td>
+                <td>
+                  <form action="{% url 'management-withdrawal-zrx-check' withdrawal.id %}" method="post">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-default">Vybavené</button>
                   </form>
