@@ -13,6 +13,9 @@ pip install python-bitcoinlib #bitcoin rpc caller
 pip install litecoin-requests #litecoin rpc caller
 #pip install dogecoin-python   #dogecoin rpc caller - not working
 pip install requests
+sudo add-apt-repository -y ppa:ethereum/ethereum
+sudo apt-get update
+sudo apt-get install ethereum
 ```
 
 ## Web server:
