@@ -38,12 +38,18 @@ DECIMAL_PLACES_EUR = 2
 DECIMAL_PLACES_BTC = 8
 DECIMAL_PLACES_LTC = 8
 DECIMAL_PLACES_DOGE = 8
+DECIMAL_PLACES_ETH = 18
+DECIMAL_PLACES_XLM = 7
+DECIMAL_PLACES_ZRX = 18
 DECIMAL_PLACES_PRICE = 4
 # To store value up to 10 000 000 EUR:
 MAX_DIGITS_EUR = 9
 MAX_DIGITS_BTC = 11
 MAX_DIGITS_LTC = 14
 MAX_DIGITS_DOGE = 18
+MAX_DIGITS_ETH = 23
+MAX_DIGITS_XLM = 15
+MAX_DIGITS_ZRX = 26
 MAX_DIGITS_PRICE = 11
 
 class CustomUser(AbstractUser):
@@ -67,6 +73,9 @@ class Address(models.Model):
     btc = models.CharField(max_length=100, unique=True)
     ltc = models.CharField(max_length=100, unique=True)
     doge = models.CharField(max_length=100, unique=True)
+    eth = models.CharField(max_length=100, unique=True)
+    xlm = models.CharField(max_length=100, unique=True)
+    zrx = models.CharField(max_length=100, unique=True)
 
 class Balance(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
@@ -74,6 +83,9 @@ class Balance(models.Model):
     btc = models.DecimalField(max_digits=MAX_DIGITS_BTC, decimal_places=DECIMAL_PLACES_BTC)
     ltc = models.DecimalField(max_digits=MAX_DIGITS_LTC, decimal_places=DECIMAL_PLACES_LTC)
     doge = models.DecimalField(max_digits=MAX_DIGITS_DOGE, decimal_places=DECIMAL_PLACES_DOGE)
+    eth = models.DecimalField(max_digits=MAX_DIGITS_ETH, decimal_places=DECIMAL_PLACES_ETH)
+    xlm = models.DecimalField(max_digits=MAX_DIGITS_XLM, decimal_places=DECIMAL_PLACES_XLM)
+    zrx = models.DecimalField(max_digits=MAX_DIGITS_ZRX, decimal_places=DECIMAL_PLACES_ZRX)
 
 class Withdrawal_eur(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -107,19 +119,28 @@ class Questionare(models.Model):
 CURRENCIES = [
     'btc',
     'ltc',
-    'doge'
+    'doge',
+    'eth',
+    'xlm',
+    'zrx',
 ]
 
 DECIMAL_PLACES = {
     'btc': '8',
     'ltc': '8',
     'doge': '8',
+    'eth': '18',
+    'xlm': '7',
+    'zrx': '18',
 }
 
 MAX_DIGITS = {
     'btc': '11',
     'ltc': '14',
     'doge': '18',
+    'eth': '23',
+    'xlm': '15',
+    'zrx': '26',
 }
 
 for c in CURRENCIES:

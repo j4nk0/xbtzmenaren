@@ -43,6 +43,30 @@ def rates():
         doge_sell = r(Order_buy_doge.objects.all().order_by('-price')[0].price)
     except:
         doge_sell = 'X'
+    try:
+        eth_buy = r(Order_sell_eth.objects.all().order_by('price')[0].price)
+    except:
+        eth_buy = 'X'
+    try:
+        eth_sell = r(Order_buy_eth.objects.all().order_by('-price')[0].price)
+    except:
+        eth_sell = 'X'
+    try:
+        xlm_buy = r(Order_sell_xlm.objects.all().order_by('price')[0].price)
+    except:
+        xlm_buy = 'X'
+    try:
+        xlm_sell = r(Order_buy_xlm.objects.all().order_by('-price')[0].price)
+    except:
+        xlm_sell = 'X'
+    try:
+        zrx_buy = r(Order_sell_zrx.objects.all().order_by('price')[0].price)
+    except:
+        zrx_buy = 'X'
+    try:
+        zrx_sell = r(Order_buy_zrx.objects.all().order_by('-price')[0].price)
+    except:
+        zrx_sell = 'X'
     res = {
         'BTC-EUR': {
              'buy': btc_buy,
@@ -55,7 +79,19 @@ def rates():
         'DOGE-EUR': {
              'buy': doge_buy,
              'sell': doge_sell,
-        }
+        },
+        'ETH-EUR': {
+             'buy': eth_buy,
+             'sell': eth_sell,
+        },
+        'XLM-EUR': {
+             'buy': xlm_buy,
+             'sell': xlm_sell,
+        },
+        'ZRX-EUR': {
+             'buy': zrx_buy,
+             'sell': zrx_sell,
+        },
     }
     return res
 
