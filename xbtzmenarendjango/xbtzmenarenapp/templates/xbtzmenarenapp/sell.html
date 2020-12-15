@@ -28,9 +28,27 @@
       <li>
       {% endif %}
       <a data-toggle="pill" href="#Dogecoin">Dogecoin</a></li>
+      {% if active == "eth" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#Ethereum">Ethereum</a></li>
+      {% if active == "xlm" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#Stellar">Stellar</a></li>
+      {% if active == "zrx" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#0x">0x</a></li>
     </ul>
-    
     <div class="tab-content">
+
       {% if active == "btc" %}
       <div id="Bitcoin" class="tab-pane active">
       {% else %}
@@ -81,6 +99,57 @@
           <button type="submit" class="btn btn-default">Predať</button>
         </form>
       </div>
+
+      {% if active == "eth" %}
+      <div id="Ethereum" class="tab-pane active">
+      {% else %}
+      <div id="Ethereum" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'sell-eth' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Predať ETH:</label>
+            <input type="text" class="form-control" name="sum_eth" id="sum_eth"/>
+          </div>
+          <div>Poplatky: <b id="fee_eth">{{ fee_eth }}</b> EUR</div>
+          <div>Predaj za: <b>~</b><b id="sum_eur_eth">{{ sum_eur_eth }}</b> EUR</div>
+          <button type="submit" class="btn btn-default">Predať</button>
+        </form>
+      </div>
+
+      {% if active == "xlm" %}
+      <div id="Stellar" class="tab-pane active">
+      {% else %}
+      <div id="Stellar" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'sell-xlm' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Predať XLM:</label>
+            <input type="text" class="form-control" name="sum_xlm" id="sum_xlm"/>
+          </div>
+          <div>Poplatky: <b id="fee_xlm">{{ fee_xlm }}</b> EUR</div>
+          <div>Predaj za: <b>~</b><b id="sum_eur_xlm">{{ sum_eur_xlm }}</b> EUR</div>
+          <button type="submit" class="btn btn-default">Predať</button>
+        </form>
+      </div>
+
+      {% if active == "zrx" %}
+      <div id="0x" class="tab-pane active">
+      {% else %}
+      <div id="0x" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'sell-zrx' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Predať ZRX:</label>
+            <input type="text" class="form-control" name="sum_zrx" id="sum_zrx"/>
+          </div>
+          <div>Poplatky: <b id="fee_zrx">{{ fee_zrx }}</b> EUR</div>
+          <div>Predaj za: <b>~</b><b id="sum_eur_zrx">{{ sum_eur_zrx }}</b> EUR</div>
+          <button type="submit" class="btn btn-default">Predať</button>
+        </form>
+      </div>
  
     </div>
   </div>
@@ -88,6 +157,9 @@
     $('#sum_btc').val('{{ max_sum_btc }}');
     $('#sum_ltc').val('{{ max_sum_ltc }}');
     $('#sum_doge').val('{{ max_sum_doge }}');
+    $('#sum_eth').val('{{ max_sum_eth }}');
+    $('#sum_xlm').val('{{ max_sum_xlm }}');
+    $('#sum_zrx').val('{{ max_sum_zrx }}');
     
     $('#sum_btc').on("change paste keyup", function() {
       if(isNaN($('#sum_btc').val())
@@ -136,6 +208,57 @@
         function(data) {
           $('#sum_eur_doge').text(data.eur);
           $('#fee_doge').text(data.fee);
+        }
+      );
+    });
+
+    $('#sum_eth').on("change paste keyup", function() {
+      if(isNaN($('#sum_eth').val()) 
+        || $('#sum_eth').val() == ""
+        || $('#sum_eth').val() == 0)
+      {
+        $('#sum_eur_eth').text("-");
+        $('#fee_eth').text("-");
+      };
+      $.post("{% url 'sell-eth-json' %}",
+        { sum_eth: $('#sum_eth').val(), csrfmiddlewaretoken: '{{ csrf_token }}' },
+        function(data) {
+          $('#sum_eur_eth').text(data.eur);
+          $('#fee_eth').text(data.fee);
+        }
+      );
+    });
+
+    $('#sum_xlm').on("change paste keyup", function() {
+      if(isNaN($('#sum_xlm').val()) 
+        || $('#sum_xlm').val() == ""
+        || $('#sum_xlm').val() == 0)
+      {
+        $('#sum_eur_xlm').text("-");
+        $('#fee_xlm').text("-");
+      };
+      $.post("{% url 'sell-xlm-json' %}",
+        { sum_xlm: $('#sum_xlm').val(), csrfmiddlewaretoken: '{{ csrf_token }}' },
+        function(data) {
+          $('#sum_eur_xlm').text(data.eur);
+          $('#fee_xlm').text(data.fee);
+        }
+      );
+    });
+
+    $('#sum_zrx').on("change paste keyup", function() {
+      if(isNaN($('#sum_zrx').val()) 
+        || $('#sum_zrx').val() == ""
+        || $('#sum_zrx').val() == 0)
+      {
+        $('#sum_eur_zrx').text("-");
+        $('#fee_zrx').text("-");
+      };
+      $.post("{% url 'sell-zrx-json' %}",
+        { sum_zrx: $('#sum_zrx').val(), csrfmiddlewaretoken: '{{ csrf_token }}' },
+        function(data) {
+          $('#sum_eur_zrx').text(data.eur);
+          $('#fee_zrx').text(data.fee);
         }
       );
     });

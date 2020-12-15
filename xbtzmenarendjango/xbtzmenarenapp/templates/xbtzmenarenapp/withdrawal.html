@@ -34,9 +34,27 @@
       <li>
       {% endif %}
       <a data-toggle="pill" href="#Dogecoin">Dogecoin</a></li>
+      {% if active == "eth" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#Ethereum">Ethereum</a></li>
+      {% if active == "xlm" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#Stellar">Stellar</a></li>
+      {% if active == "zrx" %}
+      <li class="active">
+      {% else %}
+      <li>
+      {% endif %}
+      <a data-toggle="pill" href="#0x">0x</a></li>
     </ul>
-    
     <div class="tab-content">
+
       {% if active == "eur" %}
       <div id="Euro" class="tab-pane active">
       {% else %}
@@ -116,6 +134,69 @@
             <label for="usr">Zaslať na adresu:</label>
             <input type="text" class="form-control"
 	      name="address_doge" id="address_doge"/>
+          </div>
+          <button type="submit" class="btn btn-default">Vybrať</button>
+        </form>
+      </div>
+
+      {% if active == "eth" %}
+      <div id="Ethereum" class="tab-pane active">
+      {% else %}
+      <div id="Ethereum" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'withdrawal-eth' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Vybrať ETH:</label>
+            <input type="text" class="form-control" name="sum_eth" id="sum_eth"/>
+            <script>$('#sum_eth').val('{{ max_sum_eth }}');</script>
+          </div>
+          <div class="form-group">
+            <label for="usr">Zaslať na adresu:</label>
+            <input type="text" class="form-control"
+	      name="address_eth" id="address_eth"/>
+          </div>
+          <button type="submit" class="btn btn-default">Vybrať</button>
+        </form>
+      </div>
+
+      {% if active == "xlm" %}
+      <div id="Stellar" class="tab-pane active">
+      {% else %}
+      <div id="Stellar" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'withdrawal-xlm' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Vybrať XLM:</label>
+            <input type="text" class="form-control" name="sum_xlm" id="sum_xlm"/>
+            <script>$('#sum_xlm').val('{{ max_sum_xlm }}');</script>
+          </div>
+          <div class="form-group">
+            <label for="usr">Zaslať na adresu:</label>
+            <input type="text" class="form-control"
+	      name="address_xlm" id="address_xlm"/>
+          </div>
+          <button type="submit" class="btn btn-default">Vybrať</button>
+        </form>
+      </div>
+
+      {% if active == "zrx" %}
+      <div id="0x" class="tab-pane active">
+      {% else %}
+      <div id="0x" class="tab-pane">
+      {% endif %}
+        <form action="{% url 'withdrawal-zrx' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usr">Vybrať ZRX:</label>
+            <input type="text" class="form-control" name="sum_zrx" id="sum_zrx"/>
+            <script>$('#sum_zrx').val('{{ max_sum_zrx }}');</script>
+          </div>
+          <div class="form-group">
+            <label for="usr">Zaslať na adresu:</label>
+            <input type="text" class="form-control"
+	      name="address_zrx" id="address_zrx"/>
           </div>
           <button type="submit" class="btn btn-default">Vybrať</button>
         </form>

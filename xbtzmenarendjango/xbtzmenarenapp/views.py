@@ -14,9 +14,9 @@ from decimal import InvalidOperation
 from schwifty import IBAN
 from .check_address import is_valid_btc_address, is_valid_ltc_address, is_valid_doge_address
 import json
-from . import bitcoin_driver
-from . import litecoin_driver
-from . import dogecoin_driver
+from . import bitcoin_driver as btc_driver
+from . import litecoin_driver as ltc_driver
+from . import dogecoin_driver as doge_driver
 from django import forms
 
 def dec(n, decimal_places):
@@ -47,6 +47,12 @@ def buy(request, success=None, active='btc'):
         'sum_ltc': rates.preview_market_buy_ltc(sum_eur),
         'fee_doge': rates.fee_market_buy_doge(sum_eur),
         'sum_doge': rates.preview_market_buy_doge(sum_eur),
+        'fee_eth': rates.fee_market_buy_eth(sum_eur),
+        'sum_eth': rates.preview_market_buy_eth(sum_eur),
+        'fee_xlm': rates.fee_market_buy_xlm(sum_eur),
+        'sum_xlm': rates.preview_market_buy_xlm(sum_eur),
+        'fee_zrx': rates.fee_market_buy_zrx(sum_eur),
+        'sum_zrx': rates.preview_market_buy_zrx(sum_eur),
     }
     if success == True:
         context.update({'ok_message': 'Nákup uspešný'})
@@ -54,65 +60,28 @@ def buy(request, success=None, active='btc'):
         context.update({'error_message': 'Nesprávna hodnota'})
     return render(request, 'xbtzmenarenapp/buy.html', context)
 
+for c in CURRENCIES:
+    exec('''
 @user_passes_test(verification_check)
 @login_required
-def buy_btc(request):
+def buy_''' + c + '''(request):
     try:
         sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
-        rates.market_buy_btc(request.user, sum_eur)
+        rates.market_buy_''' + c + '''(request.user, sum_eur)
     except:
-        return buy(request, False, 'btc')
-    return buy(request, True, 'btc')
+        return buy(request, False, "''' + c + '''")
+    return buy(request, True, "''' + c + '''")
 
-def buy_btc_json(request):
+def buy_''' + c + '''_json(request):
     sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
     data = {
-        'fee': str(rates.fee_market_buy_btc(sum_eur)),
-        'btc': str(rates.preview_market_buy_btc(sum_eur)),
+        'fee': str(rates.fee_market_buy_''' + c + '''(sum_eur)),
+        "''' + c + '''": str(rates.preview_market_buy_''' + c + '''(sum_eur)),
     }
     res = HttpResponse(json.dumps(data))
     res['Content-Type'] = 'application/json'
     return res
-
-@user_passes_test(verification_check)
-@login_required
-def buy_ltc(request):
-    try:
-        sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
-        rates.market_buy_ltc(request.user, sum_eur)
-    except:
-        return buy(request, False, 'ltc')
-    return buy(request, True, 'ltc')
-
-def buy_ltc_json(request):
-    sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
-    data = {
-        'fee': str(rates.fee_market_buy_ltc(sum_eur)),
-        'ltc': str(rates.preview_market_buy_ltc(sum_eur)),
-    }
-    res = HttpResponse(json.dumps(data))
-    res['Content-Type'] = 'application/json'
-    return res
-
-@user_passes_test(verification_check)
-@login_required
-def buy_doge(request):
-    try:
-        sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
-        rates.market_buy_doge(request.user, sum_eur)
-    except:
-        return buy(request, False, 'doge')
-    return buy(request, True, 'doge')
-
-def buy_doge_json(request):
-    sum_eur = dec(request.POST['sum_eur'], DECIMAL_PLACES_EUR)
-    data = {
-        'fee': str(rates.fee_market_buy_doge(sum_eur)),
-        'doge': str(rates.preview_market_buy_doge(sum_eur)),
-    }
-    res = HttpResponse(json.dumps(data))
-    res['Content-Type'] = 'application/json'
-    return res
+''')
 
 @user_passes_test(verification_check)
 @login_required
@@ -120,13 +89,20 @@ def sell(request, success=None, active='btc'):
     sum_btc = request.user.balance.btc
     sum_ltc = request.user.balance.ltc
     sum_doge = request.user.balance.doge
+    sum_eth = request.user.balance.eth
+    sum_xlm = request.user.balance.xlm
+    sum_zrx = request.user.balance.zrx
     fee_btc, sum_eur_btc = rates.preview_market_sell_btc(sum_btc)
     fee_ltc, sum_eur_ltc = rates.preview_market_sell_ltc(sum_ltc)
     fee_doge, sum_eur_doge = rates.preview_market_sell_doge(sum_doge)
+    fee_eth, sum_eur_eth = rates.preview_market_sell_eth(sum_eth)
+    fee_xlm, sum_eur_xlm = rates.preview_market_sell_xlm(sum_xlm)
+    fee_zrx, sum_eur_zrx = rates.preview_market_sell_eth(sum_zrx)
     context = {
         'max_sum_btc': sum_btc,
         'max_sum_ltc': sum_ltc,
         'max_sum_doge': sum_doge,
+        'max_sum_eth': sum_eth,
         'active': active,
         'fee_btc': fee_btc,
         'sum_eur_btc': sum_eur_btc,
@@ -134,6 +110,12 @@ def sell(request, success=None, active='btc'):
         'sum_eur_ltc': sum_eur_ltc,
         'fee_doge': fee_doge,
         'sum_eur_doge': sum_eur_doge,
+        'fee_eth': fee_eth,
+        'sum_eur_eth': sum_eur_eth,
+        'fee_xlm': fee_xlm,
+        'sum_eur_xlm': sum_eur_xlm,
+        'fee_zrx': fee_zrx,
+        'sum_eur_zrx': sum_eur_zrx,
     }
     if success == True:
         context.update({'ok_message': 'Predaj uspešný'})
@@ -141,19 +123,21 @@ def sell(request, success=None, active='btc'):
         context.update({'error_message': 'Nesprávna hodnota'})
     return render(request, 'xbtzmenarenapp/sell.html', context)
 
+for c in CURRENCIES:
+    exec('''
 @user_passes_test(verification_check)
 @login_required
-def sell_btc(request):
+def sell_''' + c + '''(request):
     try:
-        sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
-        rates.market_sell_btc(request.user, sum_btc)
+        sum_''' + c + ''' = dec(request.POST['sum_''' + c + ''''], ''' + DECIMAL_PLACES[c] + ''')
+        rates.market_sell_''' + c + '''(request.user, sum_''' + c + ''')
     except:
-        return sell(request, False, 'btc')
-    return sell(request, True, 'btc')
+        return sell(request, False, "''' + c + '''")
+    return sell(request, True, "''' + c + '''")
 
-def sell_btc_json(request):
-    sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
-    fee, sum_eur = rates.preview_market_sell_btc(sum_btc)
+def sell_''' + c + '''_json(request):
+    sum_''' + c + ''' = dec(request.POST['sum_''' + c + ''''], ''' + DECIMAL_PLACES[c] + ''')
+    fee, sum_eur = rates.preview_market_sell_''' + c + '''(sum_''' + c + ''')
     data = {
         'fee': str(fee),
         'eur': str(sum_eur),
@@ -161,48 +145,7 @@ def sell_btc_json(request):
     res = HttpResponse(json.dumps(data))
     res['Content-Type'] = 'application/json'
     return res
-
-@user_passes_test(verification_check)
-@login_required
-def sell_ltc(request):
-    try:
-        sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
-        rates.market_sell_ltc(request.user, sum_ltc)
-    except:
-        return sell(request, False, 'ltc')
-    return sell(request, True, 'ltc')
-
-def sell_ltc_json(request):
-    sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
-    fee, sum_eur = rates.preview_market_sell_ltc(sum_ltc)
-    data = {
-        'fee': str(fee),
-        'eur': str(sum_eur),
-    }
-    res = HttpResponse(json.dumps(data))
-    res['Content-Type'] = 'application/json'
-    return res
-
-@user_passes_test(verification_check)
-@login_required
-def sell_doge(request):
-    try:
-        sum_doge = dec(request.POST['sum_doge'], DECIMAL_PLACES_DOGE)
-        rates.market_sell_doge(request.user, sum_doge)
-    except:
-        return sell(request, False, 'doge')
-    return sell(request, True, 'doge')
-
-def sell_doge_json(request):
-    sum_doge = dec(request.POST['sum_doge'], DECIMAL_PLACES_DOGE)
-    fee, sum_eur = rates.preview_market_sell_doge(sum_doge)
-    data = {
-        'fee': str(fee),
-        'eur': str(sum_eur),
-    }
-    res = HttpResponse(json.dumps(data))
-    res['Content-Type'] = 'application/json'
-    return res
+''')
 
 @user_passes_test(verification_check)
 @login_required
@@ -213,6 +156,9 @@ def limit_order_buy(request, success=None, active='btc'):
         'orders_btc': Order_buy_btc.objects.filter(user=request.user),
         'orders_ltc': Order_buy_ltc.objects.filter(user=request.user),
         'orders_doge': Order_buy_doge.objects.filter(user=request.user),
+        'orders_eth': Order_buy_eth.objects.filter(user=request.user),
+        'orders_xlm': Order_buy_xlm.objects.filter(user=request.user),
+        'orders_zrx': Order_buy_zrx.objects.filter(user=request.user),
     }
     if success == True:
         context.update({'ok_message': 'Požiadavka registrovaná'})
@@ -220,21 +166,23 @@ def limit_order_buy(request, success=None, active='btc'):
         context.update({'error_message': 'Nesprávna hodnota'})
     return render(request, 'xbtzmenarenapp/limitOrderBuy.html', context)
 
+for c in CURRENCIES:
+    exec('''
 @user_passes_test(verification_check)
 @login_required
-def limit_order_buy_btc(request):
+def limit_order_buy_''' + c + '''(request):
     try:
-        sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
-        price_btc = dec(request.POST['price_btc'], DECIMAL_PLACES_PRICE)
-        rates.limit_order_buy_btc(request.user, sum_btc, price_btc)
+        sum_''' + c + ''' = dec(request.POST['sum_''' + c + ''''], ''' + DECIMAL_PLACES[c] + ''')
+        price_''' + c + ''' = dec(request.POST['price_''' + c + ''''], DECIMAL_PLACES_PRICE)
+        rates.limit_order_buy_''' + c + '''(request.user, sum_''' + c + ''', price_''' + c + ''')
     except:
-        return limit_order_buy(request, False, 'btc')
-    return limit_order_buy(request, True, 'btc')
+        return limit_order_buy(request, False, "''' + c + '''")
+    return limit_order_buy(request, True, "''' + c + '''")
 
-def limit_order_buy_btc_json(request):
-    sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
-    price_btc = dec(request.POST['price_btc'], DECIMAL_PLACES_PRICE)
-    fee, sum_eur = rates.preview_limit_order_buy_btc(sum_btc, price_btc)
+def limit_order_buy_''' + c + '''_json(request):
+    sum_''' + c + ''' = dec(request.POST['sum_''' + c + ''''], ''' + DECIMAL_PLACES[c] + ''')
+    price_''' + c + ''' = dec(request.POST['price_''' + c + ''''], DECIMAL_PLACES_PRICE)
+    fee, sum_eur = rates.preview_limit_order_buy_''' + c + '''(sum_''' + c + ''', price_''' + c + ''')
     data = {
         'fee': str(fee),
         'eur': str(sum_eur),
@@ -245,86 +193,15 @@ def limit_order_buy_btc_json(request):
 
 @user_passes_test(verification_check)
 @login_required
-def limit_order_buy_btc_delete(request, order_id):
-    if request.user != Order_buy_btc.objects.get(id=order_id).user:
-        return limit_order_buy(request, False, 'btc')
+def limit_order_buy_''' + c + '''_delete(request, order_id):
+    if request.user != Order_buy_''' + c + '''.objects.get(id=order_id).user:
+        return limit_order_buy(request, False, "''' + c + '''")
     try:
-        rates.delete_limit_order_buy_btc(order_id)
+        rates.delete_limit_order_buy_''' + c + '''(order_id)
     except:
-        return limit_order_buy(request, False, 'btc')
-    return limit_order_buy(request, True, 'btc')
-
-@user_passes_test(verification_check)
-@login_required
-def limit_order_buy_ltc(request):
-    try:
-        sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
-        price_ltc = dec(request.POST['price_ltc'], DECIMAL_PLACES_PRICE)
-        rates.limit_order_buy_ltc(request.user, sum_ltc, price_ltc)
-    except:
-        return limit_order_buy(request, False, 'ltc')
-    return limit_order_buy(request, True, 'ltc')
-
-@user_passes_test(verification_check)
-@login_required
-def limit_order_buy_ltc_json(request):
-    sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
-    price_ltc = dec(request.POST['price_ltc'], DECIMAL_PLACES_PRICE)
-    fee, sum_eur = rates.preview_limit_order_buy_ltc(sum_ltc, price_ltc)
-    data = {
-        'fee': str(fee),
-        'eur': str(sum_eur),
-    }
-    res = HttpResponse(json.dumps(data))
-    res['Content-Type'] = 'application/json'
-    return res
-
-@user_passes_test(verification_check)
-@login_required
-def limit_order_buy_ltc_delete(request, order_id):
-    if request.user != Order_buy_ltc.objects.get(id=order_id).user:
-        return limit_order_buy(request, False, 'ltc')
-    try:
-        rates.delete_limit_order_buy_ltc(order_id)
-    except:
-        return limit_order_buy(request, False, 'ltc')
-    return limit_order_buy(request, True, 'ltc')
-
-@user_passes_test(verification_check)
-@login_required
-def limit_order_buy_doge(request):
-    try:
-        sum_doge = dec(request.POST['sum_doge'], DECIMAL_PLACES_DOGE)
-        price_doge = dec(request.POST['price_doge'], DECIMAL_PLACES_PRICE)
-        rates.limit_order_buy_doge(request.user, sum_doge, price_doge)
-    except:
-        return limit_order_buy(request, False, 'doge')
-    return limit_order_buy(request, True, 'doge')
-
-@user_passes_test(verification_check)
-@login_required
-def limit_order_buy_doge_json(request):
-    sum_doge = dec(request.POST['sum_doge'], DECIMAL_PLACES_DOGE)
-    price_doge = dec(request.POST['price_doge'], DECIMAL_PLACES_PRICE)
-    fee, sum_eur = rates.preview_limit_order_buy_doge(sum_doge, price_doge)
-    data = {
-        'fee': str(fee),
-        'eur': str(sum_eur),
-    }
-    res = HttpResponse(json.dumps(data))
-    res['Content-Type'] = 'application/json'
-    return res
-
-@user_passes_test(verification_check)
-@login_required
-def limit_order_buy_doge_delete(request, order_id):
-    if request.user != Order_buy_doge.objects.get(id=order_id).user:
-        return limit_order_buy(request, False, 'doge')
-    try:
-        rates.delete_limit_order_buy_doge(order_id)
-    except:
-        return limit_order_buy(request, False, 'doge')
-    return limit_order_buy(request, True, 'doge')
+        return limit_order_buy(request, False, "''' + c + '''")
+    return limit_order_buy(request, True, "''' + c + '''btc")
+''')
 
 @user_passes_test(verification_check)
 @login_required
@@ -334,9 +211,15 @@ def limit_order_sell(request, success=None, active='btc'):
         'max_sum_btc': request.user.balance.btc,
         'max_sum_ltc': request.user.balance.ltc,
         'max_sum_doge': request.user.balance.doge,
+        'max_sum_eth': request.user.balance.eth,
+        'max_sum_xlm': request.user.balance.xlm,
+        'max_sum_zrx': request.user.balance.zrx,
         'orders_btc': Order_sell_btc.objects.filter(user=request.user),
         'orders_ltc': Order_sell_ltc.objects.filter(user=request.user),
         'orders_doge': Order_sell_doge.objects.filter(user=request.user),
+        'orders_eth': Order_sell_eth.objects.filter(user=request.user),
+        'orders_xlm': Order_sell_xlm.objects.filter(user=request.user),
+        'orders_zrx': Order_sell_zrx.objects.filter(user=request.user),
     }
     if success == True:
         context.update({'ok_message': 'Požiadavka registrovaná'})
@@ -344,21 +227,23 @@ def limit_order_sell(request, success=None, active='btc'):
         context.update({'error_message': 'Nesprávna hodnota'})
     return render(request, 'xbtzmenarenapp/limitOrderSell.html', context)
 
+for c in CURRENCIES:
+    exec('''
 @user_passes_test(verification_check)
 @login_required
-def limit_order_sell_btc(request):
+def limit_order_sell_''' + c + '''(request):
     try:
-        sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
-        price_btc = dec(request.POST['price_btc'], DECIMAL_PLACES_PRICE)
-        rates.limit_order_sell_btc(request.user, sum_btc, price_btc)
+        sum_''' + c + ''' = dec(request.POST['sum_''' + c + ''''], ''' + DECIMAL_PLACES[c] + ''')
+        price_''' + c + ''' = dec(request.POST['price_''' + c + ''''], DECIMAL_PLACES_PRICE)
+        rates.limit_order_sell_''' + c + '''(request.user, sum_''' + c + ''', price_''' + c + ''')
     except:
-        return limit_order_sell(request, False, 'btc')
-    return limit_order_sell(request, True, 'btc')
+        return limit_order_sell(request, False, "''' + c + '''")
+    return limit_order_sell(request, True, "''' + c + '''")
 
-def limit_order_sell_btc_json(request):
-    sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
-    price_btc = dec(request.POST['price_btc'], DECIMAL_PLACES_PRICE)
-    fee, sum_eur = rates.preview_limit_order_sell_btc(sum_btc, price_btc)
+def limit_order_sell_''' + c + '''_json(request):
+    sum_''' + c + ''' = dec(request.POST['sum_''' + c + ''''], ''' +  DECIMAL_PLACES[c] + ''')
+    price_''' + c + ''' = dec(request.POST['price_''' + c + ''''], DECIMAL_PLACES_PRICE)
+    fee, sum_eur = rates.preview_limit_order_sell_''' + c + '''(sum_''' + c + ''', price_''' + c + ''')
     data = {
         'fee': str(fee),
         'eur': str(sum_eur),
@@ -369,82 +254,15 @@ def limit_order_sell_btc_json(request):
 
 @user_passes_test(verification_check)
 @login_required
-def limit_order_sell_btc_delete(request, order_id):
-    if request.user != Order_sell_btc.objects.get(id=order_id).user:
-        return limit_order_buy(request, False, 'btc')
+def limit_order_sell_''' + c + '''_delete(request, order_id):
+    if request.user != Order_sell_''' + c + '''.objects.get(id=order_id).user:
+        return limit_order_buy(request, False, "''' + c + '''")
     try:
-        rates.delete_limit_order_sell_btc(order_id)
+        rates.delete_limit_order_sell_''' + c + '''(order_id)
     except:
-        return limit_order_sell(request, False, 'btc')
-    return limit_order_sell(request, True, 'btc')
-
-@user_passes_test(verification_check)
-@login_required
-def limit_order_sell_ltc(request):
-    try:
-        sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
-        price_ltc = dec(request.POST['price_ltc'], DECIMAL_PLACES_PRICE)
-        rates.limit_order_sell_ltc(request.user, sum_ltc, price_ltc)
-    except:
-        return limit_order_sell(request, False, 'ltc')
-    return limit_order_sell(request, True, 'ltc')
-
-def limit_order_sell_ltc_json(request):
-    sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
-    price_ltc = dec(request.POST['price_ltc'], DECIMAL_PLACES_PRICE)
-    fee, sum_eur = rates.preview_limit_order_sell_ltc(sum_ltc, price_ltc)
-    data = {
-        'fee': str(fee),
-        'eur': str(sum_eur),
-    }
-    res = HttpResponse(json.dumps(data))
-    res['Content-Type'] = 'application/json'
-    return res
-
-@user_passes_test(verification_check)
-@login_required
-def limit_order_sell_ltc_delete(request, order_id):
-    if request.user != Order_sell_ltc.objects.get(id=order_id).user:
-        return limit_order_buy(request, False, 'ltc')
-    try:
-        rates.delete_limit_order_sell_ltc(order_id)
-    except:
-        return limit_order_sell(request, False, 'ltc')
-    return limit_order_sell(request, True, 'ltc')
-
-@user_passes_test(verification_check)
-@login_required
-def limit_order_sell_doge(request):
-    try:
-        sum_doge = dec(request.POST['sum_doge'], DECIMAL_PLACES_DOGE)
-        price_doge = dec(request.POST['price_doge'], DECIMAL_PLACES_PRICE)
-        rates.limit_order_sell_doge(request.user, sum_doge, price_doge)
-    except:
-        return limit_order_sell(request, False, 'doge')
-    return limit_order_sell(request, True, 'doge')
-
-def limit_order_sell_doge_json(request):
-    sum_doge = dec(request.POST['sum_doge'], DECIMAL_PLACES_DOGE)
-    price_doge = dec(request.POST['price_doge'], DECIMAL_PLACES_PRICE)
-    fee, sum_eur = rates.preview_limit_order_sell_doge(sum_doge, price_doge)
-    data = {
-        'fee': str(fee),
-        'eur': str(sum_eur),
-    }
-    res = HttpResponse(json.dumps(data))
-    res['Content-Type'] = 'application/json'
-    return res
-
-@user_passes_test(verification_check)
-@login_required
-def limit_order_sell_doge_delete(request, order_id):
-    if request.user != Order_sell_doge.objects.get(id=order_id).user:
-        return limit_order_buy(request, False, 'doge')
-    try:
-        rates.delete_limit_order_sell_ltc(order_id)
-    except:
-        return limit_order_sell(request, False, 'doge')
-    return limit_order_sell(request, True, 'doge')
+        return limit_order_sell(request, False, "''' + c + '''")
+    return limit_order_sell(request, True, "''' + c + '''")
+''')
 
 @user_passes_test(verification_check)
 @login_required
@@ -456,6 +274,12 @@ def private_rates(request):
         'ltceur_sell': rates.rates()['LTC-EUR']['sell'],
         'dogeeur_buy': rates.rates()['DOGE-EUR']['buy'],
         'dogeeur_sell': rates.rates()['DOGE-EUR']['sell'],
+        'etheur_buy': rates.rates()['ETH-EUR']['buy'],
+        'etheur_sell': rates.rates()['ETH-EUR']['sell'],
+        'xlmeur_buy': rates.rates()['XLM-EUR']['buy'],
+        'xlmeur_sell': rates.rates()['XLM-EUR']['sell'],
+        'zrxeur_buy': rates.rates()['ZRX-EUR']['buy'],
+        'zrxeur_sell': rates.rates()['ZRX-EUR']['sell'],
     }
     return render(request, 'xbtzmenarenapp/privateRates.html', context)
 
@@ -467,6 +291,12 @@ def public_rates(request):
         'ltceur_sell': rates.rates()['LTC-EUR']['sell'],
         'dogeeur_buy': rates.rates()['DOGE-EUR']['buy'],
         'dogeeur_sell': rates.rates()['DOGE-EUR']['sell'],
+        'etheur_buy': rates.rates()['ETH-EUR']['buy'],
+        'etheur_sell': rates.rates()['ETH-EUR']['sell'],
+        'xlmeur_buy': rates.rates()['XLM-EUR']['buy'],
+        'xlmeur_sell': rates.rates()['XLM-EUR']['sell'],
+        'zrxeur_buy': rates.rates()['ZRX-EUR']['buy'],
+        'zrxeur_sell': rates.rates()['ZRX-EUR']['sell'],
     }
     return render(request, 'xbtzmenarenapp/publicRates.html', context)
 
@@ -478,6 +308,12 @@ def rates_json(request):
     data['LTC-EUR']['sell'] = str(data['LTC-EUR']['sell'])
     data['DOGE-EUR']['buy'] = str(data['DOGE-EUR']['buy'])
     data['DOGE-EUR']['sell'] = str(data['DOGE-EUR']['sell'])
+    data['ETH-EUR']['buy'] = str(data['ETH-EUR']['buy'])
+    data['ETH-EUR']['sell'] = str(data['ETH-EUR']['sell'])
+    data['XLM-EUR']['buy'] = str(data['XLM-EUR']['buy'])
+    data['XLM-EUR']['sell'] = str(data['XLM-EUR']['sell'])
+    data['ZRX-EUR']['buy'] = str(data['ZRX-EUR']['buy'])
+    data['ZRX-EUR']['sell'] = str(data['ZRX-EUR']['sell'])
     res = HttpResponse(json.dumps(data))
     res['Content-Type'] = 'application/json'
     return res
@@ -630,9 +466,12 @@ def registration_attempt(request):
         Address.objects.create(
             user=CustomUser.objects.get(email=email),
             vs=f'{CustomUser.objects.get(email=email).id:010}',
-            btc=bitcoin_driver.get_new_address(),
-            ltc=litecoin_driver.get_new_address(),
-            doge=dogecoin_driver.get_new_address(),
+            btc=btc_driver.get_new_address(),
+            ltc=ltc_driver.get_new_address(),
+            doge=doge_driver.get_new_address(),
+            eth=eth_driver.get_new_address(),
+            xlm=xlm_driver.get_new_address(),
+            zrx=zrx_driver.get_new_address(),
         )
         Balance.objects.create(
             user=CustomUser.objects.get(email=email),
@@ -640,6 +479,9 @@ def registration_attempt(request):
             btc=0,
             ltc=0,
             doge=0,
+            eth=0,
+            xlm=0,
+            zrx=0,
         )
         Questionare.objects.create(
             user=CustomUser.objects.get(email=email),
@@ -655,7 +497,6 @@ def registration_attempt(request):
             question10=int(request.POST['q10']),
         )
     except:
-        raise
         CustomUser.objects.filter(email=email).delete()
         return registration(request, 'Chyba')
     return redirect('login')
@@ -668,21 +509,41 @@ def portfolio(request):
     for o in orders: eur_in_orders += o.btc * o.price
     orders = Order_buy_ltc.objects.filter(user=request.user)
     for o in orders: eur_in_orders += o.ltc * o.price
+    orders = Order_buy_doge.objects.filter(user=request.user)
+    for o in orders: eur_in_orders += o.doge * o.price
+    orders = Order_buy_eth.objects.filter(user=request.user)
+    for o in orders: eur_in_orders += o.eth * o.price
+    orders = Order_buy_xlm.objects.filter(user=request.user)
+    for o in orders: eur_in_orders += o.xlm * o.price
+    orders = Order_buy_zrx.objects.filter(user=request.user)
+    for o in orders: eur_in_orders += o.zrx * o.price
     btc_in_orders = Order_sell_btc.objects.filter(user=request.user).aggregate(Sum('btc'))['btc__sum']
     if btc_in_orders == None: btc_in_orders = D(0)
     ltc_in_orders = Order_sell_ltc.objects.filter(user=request.user).aggregate(Sum('ltc'))['ltc__sum']
     if ltc_in_orders == None: ltc_in_orders = D(0)
     doge_in_orders = Order_sell_doge.objects.filter(user=request.user).aggregate(Sum('doge'))['doge__sum']
     if doge_in_orders == None: doge_in_orders = D(0)
+    eth_in_orders = Order_sell_eth.objects.filter(user=request.user).aggregate(Sum('eth'))['eth__sum']
+    if eth_in_orders == None: eth_in_orders = D(0)
+    xlm_in_orders = Order_sell_xlm.objects.filter(user=request.user).aggregate(Sum('xlm'))['xlm__sum']
+    if xlm_in_orders == None: xlm_in_orders = D(0)
+    zrx_in_orders = Order_sell_zrx.objects.filter(user=request.user).aggregate(Sum('zrx'))['zrx__sum']
+    if zrx_in_orders == None: zrx_in_orders = D(0)
     context = {
         'eur': rates.r(request.user.balance.eur),
         'btc': rates.r(request.user.balance.btc),
         'ltc': rates.r(request.user.balance.ltc),
         'doge': rates.r(request.user.balance.doge),
+        'eth': rates.r(request.user.balance.eth),
+        'xlm': rates.r(request.user.balance.xlm),
+        'zrx': rates.r(request.user.balance.zrx),
         'eur_in_orders': rates.r(eur_in_orders),
         'btc_in_orders': rates.r(btc_in_orders),
         'ltc_in_orders': rates.r(ltc_in_orders),
         'doge_in_orders': rates.r(doge_in_orders),
+        'eth_in_orders': rates.r(eth_in_orders),
+        'xlm_in_orders': rates.r(xlm_in_orders),
+        'zrx_in_orders': rates.r(zrx_in_orders),
     }
     return render(request, 'xbtzmenarenapp/portfolio.html', context)
 
@@ -715,9 +576,15 @@ def deposit(request):
         'btc_address': request.user.address.btc, 
         'ltc_address': request.user.address.ltc,
         'doge_address': request.user.address.doge,
+        'eth_address': request.user.address.eth,
+        'xlm_address': request.user.address.xlm,
+        'zrx_address': request.user.address.zrx,
         'incoming_btc': Incoming_btc.objects.filter(user=request.user),
         'incoming_ltc': Incoming_ltc.objects.filter(user=request.user),
         'incoming_doge': Incoming_doge.objects.filter(user=request.user),
+        'incoming_eth': Incoming_eth.objects.filter(user=request.user),
+        'incoming_xlm': Incoming_xlm.objects.filter(user=request.user),
+        'incoming_zrx': Incoming_zrx.objects.filter(user=request.user),
     }
     return render(request, 'xbtzmenarenapp/deposit.html', context)
 
@@ -728,9 +595,13 @@ def withdrawal(request, error_message=None, ok_message=None, active='eur'):
         'error_message': error_message,
         'ok_message': ok_message,
         'max_sum_eur': request.user.balance.eur,
-        'max_sum_btc': request.user.balance.btc - bitcoin_driver.get_fee_per_kB(),
-        'max_sum_ltc': request.user.balance.ltc - litecoin_driver.get_fee_per_kB(),
-        'max_sum_doge': request.user.balance.doge + dogecoin_driver.get_fee_per_kB(),
+        'max_sum_btc': max(request.user.balance.btc - btc_driver.get_fee_per_kB(), 0),
+        'max_sum_ltc': max(request.user.balance.ltc - ltc_driver.get_fee_per_kB(), 0),
+        # DOGE gives fee in negative numbers!!!
+        'max_sum_doge': max(request.user.balance.doge + doge_driver.get_fee_per_kB(), 0),
+        'max_sum_eth': max(request.user.balance.eth - eth_driver.get_fee_per_kB(), 0),
+        'max_sum_xlm': max(request.user.balance.xlm - xlm_driver.get_fee_per_kB(), 0),
+        'max_sum_zrx': max(request.user.balance.zrx - zrx_driver.get_fee_per_kB(), 0),
         'active': active,
     }
     return render(request, 'xbtzmenarenapp/withdrawal.html', context)
@@ -763,119 +634,46 @@ def withdrawal_eur(request):
         return withdrawal(request, error_message='Nesprávna hodnota', active='eur')
     return withdrawal(request, ok_message='Požiadavka zaregistrovaná', active='eur')
 
+for c in CURRENCIES:
+    exec('''
 @user_passes_test(verification_check)
 @login_required
-def withdrawal_btc(request):
+def withdrawal_''' + c + '''(request):
     try:
-        sum_btc = dec(request.POST['sum_btc'], DECIMAL_PLACES_BTC)
+        sum_''' + c + ''' = dec(request.POST['sum_''' + c + ''''], ''' + DECIMAL_PLACES[c] + ''')
     except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota', active='btc')
-    address_btc = request.POST['address_btc']
-    if not is_valid_btc_address(address_btc):
-        return withdrawal(request, error_message='Nesprávna adresa', active='btc')
+        return withdrawal(request, error_message='Nesprávna hodnota', active="''' + c + '''")
+    address_''' + c + ''' = request.POST['address_''' + c + '''']
+    if not is_valid_''' + c + '''_address(address_''' + c + '''):
+        return withdrawal(request, error_message='Nesprávna adresa', active="''' + c + '''")
     try:
         with transaction.atomic():
-            fee = bitcoin_driver.get_fee_per_kB()
+            fee = ''' + c + '''_driver.get_fee_per_kB()
             balance = Balance.objects.filter(user=request.user)
-            balance.update(btc=F('btc') - (sum_bt + fee))
-            if balance[0].btc < 0: raise ValueError
-            if bitcoin_driver.get_balance() < (sum_btc + fee):
-                Withdrawal_btc.objects.create(
+            balance.update(''' + c + '''=F("''' + c + '''") - (sum_''' + c + ''' + fee))
+            if balance[0].''' + c + ''' < 0: raise ValueError
+            if ''' + c + '''_driver.get_balance() < (sum_''' + c + ''' + fee):
+                Withdrawal_''' + c + '''.objects.create(
                     user=request.user,
                     time_created=timezone.now(),
-                    btc=sum_btc,
-                    address=address_btc,
+                    ''' + c + '''=sum_''' + c + ''',
+                    address=address_''' + c + ''',
                     is_pending=True,
                 )
             else:
-                Withdrawal_btc.objects.create(
+                Withdrawal_''' + c + '''.objects.create(
                     user=request.user,
                     time_created=timezone.now(),
                     time_processed=timezone.now(),
-                    btc=sum_btc,
-                    address=address_btc,
+                    ''' + c + '''=sum_''' + c + ''',
+                    address=address_''' + c + ''',
                     is_pending=False,
                 )
-                bitcoin_driver.send(address_btc, sum_btc, fee)
+                ''' + c + '''_driver.send(address_''' + c + ''', sum_''' + c + ''', fee)
     except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota', active='btc')
-    return withdrawal(request, ok_message='Požiadavka zaregistrovaná', active='btc')
-
-@user_passes_test(verification_check)
-@login_required
-def withdrawal_ltc(request):
-    try:
-        sum_ltc = dec(request.POST['sum_ltc'], DECIMAL_PLACES_LTC)
-    except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota', active='ltc')
-    address_ltc = request.POST['address_ltc']
-    if not is_valid_ltc_address(address_ltc):
-        return withdrawal(request, error_message='Nesprávna adresa', active='ltc')
-    try:
-        with transaction.atomic():
-            fee = litecoin_driver.get_fee_per_kB()
-            balance = Balance.objects.filter(user=request.user)
-            balance.update(ltc=F('ltc') - (sum_ltc + fee))
-            if balance[0].ltc < 0: raise ValueError
-            if litecoin_driver.get_balance() < (sum_ltc + fee):
-                Withdrawal_ltc.objects.create(
-                    user=request.user,
-                    time_created=timezone.now(),
-                    ltc=sum_ltc,
-                    address=address_ltc,
-                    is_pending=True,
-                )
-            else:
-                Withdrawal_ltc.objects.create(
-                    user=request.user,
-                    time_created=timezone.now(),
-                    time_processed=timezone.now(),
-                    ltc=sum_ltc,
-                    address=address_ltc,
-                    is_pending=False,
-                )
-                litecoin_driver.send(address_ltc, sum_ltc, fee)
-    except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota', active='ltc')
-    return withdrawal(request, ok_message='Požiadavka zaregistrovaná', active='ltc')
-
-@user_passes_test(verification_check)
-@login_required
-def withdrawal_doge(request):
-    try:
-        sum_doge = dec(request.POST['sum_doge'], DECIMAL_PLACES_DOGE)
-    except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota', active='doge')
-    address_doge = request.POST['address_doge']
-    if not is_valid_doge_address(address_doge):
-        return withdrawal(request, error_message='Nesprávna adresa', active='doge')
-    try:
-        with transaction.atomic():
-            fee = dogecoin_driver.get_fee_per_kB()
-            balance = Balance.objects.filter(user=request.user)
-            balance.update(doge=F('doge') - (sum_doge + fee))
-            if balance[0].doge < 0: raise ValueError
-            if dogecoin_driver.get_balance() < (sum_doge + fee):
-                Withdrawal_doge.objects.create(
-                    user=request.user,
-                    time_created=timezone.now(),
-                    doge=sum_doge,
-                    address=address_doge,
-                    is_pending=True,
-                )
-            else:
-                Withdrawal_doge.objects.create(
-                    user=request.user,
-                    time_created=timezone.now(),
-                    time_processed=timezone.now(),
-                    doge=sum_doge,
-                    address=address_doge,
-                    is_pending=False,
-                )
-                dogecoin_driver.send(address_doge, sum_doge, fee)
-    except ValueError:
-        return withdrawal(request, error_message='Nesprávna hodnota', active='doge')
-    return withdrawal(request, ok_message='Požiadavka zaregistrovaná', active='doge')
+        return withdrawal(request, error_message='Nesprávna hodnota', active="''' + c + '''")
+    return withdrawal(request, ok_message='Požiadavka zaregistrovaná', active="''' + c + '''")
+''')
 
 def staff_check(user):
     return user.is_staff
@@ -915,10 +713,16 @@ def management_withdrawals(request, active='eur'):
         'old_withdrawals_btc': Withdrawal_btc.objects.filter(is_pending=False).order_by('-time_processed')[:5],
         'old_withdrawals_ltc': Withdrawal_ltc.objects.filter(is_pending=False).order_by('-time_processed')[:5],
         'old_withdrawals_doge': Withdrawal_doge.objects.filter(is_pending=False).order_by('-time_processed')[:5],
+        'old_withdrawals_eth': Withdrawal_eth.objects.filter(is_pending=False).order_by('-time_processed')[:5],
+        'old_withdrawals_xlm': Withdrawal_xlm.objects.filter(is_pending=False).order_by('-time_processed')[:5],
+        'old_withdrawals_zrx': Withdrawal_zrx.objects.filter(is_pending=False).order_by('-time_processed')[:5],
         'withdrawals_eur': Withdrawal_eur.objects.filter(is_pending=True).order_by('iban')[:100],
         'withdrawals_btc': Withdrawal_btc.objects.filter(is_pending=True).order_by('address')[:100],
         'withdrawals_ltc': Withdrawal_ltc.objects.filter(is_pending=True).order_by('address')[:100],
         'withdrawals_doge': Withdrawal_doge.objects.filter(is_pending=True).order_by('address')[:100],
+        'withdrawals_eth': Withdrawal_eth.objects.filter(is_pending=True).order_by('address')[:100],
+        'withdrawals_xlm': Withdrawal_xlm.objects.filter(is_pending=True).order_by('address')[:100],
+        'withdrawals_zrx': Withdrawal_zrx.objects.filter(is_pending=True).order_by('address')[:100],
         'active': active,
     }
     return render(request, 'xbtzmenarenapp/management/withdrawals.html', context)
@@ -933,35 +737,18 @@ def management_withdrawal_eur_check(request, withdrawal_id):
     withdrawal.save()
     return management_withdrawals(request, 'eur')
 
+for c in CURRENCIES:
+    exec('''
 @user_passes_test(verification_check)
 @user_passes_test(staff_check)
 @login_required
-def management_withdrawal_btc_check(request, withdrawal_id):
-    withdrawal = Withdrawal_btc.objects.get(id=withdrawal_id)
+def management_withdrawal_''' + c + '''_check(request, withdrawal_id):
+    withdrawal = Withdrawal_''' + c + '''.objects.get(id=withdrawal_id)
     withdrawal.is_pending = False
     withdrawal.time_processed=timezone.now()
     withdrawal.save()
-    return management_withdrawals(request, 'btc')
-
-@user_passes_test(verification_check)
-@user_passes_test(staff_check)
-@login_required 
-def management_withdrawal_ltc_check(request, withdrawal_id):
-    withdrawal = Withdrawal_ltc.objects.get(id=withdrawal_id)
-    withdrawal.is_pending = False
-    withdrawal.time_processed=timezone.now()
-    withdrawal.save()
-    return management_withdrawals(request, 'ltc')
-
-@user_passes_test(verification_check)
-@user_passes_test(staff_check)
-@login_required 
-def management_withdrawal_doge_check(request, withdrawal_id):
-    withdrawal = Withdrawal_doge.objects.get(id=withdrawal_id)
-    withdrawal.is_pending = False
-    withdrawal.time_processed=timezone.now()
-    withdrawal.save()
-    return management_withdrawals(request, 'doge')
+    return management_withdrawals(request, "''' + c + '''")
+''')
 
 @user_passes_test(verification_check)
 @user_passes_test(staff_check)
@@ -1001,8 +788,8 @@ def management_deposit_attempt(request):
 def management_balances(request):
     eur_in_orders_staff = D(0)
     eur_in_orders_non_staff = D(0)
-    orders = Order_buy_btc.objects.all()
     staff = CustomUser.objects.filter(is_staff=True)
+    orders = Order_buy_btc.objects.all()
     for o in orders:
         if o.user in staff:
             eur_in_orders_staff += o.btc * o.price
@@ -1020,51 +807,101 @@ def management_balances(request):
             eur_in_orders_staff += o.doge * o.price
         else:
             eur_in_orders_non_staff += o.doge * o.price
+    orders = Order_buy_eth.objects.filter(user=request.user)
+    for o in orders:
+        if o.user in staff:
+            eur_in_orders_staff += o.eth * o.price
+        else:
+            eur_in_orders_non_staff += o.eth * o.price
+    orders = Order_buy_xlm.objects.filter(user=request.user)
+    for o in orders:
+        if o.user in staff:
+            eur_in_orders_staff += o.xlm * o.price
+        else:
+            eur_in_orders_non_staff += o.xlm * o.price
+    orders = Order_buy_zrx.objects.filter(user=request.user)
+    for o in orders:
+        if o.user in staff:
+            eur_in_orders_staff += o.zrx * o.price
+        else:
+            eur_in_orders_non_staff += o.zrx * o.price
     btc_in_orders_staff = D(0)
     btc_in_orders_non_staff = D(0)
     for user in CustomUser.objects.all():
+        amount = Order_sell_btc.objects.filter(user=user).aggregate(Sum('btc'))['btc__sum']
         if user in staff:
-            amount = Order_sell_btc.objects.filter(user=user).aggregate(Sum('btc'))['btc__sum']
             if amount: btc_in_orders_staff += amount
         else:
-            amount = Order_sell_btc.objects.filter(user=user).aggregate(Sum('btc'))['btc__sum']
             if amount: btc_in_orders_non_staff += amount
     ltc_in_orders_staff = D(0)
     ltc_in_orders_non_staff = D(0)
     for user in CustomUser.objects.all():
+        amount = Order_sell_ltc.objects.filter(user=user).aggregate(Sum('ltc'))['ltc__sum']
         if user in staff:
-            amount = Order_sell_ltc.objects.filter(user=user).aggregate(Sum('ltc'))['ltc__sum']
             if amount: ltc_in_orders_staff += amount
         else:
-            amount = Order_sell_ltc.objects.filter(user=user).aggregate(Sum('ltc'))['ltc__sum']
             if amount: ltc_in_orders_non_staff += amount
     doge_in_orders_staff = D(0)
     doge_in_orders_non_staff = D(0)
     for user in CustomUser.objects.all():
+        amount = Order_sell_doge.objects.filter(user=user).aggregate(Sum('doge'))['doge__sum']
         if user in staff:
-            amount = Order_sell_doge.objects.filter(user=user).aggregate(Sum('doge'))['doge__sum']
             if amount: doge_in_orders_staff += amount
         else:
-            amount = Order_sell_doge.objects.filter(user=user).aggregate(Sum('doge'))['doge__sum']
             if amount: doge_in_orders_non_staff += amount
+    eth_in_orders_staff = D(0)
+    eth_in_orders_non_staff = D(0)
+    for user in CustomUser.objects.all():
+        amount = Order_sell_eth.objects.filter(user=user).aggregate(Sum('eth'))['eth__sum']
+        if user in staff:
+            if amount: eth_in_orders_staff += amount
+        else:
+            if amount: eth_in_orders_non_staff += amount
+    xlm_in_orders_staff = D(0)
+    xlm_in_orders_non_staff = D(0)
+    for user in CustomUser.objects.all():
+        amount = Order_sell_xlm.objects.filter(user=user).aggregate(Sum('xlm'))['xlm__sum']
+        if user in staff:
+            if amount: xlm_in_orders_staff += amount
+        else:
+            if amount: xlm_in_orders_non_staff += amount
+    zrx_in_orders_staff = D(0)
+    zrx_in_orders_non_staff = D(0)
+    for user in CustomUser.objects.all():
+        amount = Order_sell_zrx.objects.filter(user=user).aggregate(Sum('zrx'))['zrx__sum']
+        if user in staff:
+            if amount: zrx_in_orders_staff += amount
+        else:
+            if amount: zrx_in_orders_non_staff += amount
     total_eur = Balance.objects.aggregate(Sum('eur'))['eur__sum']
     total_btc = Balance.objects.aggregate(Sum('btc'))['btc__sum']
     total_ltc = Balance.objects.aggregate(Sum('ltc'))['ltc__sum']
     total_doge = Balance.objects.aggregate(Sum('doge'))['doge__sum']
+    total_eth = Balance.objects.aggregate(Sum('eth'))['eth__sum']
+    total_xlm = Balance.objects.aggregate(Sum('xlm'))['xlm__sum']
+    total_zrx = Balance.objects.aggregate(Sum('zrx'))['zrx__sum']
     staff_eur = D(0)
     staff_btc = D(0)
     staff_ltc = D(0)
     staff_doge = D(0)
-    staff_users = CustomUser.objects.filter(is_staff=True)
-    for user in staff_users:
+    staff_eth = D(0)
+    staff_xlm = D(0)
+    staff_zrx = D(0)
+    for user in staff:
         staff_eur += user.balance.eur
         staff_btc += user.balance.btc
         staff_ltc += user.balance.ltc
         staff_doge += user.balance.doge
+        staff_eth += user.balance.eth
+        staff_xlm += user.balance.xlm
+        staff_zrx += user.balance.zrx
     non_staff_eur = total_eur - staff_eur
     non_staff_btc = total_btc - staff_btc
     non_staff_ltc = total_ltc - staff_ltc
     non_staff_doge = total_doge - staff_doge
+    non_staff_eth = total_eth - staff_eth
+    non_staff_xlm = total_xlm - staff_xlm
+    non_staff_zrx = total_zrx - staff_zrx
     context = {
         'eur_in_orders_staff': rates.r(eur_in_orders_staff),
         'eur_in_orders_non_staff': rates.r(eur_in_orders_non_staff),
@@ -1078,6 +915,15 @@ def management_balances(request):
         'doge_in_orders_staff': rates.r(doge_in_orders_staff),
         'doge_in_orders_non_staff': rates.r(doge_in_orders_non_staff),
         'doge_in_orders_total': rates.r(doge_in_orders_staff + doge_in_orders_non_staff),
+        'eth_in_orders_staff': rates.r(eth_in_orders_staff),
+        'eth_in_orders_non_staff': rates.r(eth_in_orders_non_staff),
+        'eth_in_orders_total': rates.r(eth_in_orders_staff + eth_in_orders_non_staff),
+        'xlm_in_orders_staff': rates.r(xlm_in_orders_staff),
+        'xlm_in_orders_non_staff': rates.r(xlm_in_orders_non_staff),
+        'xlm_in_orders_total': rates.r(xlm_in_orders_staff + xlm_in_orders_non_staff),
+        'zrx_in_orders_staff': rates.r(zrx_in_orders_staff),
+        'zrx_in_orders_non_staff': rates.r(zrx_in_orders_non_staff),
+        'zrx_in_orders_total': rates.r(zrx_in_orders_staff + zrx_in_orders_non_staff),
         'non_staff_eur': rates.r(non_staff_eur),
         'staff_eur': rates.r(staff_eur),
         'total_eur': rates.r(total_eur),
@@ -1090,6 +936,15 @@ def management_balances(request):
         'non_staff_doge': rates.r(non_staff_doge),
         'staff_doge': rates.r(staff_doge),
         'total_doge': rates.r(total_doge),
+        'non_staff_eth': rates.r(non_staff_eth),
+        'staff_eth': rates.r(staff_eth),
+        'total_eth': rates.r(total_eth),
+        'non_staff_xlm': rates.r(non_staff_xlm),
+        'staff_xlm': rates.r(staff_xlm),
+        'total_xlm': rates.r(total_xlm),
+        'non_staff_zrx': rates.r(non_staff_zrx),
+        'staff_zrx': rates.r(staff_zrx),
+        'total_zrx': rates.r(total_zrx),
     }
     return render(request, 'xbtzmenarenapp/management/balances.html', context)
 
@@ -1101,6 +956,9 @@ def management_buys(request):
         'buys_btc': Buy_btc.objects.all().order_by('-datetime')[:100],
         'buys_ltc': Buy_ltc.objects.all().order_by('-datetime')[:100],
         'buys_doge': Buy_doge.objects.all().order_by('-datetime')[:100],
+        'buys_eth': Buy_eth.objects.all().order_by('-datetime')[:100],
+        'buys_xlm': Buy_xlm.objects.all().order_by('-datetime')[:100],
+        'buys_zrx': Buy_zrx.objects.all().order_by('-datetime')[:100],
     }
     return render(request, 'xbtzmenarenapp/management/buys.html', context)
 
@@ -1112,6 +970,9 @@ def management_sells(request):
         'sells_btc': Sell_btc.objects.all().order_by('-datetime')[:100],
         'sells_ltc': Sell_ltc.objects.all().order_by('-datetime')[:100],
         'sells_doge': Sell_doge.objects.all().order_by('-datetime')[:100],
+        'sells_eth': Sell_eth.objects.all().order_by('-datetime')[:100],
+        'sells_xlm': Sell_xlm.objects.all().order_by('-datetime')[:100],
+        'sells_zrx': Sell_zrx.objects.all().order_by('-datetime')[:100],
     }
     return render(request, 'xbtzmenarenapp/management/sells.html', context)
 
@@ -1126,6 +987,12 @@ def management_orderbook(request):
         'sell_ltc': Order_sell_ltc.objects.all().order_by('price')[:100],
         'buy_doge': Order_buy_doge.objects.all().order_by('-price')[:100:-1],
         'sell_doge': Order_sell_doge.objects.all().order_by('price')[:100],
+        'buy_eth': Order_buy_eth.objects.all().order_by('-price')[:100:-1],
+        'sell_eth': Order_sell_eth.objects.all().order_by('price')[:100],
+        'buy_xlm': Order_buy_xlm.objects.all().order_by('-price')[:100:-1],
+        'sell_xlm': Order_sell_xlm.objects.all().order_by('price')[:100],
+        'buy_zrx': Order_buy_zrx.objects.all().order_by('-price')[:100:-1],
+        'sell_zrx': Order_sell_zrx.objects.all().order_by('price')[:100],
     }
     return render(request, 'xbtzmenarenapp/management/orderbook.html', context)
 
