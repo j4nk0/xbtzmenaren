@@ -1092,6 +1092,10 @@ def management_orderbook(request):
 
 ```
         ...
+	<tr>
+	  <td></td>
+	  <td></td>
+	</tr>
         <tr>
           <td><b>DOGE-EUR</b></td>
           <td></td>
