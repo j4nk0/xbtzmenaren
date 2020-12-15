@@ -773,11 +773,10 @@ def management_balances(request):
     doge_in_orders_staff = D(0)
     doge_in_orders_non_staff = D(0)
     for user in CustomUser.objects.all():
+        amount = Order_sell_doge.objects.filter(user=user).aggregate(Sum('doge'))['doge__sum']
         if user in staff:
-            amount = Order_sell_doge.objects.filter(user=user).aggregate(Sum('doge'))['doge__sum']
             if amount: doge_in_orders_staff += amount
         else:
-            amount = Order_sell_doge.objects.filter(user=user).aggregate(Sum('doge'))['doge__sum']
             if amount: doge_in_orders_non_staff += amount
     ...
     total_doge = Balance.objects.aggregate(Sum('doge'))['doge__sum']
