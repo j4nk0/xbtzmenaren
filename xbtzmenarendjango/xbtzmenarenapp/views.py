@@ -551,6 +551,124 @@ def portfolio(request):
 
 @user_passes_test(verification_check)
 @login_required
+def recommended_portfolio(request):
+    btc = 0
+    ltc = 0
+    doge = 0
+    eth = 0
+    xlm = 0
+    zrx = 0
+    answer6 = request.user.questionare.question6
+    if answer6 == 1:
+        btc += 100
+    elif answer6 == 2:
+        btc += 40
+        eth += 30
+        ltc += 20
+        doge += 10
+    elif answer6 == 3:
+        xlm += 40
+        eth += 30
+        ltc += 20
+        doge += 10
+    elif answer6 == 4:
+        xlm += 50
+        zrx += 50
+    answer7 = request.user.questionare.question7
+    if answer7 == 1:
+        xlm += 40
+        zrx += 60
+    elif answer7 == 2:
+        xlm += 30
+        eth += 30
+        ltc += 20
+        zrx += 20
+    elif answer7 == 3:
+        btc += 30
+        eth += 30
+        ltc += 20
+        doge += 20
+    elif answer7 == 4:
+        btc += 50
+        ltc += 30
+        doge += 20
+    elif answer7 == 5:
+        btc += 50
+        ltc += 50
+    answer8 = request.user.questionare.question8
+    if answer8 == 1:
+        btc += 50
+        eth += 50
+    elif answer8 == 2:
+        btc += 30
+        eth += 30
+        ltc += 20
+        xlm += 20
+    elif answer8 == 3:
+        btc += 20
+        eth += 20
+        ltc += 20
+        doge += 20
+        xlm += 20
+    elif answer8 == 4:
+        btc += 10
+        doge += 20
+        xlm += 30
+        zrx += 40
+    elif answer8 == 5:
+        xlm += 50
+        zrx += 50
+    answer9 = request.user.questionare.question9
+    if answer9 == 1: 
+        btc += 100
+    elif answer9 == 2: 
+        btc += 50
+        eth += 30
+        ltc += 20
+    elif answer9 == 3: 
+        btc += 20
+        eth += 30
+        ltc += 20
+        xlm += 30
+    elif answer9 == 4: 
+        xlm += 30
+        zrx += 30
+        ltc += 20
+        doge += 20
+    answer10 = request.user.questionare.question10
+    if answer10 == 1:
+        btc += 50
+        ltc += 50
+    elif answer10 == 2:
+        btc += 50
+        eth += 20
+        xlm += 30
+    elif answer10 == 3:
+        btc += 10
+        eth += 10
+        xlm += 30
+        zrx += 30
+        doge += 10
+        ltc += 10
+    btc /= 5
+    ltc /= 5
+    doge /= 5
+    eth /= 5
+    xlm /= 5
+    zrx /= 5
+    context = {
+        'btc': str(int(btc)) + ' %',
+        'ltc': str(int(ltc)) + ' %',
+        'doge': str(int(doge)) + ' %',
+        'eth': str(int(eth)) + ' %',
+        'xlm': str(int(xlm)) + ' %',
+        'zrx': str(int(zrx)) + ' %',
+    }
+    return render(request, 'xbtzmenarenapp/recommendedPortfolio.html', context)
+
+
+@user_passes_test(verification_check)
+@login_required
 def change_password(request, error_message=None):
     context = { 'error_message': error_message }
     return render(request, 'xbtzmenarenapp/changePassword.html', context)
