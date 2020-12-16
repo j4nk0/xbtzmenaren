@@ -16,6 +16,7 @@ pip install requests
 sudo add-apt-repository -y ppa:ethereum/ethereum
 sudo apt-get update
 sudo apt-get install ethereum
+pip install web3   #for geth - ethereum
 ```
 
 ## Web server:
