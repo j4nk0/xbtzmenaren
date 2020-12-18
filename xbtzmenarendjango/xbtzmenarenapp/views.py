@@ -556,9 +556,6 @@ def recommended_portfolio(request):
     btc /= 5
     ltc /= 5
     doge /= 5
-    eth /= 5
-    xlm /= 5
-    zrx /= 5
     context = {
         'btc': str(int(btc)) + ' %',
         'ltc': str(int(ltc)) + ' %',
