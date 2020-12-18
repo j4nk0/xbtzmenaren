@@ -6,9 +6,6 @@
       <li class="active"><a data-toggle="pill" href="#Bitcoin">Bitcoin</a></li>
       <li><a data-toggle="pill" href="#Litecoin">Litecoin</a></li>
       <li><a data-toggle="pill" href="#Dogecoin">Dogecoin</a></li>
-      <li><a data-toggle="pill" href="#Ethereum">Ethereum</a></li>
-      <li><a data-toggle="pill" href="#Stellar">Stellar</a></li>
-      <li><a data-toggle="pill" href="#0x">0x</a></li>
     </ul>
     <div class="tab-content">
 
@@ -74,75 +71,6 @@
                 <td>{{ sell.user }}</td>
                 <td>{{ sell.datetime }}</td>
                 <td>{{ sell.doge }}</td>
-                <td>{{ sell.eur }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
-      <div id="Ethereum" class="tab-pane">
-        <table class="table">
-          <thead>
-              <tr>
-                <td><b>Užívateľ</b></td>
-                <td><b>Čas</b></td>
-                <td><b>ETH</b></td>
-                <td><b>EUR</b></td>
-              </tr>
-          </thead>
-          <tbody>
-            {% for sell in sells_eth %}
-              <tr>
-                <td>{{ sell.user }}</td>
-                <td>{{ sell.datetime }}</td>
-                <td>{{ sell.eth }}</td>
-                <td>{{ sell.eur }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
-      <div id="Stellar" class="tab-pane">
-        <table class="table">
-          <thead>
-              <tr>
-                <td><b>Užívateľ</b></td>
-                <td><b>Čas</b></td>
-                <td><b>XLM</b></td>
-                <td><b>EUR</b></td>
-              </tr>
-          </thead>
-          <tbody>
-            {% for sell in sells_xlm %}
-              <tr>
-                <td>{{ sell.user }}</td>
-                <td>{{ sell.datetime }}</td>
-                <td>{{ sell.xlm }}</td>
-                <td>{{ sell.eur }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
-      <div id="0x" class="tab-pane">
-        <table class="table">
-          <thead>
-              <tr>
-                <td><b>Užívateľ</b></td>
-                <td><b>Čas</b></td>
-                <td><b>ZRX</b></td>
-                <td><b>EUR</b></td>
-              </tr>
-          </thead>
-          <tbody>
-            {% for sell in sells_zrx %}
-              <tr>
-                <td>{{ sell.user }}</td>
-                <td>{{ sell.datetime }}</td>
-                <td>{{ sell.zrx }}</td>
                 <td>{{ sell.eur }}</td>
               </tr>
             {% endfor %}
