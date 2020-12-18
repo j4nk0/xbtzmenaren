@@ -8,9 +8,6 @@
       <li><a data-toggle="pill" href="#Bitcoin">Bitcoin</a></li>
       <li><a data-toggle="pill" href="#Litecoin">Litecoin</a></li>
       <li><a data-toggle="pill" href="#Dogecoin">Dogecoin</a></li>
-      <li><a data-toggle="pill" href="#Ethereum">Ethereum</a></li>
-      <li><a data-toggle="pill" href="#Stellar">Stellar</a></li>
-      <li><a data-toggle="pill" href="#0x">0x</a></li>
     </ul>
     <div class="tab-content">
 
@@ -86,78 +83,6 @@
               <tr>
                 <td>{{ incoming.address }}</td>
                 <td>{{ incoming.doge }}</td>
-                <td>{{ incoming.confirmations }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
-      <div id="Ethereum" class="tab-pane">
-        <p>Zašlite na adresu:</p>
-        <p><b>{{ eth_address }}</b></p>
-        <p>Prichádzajúce platby (na pripísanie sumy je treba 6 potvrdení):</p>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Adresa</th>
-              <th>Suma ETH</th>
-              <th>Potvrdení</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for incoming in incoming_eth %}
-              <tr>
-                <td>{{ incoming.address }}</td>
-                <td>{{ incoming.eth }}</td>
-                <td>{{ incoming.confirmations }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
-      <div id="Stellar" class="tab-pane">
-        <p>Zašlite na adresu:</p>
-        <p><b>{{ xlm_address }}</b></p>
-        <p>Prichádzajúce platby (na pripísanie sumy je treba 6 potvrdení):</p>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Adresa</th>
-              <th>Suma XLM</th>
-              <th>Potvrdení</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for incoming in incoming_xlm %}
-              <tr>
-                <td>{{ incoming.address }}</td>
-                <td>{{ incoming.xlm }}</td>
-                <td>{{ incoming.confirmations }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
-      <div id="0x" class="tab-pane">
-        <p>Zašlite na adresu:</p>
-        <p><b>{{ zrx_address }}</b></p>
-        <p>Prichádzajúce platby (na pripísanie sumy je treba 6 potvrdení):</p>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Adresa</th>
-              <th>Suma ZRX</th>
-              <th>Potvrdení</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for incoming in incoming_zrx %}
-              <tr>
-                <td>{{ incoming.address }}</td>
-                <td>{{ incoming.zrx }}</td>
                 <td>{{ incoming.confirmations }}</td>
               </tr>
             {% endfor %}
