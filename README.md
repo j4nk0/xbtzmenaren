@@ -188,6 +188,31 @@ MEDIA_URL = 'https://xbtzmenaren.ddns.net/media/'
 ```
 and use this syntax in views.py:`with open('/var/www/xbtzmenarendjango/media/' + email + file_description, 'wb+') as destination:`
 
+## Disable debug:
+
+`settings.py` : `DEBUG = False`
+
+## Enable notifications:
+
+copy `~/xbtzmenaren/wallet_attachement/` to `var/www/wallet_attachement/`
+
+to `~/.bitcoin/bitcoin.conf` add:
+```
+blocknotify=python /var/www/wallet_attachement/bitcoind/blockscript.py %s
+walletnotify=python /var/www/wallet_attachement/bitcoind/walletscript.py %s
+```
+
+to `~/.litecoin/litecoin.conf` add:
+```
+blocknotify=python /var/www/wallet_attachement/litecoind/blockscript.py %s
+walletnotify=python /var/www/wallet_attachement/litecoind/walletscript.py %s
+```
+
+to `~/.dogecoin/dogecoin.conf` add:
+```
+blocknotify=python /var/www/wallet_attachement/dogecoind/blockscript.py %s
+walletnotify=python /var/www/wallet_attachement/dogecoind/walletscript.py %s
+```
 
 ## Adding new currency - DOGE:
 
