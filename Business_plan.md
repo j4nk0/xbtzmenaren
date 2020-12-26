@@ -41,3 +41,14 @@ Marža 2%
 Návratnosť:
 2000 / (300 - 280) = 9 rokov
 Okrem investície do servera si bude prevádzka vyžadovať rezervy mien a to vo výške 2500 eur na menu - rezerva na 5 dní - čas potrebný na nákup ďalšej meny.
+
+## Konkurencia
+
+### simplecoin.eu
+
+ma 8 jazykovych mutacii, medzi nimi aj slovensku a cesku
+
+#### Udavane parametre zo dna 26.12.2020:
+##### 2551 obchodov za poslednych 30 dni
+##### 3348134 EUR objem obchodov za poslednych 30 dni
+##### pri cene BTC-EUR 20797.28 simplecoin ponuka BTC-EUR 21304.25 , s poplatkami 21556.37 (marza 2.4 % resp. 3.6 %)
