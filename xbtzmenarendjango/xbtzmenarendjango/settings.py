@@ -154,3 +154,6 @@ AXES_COOLOFF_TIME = 1
 # File storage:
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Disable AXES on testing
+AXES_ENABLED=False
