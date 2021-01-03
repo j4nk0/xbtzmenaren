@@ -33,12 +33,11 @@ Dodanie (prevod) produktu
 Prevod meny prebieha elektronickým spôsobom.
 V prípade, keď sa produkt doručuje do externej peňaženky kupujúceho, je kupujúci povinný znášať všetky náklady s týmto spojené, predovšetkým tzv. miners fee.
 Prevádzkovateľ neručí za to, čo sa ďalej deje s nakúpeným produktom po jeho vybraní kupujúcim.
-Zmluvné strany si môžu bežnú korešpondenciu navzájom doručovať prostredníctvom elektronickej pošty, a to na adresu elektronickej pošty uvedenú v užívateľskom účte kupujúceho alebo uvedenú kupujúcim v objednávke, resp. na adresu uvedenú na webovej stránke predávajúceho.
+Zmluvné strany si môžu bežnú korešpondenciu navzájom doručovať prostredníctvom elektronickej pošty, a to na adresu elektronickej pošty uvedenú v užívateľskom účte kupujúceho alebo uvedenú kupujúcim v objednávke, resp. na adresu uvedenú na webovej stránke poskytovateľa.
 Ak vzťah založený zmluvou obsahuje medzinárodné (zahraničné) prvky, potom sa strany dohodnú, že vzťah sa bude riadiť slovenským právom. Týmto nie sú dotknuté práva spotrebiteľa vyplývajúce zo všeobecne záväzných právnych predpisov.
 Ak sa niektoré ustanovenia obchodných podmienok stanú neplatnými alebo neúčinnými, namiesto neplatných ustanovení nastúpia ustanovenia, ktorých význam sa čo najviac približuje neplatným ustanoveniam. Neplatnosťou alebo neúčinnosťou jedného ustanovenia nie je dotknutá platnosť ostatných ustanovení.
 Zmluvu, vrátane obchodných podmienok archivuje predávajúci v elektronickej podobe a nie je prístupná.
 
-     
 Zásady ochrany osobných údajov
 
 Prevádzkovateľ spracováva osobné údaje kupujúceho v súlade s ust. zákona č. 18/2018 Z. z. - Zákon o ochrane osobných údajov a o zmene niektorých zákonov v znení neskorších predpisov a podľa nariadenia č. 2016/679 Európskeho parlamentu a Rady EÚ o ochrane fyzických osôb pri spracovaní osobných údajov a voľnom pohybe týchto údajov (GDPR). Za týmto účelom prevádzkovateľ, prijal Zásady ochrany osobných údajov.
