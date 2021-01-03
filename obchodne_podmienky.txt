@@ -23,10 +23,10 @@ Klient prehlasuje, že pred naviazaním zmluvného vzťahu s prevádzkovateľom 
 
 Uzatvorenie zmluvy
 
-Všetky prezentácie produktov umiestnených na webovej stránke obchodu majú informatívny charakter a predávajúci nie je povinný uzavrieť zmluvu na tieto výrobky.
-Webová stránka obsahuje informácie o produktoch, vrátane cien jednotlivých produktov. Ceny nezostávajú v platnosti po dobu, keď sa zobrazujú na webovom rozhraní obchodu a predávajúci má právo ich kedykoľvek zmeniť. Toto ustanovenie neobmedzuje možnosť predávajúceho uzavrieť objednávku na vopred určenú cenu.
+Všetky prezentácie produktov umiestnených na webovej stránke obchodu majú informatívny charakter a prevádzkovateľ nie je povinný uzavrieť zmluvu na tieto výrobky.
+Webová stránka obsahuje informácie o produktoch, vrátane cien jednotlivých produktov. Ceny nezostávajú v platnosti po dobu, keď sa zobrazujú na webovom rozhraní obchodu a prevádzkovateľ má právo ich kedykoľvek zmeniť. Toto ustanovenie neobmedzuje možnosť prevádzkovateľa uzavrieť objednávku na vopred určenú cenu.
 Kupujúci súhlasí s použitím komunikačných prostriedkov na diaľku pri uzatvorení Zmluvy.
-Prevádzkovateľ má právo požiadať kupujúceho o dodatočné informácie k objednávke, a to najmä z dôvodu a v rozsahu stanovenom podľa zákona č. 297/2008 Z. z. - Zákon o ochrane pred legalizáciou príjmov z trestnej činnosti a o ochrane pred financovaním terorizmu. Neposkytnutie týchto informácií alebo ich poskytnutie v nedostatočnom rozsahu je pre predávajúceho dôvodom na odstúpenie od zmluvy.
+Prevádzkovateľ má právo požiadať kupujúceho o dodatočné informácie k objednávke, a to najmä z dôvodu a v rozsahu stanovenom podľa zákona č. 297/2008 Z. z. - Zákon o ochrane pred legalizáciou príjmov z trestnej činnosti a o ochrane pred financovaním terorizmu. Neposkytnutie týchto informácií alebo ich poskytnutie v nedostatočnom rozsahu je pre prevádzkovateľa dôvodom na odstúpenie od zmluvy.
 
 Dodanie (prevod) produktu
 
@@ -36,7 +36,7 @@ Prevádzkovateľ neručí za to, čo sa ďalej deje s nakúpeným produktom po j
 Zmluvné strany si môžu bežnú korešpondenciu navzájom doručovať prostredníctvom elektronickej pošty, a to na adresu elektronickej pošty uvedenú v užívateľskom účte kupujúceho alebo uvedenú kupujúcim v objednávke, resp. na adresu uvedenú na webovej stránke poskytovateľa.
 Ak vzťah založený zmluvou obsahuje medzinárodné (zahraničné) prvky, potom sa strany dohodnú, že vzťah sa bude riadiť slovenským právom. Týmto nie sú dotknuté práva spotrebiteľa vyplývajúce zo všeobecne záväzných právnych predpisov.
 Ak sa niektoré ustanovenia obchodných podmienok stanú neplatnými alebo neúčinnými, namiesto neplatných ustanovení nastúpia ustanovenia, ktorých význam sa čo najviac približuje neplatným ustanoveniam. Neplatnosťou alebo neúčinnosťou jedného ustanovenia nie je dotknutá platnosť ostatných ustanovení.
-Zmluvu, vrátane obchodných podmienok archivuje predávajúci v elektronickej podobe a nie je prístupná.
+Zmluvu, vrátane obchodných podmienok archivuje prevádzkovateľ v elektronickej podobe a nie je prístupná.
 
 Zásady ochrany osobných údajov
 
