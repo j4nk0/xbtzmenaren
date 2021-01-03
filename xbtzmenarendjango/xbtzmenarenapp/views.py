@@ -178,7 +178,7 @@ def limit_order_buy_''' + c + '''_delete(request, order_id):
         rates.delete_limit_order_buy_''' + c + '''(order_id)
     except:
         return limit_order_buy(request, False, "''' + c + '''")
-    return limit_order_buy(request, True, "''' + c + '''btc")
+    return limit_order_buy(request, True, "''' + c + '''")
 ''')
 
 @user_passes_test(verification_check)
