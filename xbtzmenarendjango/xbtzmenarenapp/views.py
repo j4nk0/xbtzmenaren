@@ -452,7 +452,7 @@ def registration_attempt(request):
 @user_passes_test(verification_check)
 @login_required
 def portfolio(request):
-    eur_in_orders = 0
+    eur_in_orders = D('0')
     orders = Order_buy_btc.objects.filter(user=request.user)
     for o in orders: eur_in_orders += o.btc * o.price
     orders = Order_buy_ltc.objects.filter(user=request.user)
