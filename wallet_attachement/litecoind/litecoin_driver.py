@@ -51,7 +51,7 @@ class conn():
         return D(response.json()['result']['feerate'])
 
     def send(self, address, amount, fee_per_kB):
-        payload = json.dumps({"method": 'settxfee', "params": [fee_per_kB]})
+        payload = json.dumps({"method": 'settxfee', "params": [str(fee_per_kB)]})
         response = requests.post(url=self.url, auth=self.auth, data=payload, headers=self.headers)
         payload = json.dumps({"method": 'sendtoaddress', "params": [address, str(amount)]})
         response = requests.post(url=self.url, auth=self.auth, data=payload, headers=self.headers)
