@@ -606,10 +606,10 @@ def withdrawal(request, error_message=None, ok_message=None, active='eur'):
         'error_message': error_message,
         'ok_message': ok_message,
         'max_sum_eur': request.user.balance.eur,
-        'max_sum_btc': max(request.user.balance.btc - btc_driver.get_fee_per_kB(), 0),
-        'max_sum_ltc': max(request.user.balance.ltc - ltc_driver.get_fee_per_kB(), 0),
+        'max_sum_btc': max(round(request.user.balance.btc - btc_driver.get_fee_per_kB(), DECIMAL_PLACES_BTC), 0),
+        'max_sum_ltc': max(round(request.user.balance.ltc - ltc_driver.get_fee_per_kB(), DECIMAL_PLACES_LTC), 0),
         # DOGE gives fee in negative numbers!!!
-        'max_sum_doge': max(request.user.balance.doge + doge_driver.get_fee_per_kB(), 0),
+        'max_sum_doge': max(round(request.user.balance.doge + doge_driver.get_fee_per_kB(), DECIMAL_PLACES_DOGE), 0),
         'active': active,
     }
     return render(request, 'xbtzmenarenapp/withdrawal.html', context)
