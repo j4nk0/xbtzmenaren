@@ -2,7 +2,7 @@ import sys
 import socket
 
 my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-while:
+while True:
     try:
         my_socket.connect(('localhost', 22554))
         break
