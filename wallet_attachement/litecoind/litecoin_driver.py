@@ -6,7 +6,7 @@ from django.utils import timezone
 import requests
 
 TRESHOLD_CONFIRMATIONS = 6
-CHECK_CONFIRMATIONS = 10
+CHECK_CONFIRMATIONS = 100
 
 class conn():
     
