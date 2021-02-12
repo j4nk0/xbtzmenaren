@@ -1,12 +1,13 @@
 import socket
 import json
 from .models import Incoming_doge, Deposit_doge, Address, Balance
+from decimal import Decimal as D
 from django.db.models import F
 from django.utils import timezone
 import requests
 
 TRESHOLD_CONFIRMATIONS = 6
-CHECK_CONFIRMATIONS = 10
+CHECK_CONFIRMATIONS = 100
 
 class conn():
     
@@ -42,12 +43,12 @@ class conn():
     def getbalance(self):
         payload = json.dumps({"method": 'getbalance', "params": []})
         response = requests.post(url=self.url, auth=self.auth, data=payload, headers=self.headers)
-        return response.json()['result']
+        return D(response.json()['result'])
 
     def get_fee_per_kB(self):
         payload = json.dumps({"method": 'estimatesmartfee', "params": [5]})
         response = requests.post(url=self.url, auth=self.auth, data=payload, headers=self.headers)
-        return response.json()['result']['feerate']
+        return D(response.json()['result']['feerate'])
 
     def send(self, address, amount, fee_per_kB):
         payload = json.dumps({"method": 'settxfee', "params": [fee_per_kB]})

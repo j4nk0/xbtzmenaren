@@ -6,7 +6,7 @@ from django.db.models import F
 from django.utils import timezone
 
 TRESHOLD_CONFIRMATIONS = 6
-CHECK_CONFIRMATIONS = 10
+CHECK_CONFIRMATIONS = 100
 CONF_PATH = '/home/j4nk0/.bitcoin/bitcoin.conf'
 
 def get_balance():
