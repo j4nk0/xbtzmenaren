@@ -1,11 +1,7 @@
 import socket
 import json
-from .models import Incoming_ltc, Deposit_ltc, Address, Balance
-from decimal import Decimal as D
-from django.db.models import F
-from django.utils import timezone
 import requests
-import os
+from decimal import Decimal as D
 
 TRESHOLD_CONFIRMATIONS = 6
 CHECK_CONFIRMATIONS = 100
@@ -79,63 +75,3 @@ def get_blockhash(blockhash):
         yield blockhash
         blockhash = conn().getblock(blockhash)['previousblockhash']
 
-def listen_for_tx():
-    PIPE_PATH = '/run/litecoin_tx'
-    os.mkfifo(PIPE_PATH)
-    alldata = []
-    txids = []
-    while True:
-        with open(PIPE_PATH) as fifo:
-            for line in fifo:
-                alldata.append(line)
-                if '*' in line:
-                    alldata = ''.join(alldata)
-                    txids = alldata.split('*')
-                    alldata = txids.pop()
-                    for txid in txids:
-                        raw_tx = conn().getrawtransaction(txid)
-                        tx = conn().decoderawtransaction(raw_tx)
-                        for output in tx['vout']:
-                            for address in output['scriptPubKey']['addresses']:
-                                if address in Address.objects.all().values_list('ltc', flat=True):
-                                    Incoming_ltc.objects.create(
-                                        user=Address.objects.get(ltc=address).user,
-                                        address=address,
-                                        ltc=output['value'],
-                                        confirmations=0,
-                                        txid=txid
-                                    )
-                                    displayed_address = Address.objects.get(ltc=address)
-                                    displayed_address.ltc = conn().get_new_address()
-                                    displayed_address.save()
-
-def listen_for_block():
-    PIPE_PATH = '/run/litecoin_block'
-    os.mkfifo(PIPE_PATH)
-    alldata = []
-    blocks = []
-    while True:
-        with open(PIPE_PATH) as fifo:
-            for line in fifo:
-                alldata.append(line)
-                if '*' in line:
-                    alldata = ''.join(alldata)
-                    txids = alldata.split('*')
-                    alldata = txids.pop()
-                    for new_blockhash in blocks:
-                        for txid in Incoming_ltc.objects.all().values_list('txid', flat=True):
-                            for (blockhash, _) in zip(get_blockhash(new_blockhash), range(CHECK_CONFIRMATIONS)):
-                                if conn().is_tx_in_block(txid, blockhash):
-                                    confirmations = conn().getblock(blockhash)['confirmations']
-                                    Incoming_ltc.objects.filter(txid=txid).update(confirmations=confirmations)
-                                    if confirmations >= TRESHOLD_CONFIRMATIONS:
-                                        for record in Incoming_ltc.objects.filter(txid=txid).values('user', 'address', 'ltc'):
-                                            Deposit_ltc.objects.create(
-                                                address=record['address'],
-                                                ltc=record['ltc'],
-                                                datetime=timezone.now(),
-                                                user_id=record['user']
-                                            )
-                                            Balance.objects.filter(user=record['user']).update(ltc=F('ltc') + record['ltc'])
-                                        Incoming_ltc.objects.filter(txid=txid).delete()
-                                    break
