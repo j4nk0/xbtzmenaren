@@ -178,7 +178,7 @@ def limit_order_buy_''' + c + '''_delete(request, order_id):
         rates.delete_limit_order_buy_''' + c + '''(order_id)
     except:
         return limit_order_buy(request, False, "''' + c + '''")
-    return limit_order_buy(request, True, "''' + c + '''btc")
+    return limit_order_buy(request, True, "''' + c + '''")
 ''')
 
 @user_passes_test(verification_check)
@@ -452,7 +452,7 @@ def registration_attempt(request):
 @user_passes_test(verification_check)
 @login_required
 def portfolio(request):
-    eur_in_orders = 0
+    eur_in_orders = D('0')
     orders = Order_buy_btc.objects.filter(user=request.user)
     for o in orders: eur_in_orders += o.btc * o.price
     orders = Order_buy_ltc.objects.filter(user=request.user)
@@ -606,10 +606,10 @@ def withdrawal(request, error_message=None, ok_message=None, active='eur'):
         'error_message': error_message,
         'ok_message': ok_message,
         'max_sum_eur': request.user.balance.eur,
-        'max_sum_btc': max(request.user.balance.btc - btc_driver.get_fee_per_kB(), 0),
-        'max_sum_ltc': max(request.user.balance.ltc - ltc_driver.get_fee_per_kB(), 0),
+        'max_sum_btc': max(round(request.user.balance.btc - btc_driver.get_fee_per_kB(), DECIMAL_PLACES_BTC), 0),
+        'max_sum_ltc': max(round(request.user.balance.ltc - ltc_driver.get_fee_per_kB(), DECIMAL_PLACES_LTC), 0),
         # DOGE gives fee in negative numbers!!!
-        'max_sum_doge': max(request.user.balance.doge + doge_driver.get_fee_per_kB(), 0),
+        'max_sum_doge': max(round(request.user.balance.doge + doge_driver.get_fee_per_kB(), DECIMAL_PLACES_DOGE), 0),
         'active': active,
     }
     return render(request, 'xbtzmenarenapp/withdrawal.html', context)

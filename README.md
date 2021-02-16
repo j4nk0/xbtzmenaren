@@ -187,35 +187,6 @@ SSLStaplingCache shmcb:/tmp/stapling_cache(128000)
 
 ### Fix ...ModuleNotFoundError: No module named 'xbtzmenarendjango'...
 
-```
-<VirtualHost *:80>
-        ServerName xbtzmenaren.ddns.net
-        Redirect permanent / https://xbtzmenaren.ddns.net/
-</VirtualHost>
-<VirtualHost _default_:443>
-        ServerName xbtzmenaren.ddns.net
-        ServerAlias localhost
-
-        Alias /static /var/www/xbtzmenarendjango/static/
-        WSGIScriptAlias / /var/www/xbtzmenarendjango/xbtzmenarendjango/wsgi.py
-
-        <Directory /var/www/xbtzmenarendjango/>
-                Order deny,allow
-                Allow from all
-        </Directory>
-
-        DocumentRoot /var/www/xbtzmenarendjango/
-
-        ErrorLog /var/www/logs/error.log
-        CustomLog /var/www/logs/custom.log combined
-
-        SSLEngine on
-        SSLCertificateFile /var/www/xbtzmenarendjango/cert.pem
-        SSLCertificateKeyFile /var/www/xbtzmenarendjango/privkey.pem
-
-        SSLCipherSuite HIGH:!aNULL:!MD5
-</VirtualHost>
-```
 Do edit:
 `/var/www/xbtzmenarendjango/xbtzmenarendjango/wsgi.py` to contain: `sys.path.append('/var/www/xbtzmenarendjango')`
 

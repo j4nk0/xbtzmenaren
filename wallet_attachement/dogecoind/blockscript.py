@@ -1,6 +1,12 @@
 import sys
 import socket
 
-socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-socket.connect(('localhost', 22554))
-socket.send(('NEWBLOCK:' + sys.argv[1] + '*').encode(encoding='UTF-8'))
+my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+while True:
+    try:
+        my_socket.connect(('localhost', 22554))
+        break
+    except socket.error:
+        pass
+my_socket.sendall(('NEWBLOCK:' + sys.argv[1] + '*').encode(encoding='UTF-8'))
+my_socket.close()
