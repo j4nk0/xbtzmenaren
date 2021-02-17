@@ -25,6 +25,6 @@ for txid in txids:
                     cursor.execute("INSERT INTO xbtzmenarenapp_deposit_ltc (address, ltc, datetime, user_id) VALUES ('{address}', {ltc}, {datetime}, {user_id})".format(address=record[0], ltc=record[1], datetime=datetime.now(), user_id=record[2]))
                     cursor.execute("UPDATE xbtzmenarenapp_balance SET ltc = ltc + {ltc} WHERE user_id={user_id}".format(ltc=record[1], user_id=record[2])) 
                     db_conn.commit() 
-                cursor.execute("DELETE FROM xbtzmenarenapp_incoming_ltc WHERE txid='{txid}'".format(txid=txid)
+                cursor.execute("DELETE FROM xbtzmenarenapp_incoming_ltc WHERE txid='{txid}'".format(txid=txid))
                 db_conn.commit()
             break
