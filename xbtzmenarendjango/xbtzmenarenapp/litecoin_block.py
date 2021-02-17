@@ -15,7 +15,7 @@ cursor = db_conn.cursor()
 cursor.execute('SELECT txid FROM xbtzmenarenapp_incoming_ltc')
 txids = [ item for (item,) in cursor ]
 for txid in txids:
-    for (blockhash, _) in zip(get_blockhash(new_blockhash), range(CHECK_CONFIRMATIONS)):
+    for (blockhash, _) in zip(get_blockhash(blockhash), range(CHECK_CONFIRMATIONS)):
         if conn().is_tx_in_block(txid, blockhash):
             confirmations = conn().getblock(blockhash)['confirmations']
             cursor.execute("UPDATE xbtzmenarenapp_incoming_ltc SET confirmations='{confirmations}' WHERE txid='{txid}'".format(confirmations=confirmations, txid=txid))
