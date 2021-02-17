@@ -1,6 +1,7 @@
 from litecoin_driver import *
 from datetime import datetime
 import sys
+import psycopg2
 
 blockhash = sys.argv[1]
 db_conn = psycopg2.connect(
