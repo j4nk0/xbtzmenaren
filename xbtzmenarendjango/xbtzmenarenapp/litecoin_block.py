@@ -1,5 +1,4 @@
 from litecoin_driver import *
-from datetime import datetime
 import sys
 import psycopg2
 
@@ -23,9 +22,11 @@ for txid in txids:
             if confirmations >= TRESHOLD_CONFIRMATIONS:
                 cursor.execute("SELECT address, ltc, user FROM xbtzmenarenapp_incoming_ltc WHERE txid='{txid}'".format(txid=txid))
                 for record in cursor:
-                    cursor.execute("INSERT INTO xbtzmenarenapp_deposit_ltc (address, ltc, datetime, user_id) VALUES ('{address}', {ltc}, {datetime}, {user_id})".format(address=record[0], ltc=record[1], datetime=datetime.now(), user_id=record[2]))
+                    cursor.execute("INSERT INTO xbtzmenarenapp_deposit_ltc (address, ltc, datetime, user_id) VALUES ('{address}', {ltc}, now(), {user_id})".format(address=record[0], ltc=record[1], user_id=record[2]))
                     cursor.execute("UPDATE xbtzmenarenapp_balance SET ltc = ltc + {ltc} WHERE user_id={user_id}".format(ltc=record[1], user_id=record[2])) 
                     db_conn.commit() 
                 cursor.execute("DELETE FROM xbtzmenarenapp_incoming_ltc WHERE txid='{txid}'".format(txid=txid))
                 db_conn.commit()
             break
+cursor.close()
+db_conn.close()
