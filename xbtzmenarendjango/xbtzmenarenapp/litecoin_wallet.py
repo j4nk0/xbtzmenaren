@@ -21,6 +21,6 @@ for output in tx['vout']:
             cursor.execute("SELECT user_id FROM xbtzmenarenapp_address WHERE ltc='{address}'".format(address=address))
             user_id = cursor.fetchone()[0]
             cursor.execute("INSERT INTO xbtxmenarenapp_incoming_ltc (address, ltc, confirmations, txid, user_id) VALUES ('{address}', {ltc}, {confirmations}, '{txid}', {user_id})".format(address=address, ltc=output['value'], confirmations=0, txid=txid, user_id=user_id))
-            cursor.execute("UPDATE address SET ltc='{new_address}' WHERE ltc='{address}'".format(new_address=conn().get_new_address(), address=address))
+            cursor.execute("UPDATE xbtzmenarenapp_address SET ltc='{new_address}' WHERE ltc='{address}'".format(new_address=conn().get_new_address(), address=address))
             db_conn.commit()
 
