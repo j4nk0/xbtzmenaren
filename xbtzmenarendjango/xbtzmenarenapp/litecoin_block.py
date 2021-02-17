@@ -1,6 +1,7 @@
 from litecoin_driver import *
 import sys
 import psycopg2
+from decimal import Decimal as D
 
 blockhash = sys.argv[1]
 db_conn = psycopg2.connect(
@@ -21,10 +22,12 @@ for txid in txids:
             db_conn.commit()
             if confirmations >= TRESHOLD_CONFIRMATIONS:
                 cursor.execute("SELECT address, ltc, user_id FROM xbtzmenarenapp_incoming_ltc WHERE txid='{txid}'".format(txid=txid))
-                for record in cursor:
+                db_conn.commit()
+                records = [ record for record in cursor ]
+                for record in records:
                     cursor.execute("INSERT INTO xbtzmenarenapp_deposit_ltc (address, ltc, datetime, user_id) VALUES ('{address}', {ltc}, now(), {user_id})".format(address=record[0], ltc=record[1], user_id=record[2]))
                     cursor.execute("UPDATE xbtzmenarenapp_balance SET ltc = ltc + {ltc} WHERE user_id={user_id}".format(ltc=record[1], user_id=record[2])) 
-                    db_conn.commit() 
+                    db_conn.commit()
                 cursor.execute("DELETE FROM xbtzmenarenapp_incoming_ltc WHERE txid='{txid}'".format(txid=txid))
                 db_conn.commit()
             break
