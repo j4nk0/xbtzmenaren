@@ -20,7 +20,7 @@ for txid in txids:
             cursor.execute("UPDATE xbtzmenarenapp_incoming_ltc SET confirmations='{confirmations}' WHERE txid='{txid}'".format(confirmations=confirmations, txid=txid))
             db_conn.commit()
             if confirmations >= TRESHOLD_CONFIRMATIONS:
-                cursor.execute("SELECT address, ltc, user FROM xbtzmenarenapp_incoming_ltc WHERE txid='{txid}'".format(txid=txid))
+                cursor.execute("SELECT address, ltc, user_id FROM xbtzmenarenapp_incoming_ltc WHERE txid='{txid}'".format(txid=txid))
                 for record in cursor:
                     cursor.execute("INSERT INTO xbtzmenarenapp_deposit_ltc (address, ltc, datetime, user_id) VALUES ('{address}', {ltc}, now(), {user_id})".format(address=record[0], ltc=record[1], user_id=record[2]))
                     cursor.execute("UPDATE xbtzmenarenapp_balance SET ltc = ltc + {ltc} WHERE user_id={user_id}".format(ltc=record[1], user_id=record[2])) 
