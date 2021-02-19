@@ -1,9 +1,5 @@
 import socket
 import json
-from .models import Incoming_doge, Deposit_doge, Address, Balance
-from decimal import Decimal as D
-from django.db.models import F
-from django.utils import timezone
 import requests
 
 TRESHOLD_CONFIRMATIONS = 6
